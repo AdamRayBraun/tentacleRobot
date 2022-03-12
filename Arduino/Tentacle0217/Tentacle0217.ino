@@ -5,95 +5,106 @@
   2022
 
   TentacleBot firmware
+
+  Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
+#include <Servo.h>
+
 // Pin connections
-#define servo1Pin      9
-#define servo2Pin      10
-#define joystickButton 7
+#define servoXPin      2
+#define servoYPin      3
 
 // different modes
-#define JOYSTICK      0
+#define NONE          0
 #define SINEWAVE      1
-byte mode = SINEWAVE;
+#define HOMEING       2
+byte controlMode = SINEWAVE;
 
-int angle1 = 90;
-int angle2 = 90;
-int valueX = 0;
-int valueY = 0;
-int valueZ = 0;
+// movement
+#define sinwaveSpeed 0.008
+
+Servo servoX, servoY;
+float sinMoveX, sinMoveY;
+
+int angleX = 90;
+int angleY = 90;
 
 void setup() {
   Serial.begin(9600);
   setupServos();
-  setupInputs();
 }
 
 void loop() {
   switch (controlMode){
-    case JOYSTICK:
-      joystickControl();
-      break;
-
     case SINEWAVE:
       sineMove();
       break;
+
+    case HOMEING:
+      // to set middle home point of both servos - useful when attaching tendons
+      servoX.write(90);
+      servoY.write(90);
+      delay(10000);
+      break;
+
+    case NONE:
+      break;
   }
+  keyboardInput();
 }
 
 void setupServos(){
-  pinMode(servo1Pin, OUTPUT);
-  pinMode(servo2Pin, OUTPUT);
+  servoX.attach(servoXPin);
+  servoY.attach(servoYPin);
 }
 
-void setupInputs(){
-  pinMode(joystickButton, INPUT_PULLUP);
-}
+void sineMove(){
+  float xPos = abs(sin(sinMoveX) * 180);
+  float yPos = abs(sin(sinMoveY) * 180);
 
-void joystickControl(){
-  valueX = analogRead(A0);
-  Serial.print("X:");
-  Serial.print(valueX, DEC);
-  valueY = analogRead(A1);
-  Serial.print(" | Y:");
-  Serial.print(valueY, DEC);
-  valueZ = digitalRead(7);
-  Serial.print(" | Z: ");
-  Serial.println(valueZ, DEC);
+  servoX.write((int)xPos);
+  servoY.write((int)yPos);
 
-  if(valueZ == 0){
-    servoSet(servo1Pin, angle1);
-    servoSet(servo2Pin, angle2);
-  }
-
-  if(valueX > 900){
-    angle1 = angle1 - 2;
-    servoMove(servo1Pin, angle1);
-  } else if(valueX < 100){
-    angle1 = angle1 + 2;
-    servoMove(servo1Pin, angle1);
-  }
-
-  if(valueY > 900){
-    angle2 = angle2 + 2;
-    servoMove(servo2Pin, angle2);
-  } else if(valueY < 100){
-    angle2 = angle2 - 2;
-    servoMove(servo2Pin, angle2);
-  }
-}
-
-void servoSet(int servo,int angle){
-  digitalWrite(servo,HIGH);
-  delayMicroseconds(1500);
-  digitalWrite(servo,LOW);
   delay(15);
+
+  sinMoveX += sinwaveSpeed;
+  sinMoveY += sinwaveSpeed + 0.001;
 }
 
-void servoMove(int servo,int angle){
-  int j = map(angle,0,180,500,2500);
-  digitalWrite(servo,HIGH);
-  delayMicroseconds(j);
-  digitalWrite(servo,LOW);
-  delay(15);
+void keyboardInput(){
+  if (Serial.available() > 0){
+    switch(Serial.read()){
+      case 49:
+        // '1' key
+        if (angleX > 0) angleX--;
+        break;
+
+      case 50:
+        // '2' key
+        if (angleX < 180) angleX++;
+        break;
+
+      case 51:
+        // '3' key
+        if (angleY > 0) angleY--;
+        break;
+
+      case 52:
+        // '4' key
+        if (angleY < 180) angleY++;
+        break;
+
+      default:
+        return;
+        break;
+    }
+
+    Serial.print("angleX\t");
+    Serial.print(angleX);
+    Serial.print("\tangleY\t");
+    Serial.println(angleY);
+    servoX.write(angleX);
+    servoY.write(angleY);
+  }
 }
