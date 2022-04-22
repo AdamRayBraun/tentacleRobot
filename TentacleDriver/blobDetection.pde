@@ -4,11 +4,11 @@
 ArrayList<Blob> blobs = new ArrayList<Blob>();
 
 int blobCounter = 0;
-int maxLife = 50;
+int maxLife = 30;
 color trackColor;
 float threshold = 10;
 float distThreshold = 2;
-int minBlobSize = 4500;
+int minBlobSize = 8000;
 
 void setupBlobDetection(){
   trackColor = color(255);
@@ -25,8 +25,8 @@ void detectBlobs(){
   kinectCanvas.loadPixels();
 
   // Begin loop to walk through every pixel
-  for (int x = stairCropStartX; x < stairCropEndX; x++){
-    for (int y = stairCropStartY; y < stairCropEndY; y++){
+  for (int x = 0; x < kinectDepthW; x++){
+    for (int y = 0; y < kinectDepthH; y++){
       int loc = x + y * kinectCanvas.width;
 
       color currentColour = kinectCanvas.pixels[loc];

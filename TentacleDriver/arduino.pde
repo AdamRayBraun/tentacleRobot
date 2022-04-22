@@ -10,6 +10,11 @@
 
 // packet structure
 final byte packet_len                 = 6;
+final byte packet_pos_flag            = 1;
+final byte packet_pos_data            = 2;
+final byte packet_pos_footer          = packet_len - 1;
+
+// packet values
 final byte packet_header              = 0x69;
 final byte packet_footer              = 0x42;
 final byte packet_flag_motor_top_x    = 0x10;
@@ -17,11 +22,9 @@ final byte packet_flag_motor_top_y    = 0x11;
 final byte packet_flag_motor_bottom_x = 0x20;
 final byte packet_flag_motor_bottom_y = 0x21;
 final byte packet_flag_motor_eyelid   = 0x30;
-final byte packet_flag_motor_eyeball  = 0x31;
+// final byte packet_flag_motor_eyeball  = 0x31; ??
 final byte packet_flag_led_eyeball    = 0x40;
-final byte packet_pos_flag            = 1;
-final byte packet_pos_data            = 2;
-final byte packet_pos_footer          = packet_len - 1;
+
 byte[] txPacket = new byte[packet_len];
 Serial bus;
 
@@ -88,6 +91,18 @@ void moveTentacle(byte direction, byte section){
       println("ERROR META");
       break;
   }
+}
+
+void moveEyeBall(byte position){
+  txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
+  txPacket[packet_pos_data] = position;
+  serialTx(txPacket);
+}
+
+void eyeLight(byte intensity){
+  txPacket[packet_pos_flag] = packet_flag_led_eyeball;
+  txPacket[packet_pos_data] = intensity;
+  serialTx(txPacket);
 }
 
 void serialTx(byte[] packet){

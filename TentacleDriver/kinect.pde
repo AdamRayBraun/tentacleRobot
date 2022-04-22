@@ -7,15 +7,6 @@ final int DEPTH_ALL             = 0;
 final int DEPTH_FLAT_THRESH     = 1;
 int depthMode = DEPTH_FLAT_THRESH;
 
-int stairStartX     = 183;
-int stairEndX       = 510;
-int stairCropStartX = 100;
-int stairCropEndX   = 415;
-int stairCropStartY = 140;
-int stairCropEndY   = 210;
-int stairStartDepth = 2438;
-int stairEndDepth   = 1634;
-
 void setupKinect(){
   if (USING_KINECT){
     kinect2 = new Kinect2(this);
