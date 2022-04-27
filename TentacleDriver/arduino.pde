@@ -44,7 +44,7 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
-void moveTentacle(byte direction, byte section){
+void moveTentacle(byte direction, byte section, byte amount){
   byte err = 0;
   switch(section){
     case TOP_SECTION:

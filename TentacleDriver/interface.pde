@@ -1,8 +1,5 @@
 void keyPressed(){
-  if (key == 'b'){
-    blobsEnabled = !blobsEnabled;
-    println("Blob detection " + ((blobsEnabled) ?  "enabled" : "disabled"));
-  } else if (key == 'f'){
+  if (key == 'f'){
     depthMode = DEPTH_FLAT_THRESH;
   } else if (key == 'a'){
     depthMode = DEPTH_ALL;
