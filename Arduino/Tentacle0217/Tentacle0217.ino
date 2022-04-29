@@ -9,102 +9,44 @@
   Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
-#include <Servo.h>
+#include "TentacleStepper.h"
 
 // Pin connections
-#define servoXPin      2
-#define servoYPin      3
+#define bottom_servo_X_PUL_pin  1
+#define bottom_servo_X_DIR_pin  2
+#define bottom_servo_X_EN_pin   3
+#define bottom_servo_Y_PUL_pin  4
+#define bottom_servo_Y_DIR_pin  5
+#define bottom_servo_Y_EN_pin   6
 
-// different modes
-#define NONE          0
-#define SINEWAVE      1
-#define HOMEING       2
-byte controlMode = SINEWAVE;
+#define top_servo_X_PUL_pin     7
+#define top_servo_X_DIR_pin     8
+#define top_servo_X_EN_pin      9
+#define top_servo_Y_PUL_pin     10
+#define top_servo_Y_DIR_pin     11
+#define top_servo_Y_EN_pin      12
 
-// movement
-#define sinwaveSpeed 0.008
+TentacleStepper bottomX(bottom_servo_X_PUL_pin, bottom_servo_X_DIR_pin, bottom_servo_X_EN_pin);
+TentacleStepper bottomY(bottom_servo_Y_PUL_pin, bottom_servo_Y_DIR_pin, bottom_servo_Y_EN_pin);
 
-Servo servoX, servoY;
-float sinMoveX, sinMoveY;
+TentacleStepper topX(top_servo_X_PUL_pin, top_servo_X_DIR_pin, top_servo_X_EN_pin);
+TentacleStepper topY(top_servo_Y_PUL_pin, top_servo_Y_DIR_pin, top_servo_Y_EN_pin);
 
-int angleX = 90;
-int angleY = 90;
-
-void setup() {
-  Serial.begin(9600);
-  setupServos();
+void setup()
+{
+  Serial.begin(115200);
 }
 
-void loop() {
-  switch (controlMode){
-    case SINEWAVE:
-      sineMove();
-      break;
-
-    case HOMEING:
-      // to set middle home point of both servos - useful when attaching tendons
-      servoX.write(90);
-      servoY.write(90);
-      delay(10000);
-      break;
-
-    case NONE:
-      break;
-  }
-  keyboardInput();
+void loop()
+{
+  serialRx();
+  handleSteppers();
 }
 
-void setupServos(){
-  servoX.attach(servoXPin);
-  servoY.attach(servoYPin);
-}
-
-void sineMove(){
-  float xPos = abs(sin(sinMoveX) * 180);
-  float yPos = abs(sin(sinMoveY) * 180);
-
-  servoX.write((int)xPos);
-  servoY.write((int)yPos);
-
-  delay(15);
-
-  sinMoveX += sinwaveSpeed;
-  sinMoveY += sinwaveSpeed + 0.001;
-}
-
-void keyboardInput(){
-  if (Serial.available() > 0){
-    switch(Serial.read()){
-      case 49:
-        // '1' key
-        if (angleX > 0) angleX--;
-        break;
-
-      case 50:
-        // '2' key
-        if (angleX < 180) angleX++;
-        break;
-
-      case 51:
-        // '3' key
-        if (angleY > 0) angleY--;
-        break;
-
-      case 52:
-        // '4' key
-        if (angleY < 180) angleY++;
-        break;
-
-      default:
-        return;
-        break;
-    }
-
-    Serial.print("angleX\t");
-    Serial.print(angleX);
-    Serial.print("\tangleY\t");
-    Serial.println(angleY);
-    servoX.write(angleX);
-    servoY.write(angleY);
-  }
+void handleSteppers()
+{
+  if (bottomX.isEnabled()) bottomX.move();
+  if (bottomY.isEnabled()) bottomY.move();
+  if (topX.isEnabled()) topX.move();
+  if (topY.isEnabled()) topY.move();
 }
