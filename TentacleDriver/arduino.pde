@@ -15,15 +15,15 @@ final byte packet_pos_data            = 2;
 final byte packet_pos_footer          = packet_len - 1;
 
 // packet values
-final byte packet_header              = 0x69;
-final byte packet_footer              = 0x42;
-final byte packet_flag_motor_top_x    = 0x10;
-final byte packet_flag_motor_top_y    = 0x11;
-final byte packet_flag_motor_bottom_x = 0x20;
-final byte packet_flag_motor_bottom_y = 0x21;
-final byte packet_flag_motor_eyelid   = 0x30;
-final byte packet_flag_led_eyeball    = 0x40;
-final byte packet_flag_STOP           = 0xFF;
+final byte packet_header              = (byte)0x69;
+final byte packet_footer              = (byte)0x42;
+final byte packet_flag_motor_top_x    = (byte)0x10;
+final byte packet_flag_motor_top_y    = (byte)0x11;
+final byte packet_flag_motor_bottom_x = (byte)0x20;
+final byte packet_flag_motor_bottom_y = (byte)0x21;
+final byte packet_flag_motor_eyelid   = (byte)0x30;
+final byte packet_flag_led_eyeball    = (byte)0x40;
+final byte packet_flag_STOP           = (byte)0xFF;
 
 byte[] txPacket = new byte[packet_len];
 Serial bus;
@@ -39,31 +39,35 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
-void moveTentacle(byte motor, int position){
+void moveTentacle(byte motor, int position, boolean direction){
   byte err = 0;
   switch(motor){
     case MOTOR_TOP_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_x;
-      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
       break;
 
     case MOTOR_TOP_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_y;
-      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
       break;
 
     case MOTOR_BOTTOM_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_x;
-      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
       break;
 
     case MOTOR_BOTTOM_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_y;
-      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
       break;
 
     default:

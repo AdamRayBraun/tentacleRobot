@@ -39,8 +39,10 @@ void wiggle(){
     motorWaves[m] += wiggleSinSpeeds[m];
     motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorSpeeds[m]);
 
-    moveTentacle(m, motorPositions[m]);
+    moveTentacle(m, abs(motorPositions[m]), (motorPositions[m] > 0) ? true : false);
   }
+
+  println(motorPositions[2]);
 
   // TODO wiggle eye lid occasionally
 }
