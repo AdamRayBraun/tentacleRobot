@@ -10,8 +10,9 @@
 **/
 
 #include <AccelStepper.h>
-#include "TentacleStepper.h"
+// #include "TentacleStepper.h"
 #include <Servo.h>
+#include <Wire.h>
 
 // Pin connections
 #define bottom_servo_X_PUL_pin  1
@@ -38,10 +39,12 @@ void setup()
   Serial.begin(115200);
   setupAccelSteppers();
   setupEndEffector();
+  setupIMU();
 }
 
 void loop()
 {
   serialRx();
   handleSteppers();
+  readIMUData();
 }
