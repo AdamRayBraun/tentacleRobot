@@ -38,6 +38,10 @@ void serialRx()
           bottomY.setSpeed(rxBuff[packet_pos_data - 1]);
           break;
 
+        case packet_flag_motor_eyelid:
+          setEyelidPosition(rxBuff[packet_pos_data - 1]);
+          break;
+
         case packet_flag_led_eyeball:
           setEndEffectorLEDBrightness(rxBuff[packet_pos_data - 1]);
           break;
