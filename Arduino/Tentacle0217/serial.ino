@@ -37,6 +37,10 @@ void serialRx()
         case packet_flag_motor_bottom_y:
           bottomY.setSpeed(rxBuff[packet_pos_data - 1]);
           break;
+
+        case packet_flag_led_eyeball:
+          setEndEffectorLEDBrightness(rxBuff[packet_pos_data - 1]);
+          break;
       }
     }
   }

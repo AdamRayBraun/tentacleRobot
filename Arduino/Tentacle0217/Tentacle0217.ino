@@ -26,6 +26,9 @@
 #define top_servo_Y_DIR_pin     11
 #define top_servo_Y_EN_pin      12
 
+// LED pin needs to be PWM
+#define end_effector_led_pin    13
+
 TentacleStepper bottomX(bottom_servo_X_PUL_pin, bottom_servo_X_DIR_pin, bottom_servo_X_EN_pin);
 TentacleStepper bottomY(bottom_servo_Y_PUL_pin, bottom_servo_Y_DIR_pin, bottom_servo_Y_EN_pin);
 
@@ -35,6 +38,7 @@ TentacleStepper topY(top_servo_Y_PUL_pin, top_servo_Y_DIR_pin, top_servo_Y_EN_pi
 void setup()
 {
   Serial.begin(115200);
+  setupEndEffectorLed();
 }
 
 void loop()
