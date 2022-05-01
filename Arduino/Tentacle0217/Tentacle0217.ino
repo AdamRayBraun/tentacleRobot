@@ -9,6 +9,7 @@
   Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
+#include <AccelStepper.h>
 #include "TentacleStepper.h"
 #include <Servo.h>
 
@@ -32,15 +33,10 @@
 
 #define eyelid_servo_pin        14
 
-TentacleStepper bottomX(bottom_servo_X_PUL_pin, bottom_servo_X_DIR_pin, bottom_servo_X_EN_pin);
-TentacleStepper bottomY(bottom_servo_Y_PUL_pin, bottom_servo_Y_DIR_pin, bottom_servo_Y_EN_pin);
-
-TentacleStepper topX(top_servo_X_PUL_pin, top_servo_X_DIR_pin, top_servo_X_EN_pin);
-TentacleStepper topY(top_servo_Y_PUL_pin, top_servo_Y_DIR_pin, top_servo_Y_EN_pin);
-
 void setup()
 {
   Serial.begin(115200);
+  setupAccelSteppers();
   setupEndEffector();
 }
 
@@ -48,12 +44,4 @@ void loop()
 {
   serialRx();
   handleSteppers();
-}
-
-void handleSteppers()
-{
-  if (bottomX.isEnabled()) bottomX.move();
-  if (bottomY.isEnabled()) bottomY.move();
-  if (topX.isEnabled())    topX.move();
-  if (topY.isEnabled())    topY.move();
 }

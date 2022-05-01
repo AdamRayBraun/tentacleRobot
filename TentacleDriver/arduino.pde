@@ -23,6 +23,7 @@ final byte packet_flag_motor_bottom_x = 0x20;
 final byte packet_flag_motor_bottom_y = 0x21;
 final byte packet_flag_motor_eyelid   = 0x30;
 final byte packet_flag_led_eyeball    = 0x40;
+final byte packet_flag_STOP           = 0xFF;
 
 byte[] txPacket = new byte[packet_len];
 Serial bus;
@@ -43,30 +44,26 @@ void moveTentacle(byte motor, int position){
   switch(motor){
     case MOTOR_TOP_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_x;
-      txPacket[packet_pos_data]     = byte((position >> 16) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
       break;
 
     case MOTOR_TOP_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_y;
-      txPacket[packet_pos_data]     = byte((position >> 16) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
       break;
 
     case MOTOR_BOTTOM_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_x;
-      txPacket[packet_pos_data]     = byte((position >> 16) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
       break;
 
     case MOTOR_BOTTOM_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_y;
-      txPacket[packet_pos_data]     = byte((position >> 16) & 0xFF);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_data]     = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 1] = byte(position & 0xFF);
       break;
 
     default:
