@@ -3,8 +3,8 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 
 final String ARDUINO_PORT   = "";
-final boolean SERIAL_DEBUG  = true;
-final boolean USING_KINECT  = true;
+final boolean SERIAL_DEBUG  = false;
+final boolean USING_KINECT  = false;
 final boolean USING_ARDUINO = false;
 
 Kinect2 kinect2;
@@ -13,18 +13,14 @@ final int kinectDepthW = 512;
 final int kinectDepthH = 424;
 final int scale        = 1;
 
-// XY position of the tentacle compared to the camera
-final int tentacleX    = 301;
-final int tentacleY    = 239;
-
 // graphics canvases
 PGraphics kinectCanvas, blobCanvas;
 
 // Movement modes
-final byte eyeContact = 0;
-final byte wiggle     = 1;
-byte currentState     = eyeContact;
-byte lastState        = currentState;
+final byte EYE_CONTACT = 0;
+final byte WIGGLE      = 1;
+byte currentState      = WIGGLE;
+byte lastState         = currentState;
 
 void settings(){
   size(kinectDepthW * scale, kinectDepthH * scale * 2, P3D);
@@ -34,6 +30,8 @@ void setup(){
   setupKinect();
   setupBlobDetection();
   setupArduino();
+
+  changeState(WIGGLE);
 }
 
 void draw(){
@@ -56,22 +54,23 @@ void changeState(byte newState){
   // hand changes of states
   if (currentState != lastState){
     switch(currentState){
-      case eyeContact:
-      break;
+      case EYE_CONTACT:
+        break;
 
-      case wiggle:
-      break;
+      case WIGGLE:
+        eyeLight(200);
+        break;
     }
   }
 }
 
 void handleMovementState(){
   switch(currentState){
-    case eyeContact:
+    case EYE_CONTACT:
       moveTentacleToUser();
       break;
 
-    case wiggle:
+    case WIGGLE:
       wiggle();
       break;
   }
