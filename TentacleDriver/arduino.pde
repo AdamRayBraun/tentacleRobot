@@ -22,7 +22,6 @@ final byte packet_flag_motor_top_y    = 0x11;
 final byte packet_flag_motor_bottom_x = 0x20;
 final byte packet_flag_motor_bottom_y = 0x21;
 final byte packet_flag_motor_eyelid   = 0x30;
-// final byte packet_flag_motor_eyeball  = 0x31; ??
 final byte packet_flag_led_eyeball    = 0x40;
 
 byte[] txPacket = new byte[packet_len];
@@ -44,17 +43,21 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
-void moveTentacle(byte direction, byte section, byte amount){
+void moveTentacle(byte direction, byte section, byte position){
   byte err = 0;
   switch(section){
     case TOP_SECTION:
       switch(direction){
         case X_DIRECTION:
           txPacket[packet_pos_flag] = packet_flag_motor_top_x;
+          txPacket[packet_pos_data] = position;
           break;
+
         case Y_DIRECTION:
           txPacket[packet_pos_flag] = packet_flag_motor_top_y;
+          txPacket[packet_pos_data] = position;
           break;
+
         default:
           err = 1;
           break;
@@ -64,10 +67,14 @@ void moveTentacle(byte direction, byte section, byte amount){
       switch(direction){
         case X_DIRECTION:
           txPacket[packet_pos_flag] = packet_flag_motor_bottom_x;
+          txPacket[packet_pos_data] = position;
           break;
+
         case Y_DIRECTION:
           txPacket[packet_pos_flag] = packet_flag_motor_bottom_y;
+          txPacket[packet_pos_data] = position;
           break;
+          
         default:
           err = 1;
           break;
@@ -81,6 +88,7 @@ void moveTentacle(byte direction, byte section, byte amount){
   switch(err){
     case(0):
       serialTx(txPacket);
+      break;
     case(1):
       println("ERROR: unknown direction of movement requested");
       break;

@@ -29,3 +29,9 @@ void TentacleStepper::move()
   digitalWrite(_PUL_pin,LOW);
   delayMicroseconds(_speed);
 }
+
+void TentacleStepper::setSpeed(int newSpeed)
+{
+  _speed = newSpeed;
+  if (newSpeed != 0) _enabled = true;
+}

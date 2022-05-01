@@ -9,6 +9,7 @@ class TentacleStepper
     TentacleStepper(int PUL_pin, int DIR_pin, int EN_pin);
     boolean isEnabled();
     void enable(boolean en);
+    void setSpeed(int newSpeed);
     void move();
   private:
     int _PUL_pin;
