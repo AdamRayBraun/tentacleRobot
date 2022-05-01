@@ -2,14 +2,19 @@
    Arduino and MPU6050 Accelerometer and Gyroscope Sensor Tutorial
 */
 #include <Wire.h>
+//for MPU6050
 const int MPU = 0x68; // MPU6050 I2C address
 float AccX, AccY, AccZ;
 float GyroX, GyroY, GyroZ;
 float accAngleX, accAngleY, accAngleZ, gyroAngleX, gyroAngleY, gyroAngleZ;
-float roll, pitch, yaw;
-float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY, GyroErrorZ;
-float elapsedTime, currentTime, previousTime;
-int c = 0;
+
+//for calculate movement
+float tenX=1,tenY=0,tenZ=0;//tentacle position value
+float X1=1,Y1=1,Z1=1;//human position for interaction
+const float Pi = 3.14159;
+float tenAngle, tenR;//for polar coordinates
+float Angle1, R1;//for polar coordinates
+
 void setup() {
   Serial.begin(9600);
   Wire.begin();                      // Initialize comunication
@@ -52,9 +57,142 @@ void loop() {
   Serial.print("/");
   Serial.print(AccZ);
   Serial.print("===");
-  Serial.print(accAngleX);//Angle between the x axis and gravity
+  Serial.print(accAngleX);//Angle between the x axis and gravity_>0:upward;<0:downward
   Serial.print("/");
   Serial.print(accAngleY);
   Serial.print("/");
   Serial.println(accAngleZ);
+}
+
+
+
+//everything below move to another file
+void CalculateMovement(){
+//tentacle position: tenX,tenY,tenZ,tenAngle, tenR
+//human position: X1,Y1,Z1,Angle1, R1
+//Axis Angle: accAngleX, accAngleY, accAngleZ
+//assume z axis points outward
+
+//convert XYvalue to polar coordinates
+  tenR=sqrt(sq(tenX)+sq(tenY));
+  tenAngle=acos(tenY/tenR);
+  if(tenX<0){
+    tenAngle=2*Pi-tenAngle;
+  }
+  R1=sqrt(sq(X1)+sq(Y1));
+  Angle1=acos(Y1/R1);
+  if(X1<0){
+    Angle1=2*Pi-Angle1;
+  } 
+  
+//left right movement
+  if(tenAngle<Angle1){  
+    tenAngleIncrease();//tenAngle++
+  }
+  else{  
+    tenAngleDecrease();//tenAngle--
+  }
+
+//Up down movement
+  if(tenZ<Z1){
+    tenZIncrease();
+  }
+  else{
+    tenZDecrease();
+  }
+    
+}
+
+void tenAngleIncrease(){
+  //tenAngle++
+  if(abs(accAngleX)>abs(accAngleY)){
+    if(accAngleX>0){
+      MotorY2();//pull wire Y- 
+    }
+    else{
+      MotorY1();//pull wire Y+ 
+    }   
+  }
+  else{
+    if(accAngleY>0){
+      MotorX1();//pull wire X+ 
+    }
+    else{
+      MotorX2();//pull wire X-
+    } 
+  }
+}
+void tenAngleDecrease(){
+  //tenAngle--
+  if(abs(accAngleX)>abs(accAngleY)){
+    if(accAngleX>0){
+      MotorY1();//pull wire Y+
+    }
+    else{
+      MotorY2();//pull wire Y- 
+    }   
+  }
+  else{
+    if(accAngleY>0){
+      MotorX2();//pull wire X- 
+    }
+    else{
+      MotorX1();//pull wire X+
+    } 
+  }
+}
+void tenZIncrease(){
+  //tenZ++
+  if(abs(accAngleX)>abs(accAngleY)){
+    if(accAngleX>0){
+      MotorX1();//pull wire X+
+    }
+    else{
+      MotorX2();//pull wire X- 
+    }   
+  }
+  else{
+    if(accAngleY>0){
+      MotorY1();//pull wire Y+ 
+    }
+    else{
+      MotorY2();//pull wire Y-
+    } 
+  }
+}
+void tenZDecrease(){
+  //tenZ--
+  if(abs(accAngleX)>abs(accAngleY)){
+    if(accAngleX>0){
+      MotorX2();//pull wire X-
+    }
+    else{
+      MotorX1();//pull wire X+
+    }   
+  }
+  else{
+    if(accAngleY>0){
+      MotorY2();//pull wire Y- 
+    }
+    else{
+      MotorY1();//pull wire Y+
+    } 
+  }
+}
+
+void MotorX1(){
+  //pull wire X+ for a certain amount
+  Serial.println("X+");
+}
+void MotorX2(){
+  //pull wire X- for a certain amount
+  Serial.println("X-");
+}
+void MotorY1(){
+  //pull wire Y+ for a certain amount
+  Serial.println("Y+");
+}
+void MotorY2(){
+  //pull wire Y- for a certain amount
+  Serial.println("Y-");
 }
