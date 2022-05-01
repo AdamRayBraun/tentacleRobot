@@ -8,10 +8,12 @@ final byte MOTOR_TOP_Y = 1;
 final byte MOTOR_BOTTOM_X = 2;
 final byte MOTOR_BOTTOM_Y = 3;
 
-int motorPositions[]       = new int[4];
-float motorWaves[]         = new float[4];
-float wiggleSinSpeeds[]    = {0.001, 0.005, 0.02, 0.01};
-final int maxMotorSpeeds[] = {400, 400, 400, 400};
+int motorPositions[]          = new int[4];
+float motorWaves[]            = new float[4];
+float wiggleSinSpeeds[]       = {0.001, 0.005, 0.02, 0.01};
+final int maxMotorPositions[] = {400, 400, 400, 400};
+
+int moveTowardsSpeed = 20;
 
 void moveTentacleToUser(){
   // if we have at least one person detected
@@ -28,7 +30,33 @@ void moveTentacleToUser(){
     line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
 
     if (distanceXY > userDistanceThresh){
-      // TODO
+      if ((tentacleBase.x - personPos.x)  > 0){
+        // increment pos x
+        if (lastMotorPositions[MOTOR_BOTTOM_X] < maxMotorPositions[MOTOR_BOTTOM_X]){
+          lastMotorPositions[MOTOR_BOTTOM_X] += moveTowardsSpeed;
+          moveTentacle(MOTOR_BOTTOM_X, lastMotorPositions[MOTOR_BOTTOM_X]);
+        }
+      } else {
+        // increment neg x
+        if (lastMotorPositions[MOTOR_BOTTOM_X] > -maxMotorPositions[MOTOR_BOTTOM_X]){
+          lastMotorPositions[MOTOR_BOTTOM_X] -= moveTowardsSpeed;
+          moveTentacle(MOTOR_BOTTOM_X, lastMotorPositions[MOTOR_BOTTOM_X]);
+        }
+      }
+
+      if ((tentacleBase.y - personPos.y)  > 0){
+        // increment pos x
+        if (lastMotorPositions[MOTOR_BOTTOM_Y] < maxMotorPositions[MOTOR_BOTTOM_Y]){
+          lastMotorPositions[MOTOR_BOTTOM_Y] += moveTowardsSpeed;
+          moveTentacle(MOTOR_BOTTOM_Y, lastMotorPositions[MOTOR_BOTTOM_Y]);
+        }
+      } else {
+        // increment neg x
+        if (lastMotorPositions[MOTOR_BOTTOM_Y] > -maxMotorPositions[MOTOR_BOTTOM_Y]){
+          lastMotorPositions[MOTOR_BOTTOM_Y] -= moveTowardsSpeed;
+          moveTentacle(MOTOR_BOTTOM_Y, lastMotorPositions[MOTOR_BOTTOM_Y]);
+        }
+      }
     }
   }
 }
@@ -37,12 +65,9 @@ void wiggle(){
   // increment all 4 motor sine wave values
   for (byte m = 0; m < 4; m++){
     motorWaves[m] += wiggleSinSpeeds[m];
-    motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorSpeeds[m]);
+    motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorPositions[m]);
 
-    moveTentacle(m, abs(motorPositions[m]), (motorPositions[m] > 0) ? true : false);
+    moveTentacle(m, motorPositions[m]);
   }
-
-  println(motorPositions[2]);
-
   // TODO wiggle eye lid occasionally
 }

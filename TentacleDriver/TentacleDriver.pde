@@ -3,7 +3,7 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 
 final String ARDUINO_PORT   = "";
-final boolean SERIAL_DEBUG  = false;
+final boolean SERIAL_DEBUG  = true;
 final boolean USING_KINECT  = false;
 final boolean USING_ARDUINO = false;
 

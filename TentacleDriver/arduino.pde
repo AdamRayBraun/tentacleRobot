@@ -25,6 +25,8 @@ final byte packet_flag_motor_eyelid   = (byte)0x30;
 final byte packet_flag_led_eyeball    = (byte)0x40;
 final byte packet_flag_STOP           = (byte)0xFF;
 
+int[] lastMotorPositions = new int[4];
+
 byte[] txPacket = new byte[packet_len];
 Serial bus;
 
@@ -39,35 +41,39 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
-void moveTentacle(byte motor, int position, boolean direction){
+void moveTentacle(byte motor, int position){
   byte err = 0;
   switch(motor){
     case MOTOR_TOP_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_x;
-      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[0] = position;
       break;
 
     case MOTOR_TOP_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_top_y;
-      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[1] = position;
       break;
 
     case MOTOR_BOTTOM_X:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_x;
-      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[2] = position;
       break;
 
     case MOTOR_BOTTOM_Y:
       txPacket[packet_pos_flag]     = packet_flag_motor_bottom_y;
-      txPacket[packet_pos_data]     = byte((direction) ? 0 : 1);
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[3] = position;
       break;
 
     default:
