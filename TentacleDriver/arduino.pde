@@ -21,6 +21,7 @@ final byte packet_flag_motor_top_x    = (byte)0x10;
 final byte packet_flag_motor_top_y    = (byte)0x11;
 final byte packet_flag_motor_bottom_x = (byte)0x20;
 final byte packet_flag_motor_bottom_y = (byte)0x21;
+final byte packet_flag_stepper_home   = (byte)0x25; 
 final byte packet_flag_motor_eyelid   = (byte)0x30;
 final byte packet_flag_led_eyeball    = (byte)0x40;
 final byte packet_flag_STOP           = (byte)0xFF;
@@ -115,5 +116,16 @@ void serialTx(byte[] packet){
       out += " ";
     }
     println(out);
+  }
+}
+
+void serialRx(){
+  if (USING_ARDUINO){
+    while (bus.available() > 0) {
+      String rxMsg = bus.readStringUntil(10); // 10 = \n
+      if (rxMsg != null) {
+        println(rxMsg);
+      }
+    }
   }
 }

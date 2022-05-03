@@ -2,10 +2,10 @@ import org.openkinect.processing.*;
 import java.nio.FloatBuffer;
 import processing.serial.*;
 
-final String ARDUINO_PORT   = "";
-final boolean SERIAL_DEBUG  = true;
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem14601";
+final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = false;
-final boolean USING_ARDUINO = false;
+final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;
 
@@ -45,6 +45,8 @@ void draw(){
   }
 
   handleMovementState();
+
+  serialRx();
 }
 
 void changeState(byte newState){
@@ -73,5 +75,12 @@ void handleMovementState(){
     case WIGGLE:
       wiggle();
       break;
+  }
+}
+
+void keyPressed(){
+  if (key == 'h'){
+    txPacket[packet_pos_flag] = packet_flag_stepper_home;
+    serialTx(txPacket);
   }
 }
