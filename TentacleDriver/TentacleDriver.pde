@@ -5,7 +5,7 @@ import processing.serial.*;
 final String  ARDUINO_PORT  = "/dev/tty.usbmodem14601";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = true;
-final boolean USING_ARDUINO = false;
+final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;
 
@@ -19,7 +19,7 @@ PGraphics kinectCanvas, blobCanvas;
 // Movement modes
 final byte EYE_CONTACT = 0;
 final byte WIGGLE      = 1;
-byte currentState      = WIGGLE;
+byte currentState      = EYE_CONTACT;
 byte lastState         = currentState;
 
 void settings(){
@@ -31,7 +31,7 @@ void setup(){
   setupBlobDetection();
   setupArduino();
 
-  changeState(WIGGLE);
+  changeState(EYE_CONTACT);
 }
 
 void draw(){

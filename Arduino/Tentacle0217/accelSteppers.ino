@@ -7,7 +7,7 @@ AccelStepper topY(AccelStepper::DRIVER, top_servo_Y_PUL_pin, top_servo_Y_DIR_pin
 #define STEPPER_MAX_ACCEL 300
 
 boolean bottomXEnabled, bottomYEnabled, topXEnabled, topYEnabled;
-boolean dirBottomX, dirBottomY, dirTopX, dirTopY;
+int dirBottomX, dirBottomY, dirTopX, dirTopY;
 int targetBottomX, targetBottomY, targetTopX, targetTopY;
 
 int stepperMax = 2000;
@@ -29,34 +29,36 @@ void handleSteppers()
 {
   switch(state){
     case STATE_USB:
+
       break;
 
     case STATE_WIGGLE:
-      if (bottomY.distanceToGo() == 0)
-      {
-        delay(1000);
-        if (dirBottomY){
-          // bottomY.moveTo(random(-stepperMax, 0));
-          bottomY.moveTo(-stepperMax);
-        } else {
-          // bottomY.moveTo(random(0, stepperMax));
-          bottomY.moveTo(stepperMax);
-        }
-        dirBottomY = !dirBottomY;
-      }
-
-      if (bottomX.distanceToGo() == 0)
-      {
-        delay(1000);
-        if (dirBottomX){
-          // bottomX.moveTo(random(-stepperMax, 0));
-          bottomX.moveTo(-stepperMax);
-        } else {
-          // bottomX.moveTo(random(0, stepperMax));
-          bottomX.moveTo(stepperMax);
-        }
-        dirBottomX = !dirBottomX;
-      }
+      // if (bottomY.distanceToGo() == 0)
+      // {
+      //   delay(1000);
+      //   if (dirBottomY){
+      //     // bottomY.moveTo(random(-stepperMax, 0));
+      //     bottomY.moveTo(-stepperMax);
+      //   } else {
+      //     // bottomY.moveTo(random(0, stepperMax));
+      //     bottomY.moveTo(stepperMax);
+      //   }
+      //   dirBottomY = !dirBottomY;
+      // }
+      //
+      // if (bottomX.distanceToGo() == 0)
+      // {
+      //   delay(1000);
+      //   if (dirBottomX){
+      //     // bottomX.moveTo(random(-stepperMax, 0));
+      //     bottomX.moveTo(-stepperMax);
+      //   } else {
+      //     // bottomX.moveTo(random(0, stepperMax));
+      //     bottomX.moveTo(stepperMax);
+      //   }
+      //   dirBottomX = !dirBottomX;
+      // }
+      Serial.println("gotta fix wiggle BOOLEANS!");
       break;
   }
   bottomY.run();

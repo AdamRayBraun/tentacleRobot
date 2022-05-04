@@ -16,8 +16,8 @@
 #define packet_flag_change_state   0x60
 #define packet_flag_STOP           0xFF
 
-char rxBuff[packet_len];
-char txBuff[packet_len];
+byte rxBuff[packet_len];
+byte txBuff[packet_len];
 
 void setupSerial()
 {
@@ -35,7 +35,7 @@ void serialRx()
       switch(rxBuff[packet_pos_flag]){
         case packet_flag_motor_top_x:
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopX = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
+          targetTopX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           topX.moveTo(dirTopX * targetTopX);
           topXEnabled = true;
 
@@ -49,7 +49,7 @@ void serialRx()
 
         case packet_flag_motor_top_y:
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopY = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
+          targetTopY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           topY.moveTo(dirTopY * targetTopY);
           topYEnabled = true;
 
@@ -63,7 +63,7 @@ void serialRx()
 
         case packet_flag_motor_bottom_x:
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomX = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
+          targetBottomX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           bottomX.moveTo(dirBottomX * targetBottomX);
           bottomXEnabled = true;
 
@@ -77,7 +77,7 @@ void serialRx()
 
         case packet_flag_motor_bottom_y:
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomY = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
+          targetBottomY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           bottomY.moveTo(dirBottomY * targetBottomY);
           bottomYEnabled = true;
 
@@ -124,7 +124,9 @@ void serialRx()
           topXEnabled    = false;
           topYEnabled    = false;
 
-          if (SERIAL_DEBUG) Serial.println("STOPPED");
+          #ifdef SERIAL_DEBUG
+            Serial.println("STOPPED");
+          #endif
           break;
 
         case packet_flag_change_state:

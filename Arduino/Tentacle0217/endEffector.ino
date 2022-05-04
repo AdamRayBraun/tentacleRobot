@@ -1,4 +1,4 @@
-Servo eyelidServo;
+Servo eyelidServoL, eyelidServoR;
 
 void setupEndEffector()
 {

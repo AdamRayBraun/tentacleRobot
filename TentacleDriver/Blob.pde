@@ -36,6 +36,9 @@ class Blob {
     blobCanvas.noFill();
     blobCanvas.rectMode(CORNERS);
     blobCanvas.rect(minx, miny, maxx, maxy);
+    blobCanvas.fill(0, 255, 0);
+    blobCanvas.textSize(20);
+    blobCanvas.text((maxx - minx) * 0.5 + minx + ", " + (maxy - miny) * 0.5 + miny, minx - 20, miny - 20);
     blobCanvas.endDraw();
   }
 

@@ -39,7 +39,7 @@
 
 #define STATE_WIGGLE 0
 #define STATE_USB    1
-int state = STATE_WIGGLE;
+int state = STATE_USB;
 
 void setup()
 {
