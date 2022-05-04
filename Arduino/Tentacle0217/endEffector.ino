@@ -4,7 +4,8 @@ void setupEndEffector()
 {
   pinMode(end_effector_led_pin, OUTPUT);
 
-  eyelidServo.attach(eyelid_servo_pin);
+  eyelidServoL.attach(eyelid_servo_pin_L);
+  eyelidServoR.attach(eyelid_servo_pin_R);
 }
 
 void setEndEffectorLEDBrightness(int brightness)
@@ -14,5 +15,7 @@ void setEndEffectorLEDBrightness(int brightness)
 
 void setEyelidPosition(int position)
 {
-  eyelidServo.write(constrain(position, 0, 180));
+  int pos = constrain(position, 0, 180);
+  eyelidServoL.write(pos);
+  eyelidServoR.write(180 - pos);
 }

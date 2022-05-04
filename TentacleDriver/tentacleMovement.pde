@@ -1,7 +1,7 @@
 // position of the tentacle compared to the camera
 PVector tentacleBase = new PVector(301, 239, 200);
 
-int userDistanceThresh = 100;
+int userDistanceThresh = 10;
 final int pulsePRev = 8000;
 
 final byte MOTOR_TOP_X = 0;

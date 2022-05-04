@@ -34,7 +34,8 @@
 // LED pin needs to be PWM
 #define end_effector_led_pin    13
 
-#define eyelid_servo_pin        14
+#define eyelid_servo_pin_L      2
+#define eyelid_servo_pin_R      3
 
 #define STATE_WIGGLE 0
 #define STATE_USB    1
@@ -44,7 +45,7 @@ void setup()
 {
   setupSerial();
   setupAccelSteppers();
-  // setupEndEffector();
+  setupEndEffector();
   // setupIMU();
 }
 

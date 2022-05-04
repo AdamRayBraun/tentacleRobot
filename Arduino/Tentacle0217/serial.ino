@@ -13,6 +13,7 @@
 #define packet_flag_stepper_home   0x25
 #define packet_flag_motor_eyelid   0x30
 #define packet_flag_led_eyeball    0x40
+#define packet_flag_change_state   0x60
 #define packet_flag_STOP           0xFF
 
 char rxBuff[packet_len];
@@ -38,6 +39,8 @@ void serialRx()
           topX.moveTo(dirTopX * targetTopX);
           topXEnabled = true;
 
+          state = STATE_USB;
+
           #ifdef SERIAL_DEBUG
             Serial.print("top x moving to: ");
             Serial.println(dirTopX * targetTopX);
@@ -49,6 +52,8 @@ void serialRx()
           targetTopY = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
           topY.moveTo(dirTopY * targetTopY);
           topYEnabled = true;
+
+          state = STATE_USB;
 
           #ifdef SERIAL_DEBUG
             Serial.print("top Y moving to: ");
@@ -62,6 +67,8 @@ void serialRx()
           bottomX.moveTo(dirBottomX * targetBottomX);
           bottomXEnabled = true;
 
+          state = STATE_USB;
+
           #ifdef SERIAL_DEBUG
             Serial.print("bottom X moving to: ");
             Serial.println(dirBottomX * targetBottomX);
@@ -73,6 +80,8 @@ void serialRx()
           targetBottomY = (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2];
           bottomY.moveTo(dirBottomY * targetBottomY);
           bottomYEnabled = true;
+
+          state = STATE_USB;
 
           #ifdef SERIAL_DEBUG
             Serial.print("bottom Y moving to: ");
@@ -116,6 +125,10 @@ void serialRx()
           topYEnabled    = false;
 
           if (SERIAL_DEBUG) Serial.println("STOPPED");
+          break;
+
+        case packet_flag_change_state:
+          state = rxBuff[packet_pos_data];
           break;
       }
     }

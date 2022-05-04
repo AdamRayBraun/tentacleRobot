@@ -4,8 +4,8 @@ import processing.serial.*;
 
 final String  ARDUINO_PORT  = "/dev/tty.usbmodem14601";
 final boolean SERIAL_DEBUG  = false;
-final boolean USING_KINECT  = false;
-final boolean USING_ARDUINO = true;
+final boolean USING_KINECT  = true;
+final boolean USING_ARDUINO = false;
 
 Kinect2 kinect2;
 
@@ -75,12 +75,5 @@ void handleMovementState(){
     case WIGGLE:
       wiggle();
       break;
-  }
-}
-
-void keyPressed(){
-  if (key == 'h'){
-    txPacket[packet_pos_flag] = packet_flag_stepper_home;
-    serialTx(txPacket);
   }
 }

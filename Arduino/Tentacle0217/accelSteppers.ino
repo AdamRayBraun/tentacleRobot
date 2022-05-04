@@ -3,14 +3,14 @@ AccelStepper bottomY(AccelStepper::DRIVER, bottom_servo_Y_PUL_pin, bottom_servo_
 AccelStepper topX(AccelStepper::DRIVER, top_servo_X_PUL_pin, top_servo_X_DIR_pin);
 AccelStepper topY(AccelStepper::DRIVER, top_servo_Y_PUL_pin, top_servo_Y_DIR_pin);
 
-#define STEPPER_MAX_SPEED 1000
+#define STEPPER_MAX_SPEED 2000
 #define STEPPER_MAX_ACCEL 300
 
 boolean bottomXEnabled, bottomYEnabled, topXEnabled, topYEnabled;
 boolean dirBottomX, dirBottomY, dirTopX, dirTopY;
 int targetBottomX, targetBottomY, targetTopX, targetTopY;
 
-int stepperMax = 1000;
+int stepperMax = 2000;
 
 void setupAccelSteppers()
 {
@@ -36,9 +36,11 @@ void handleSteppers()
       {
         delay(1000);
         if (dirBottomY){
-          bottomY.moveTo(random(-stepperMax, 0));
+          // bottomY.moveTo(random(-stepperMax, 0));
+          bottomY.moveTo(-stepperMax);
         } else {
-          bottomY.moveTo(random(0, stepperMax));
+          // bottomY.moveTo(random(0, stepperMax));
+          bottomY.moveTo(stepperMax);
         }
         dirBottomY = !dirBottomY;
       }
@@ -47,15 +49,16 @@ void handleSteppers()
       {
         delay(1000);
         if (dirBottomX){
-          bottomX.moveTo(random(-stepperMax, 0));
+          // bottomX.moveTo(random(-stepperMax, 0));
+          bottomX.moveTo(-stepperMax);
         } else {
-          bottomX.moveTo(random(0, stepperMax));
+          // bottomX.moveTo(random(0, stepperMax));
+          bottomX.moveTo(stepperMax);
         }
         dirBottomX = !dirBottomX;
       }
-
-      bottomY.run();
-      bottomX.run();
       break;
   }
+  bottomY.run();
+  bottomX.run();
 }
