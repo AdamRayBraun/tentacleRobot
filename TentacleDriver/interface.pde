@@ -9,6 +9,13 @@ void keyPressed(){
   } else if (key == ']'){
     minBlobSize += 100;
     println(minBlobSize);
+  } else if (key == 'h'){
+    txPacket[packet_pos_flag] = packet_flag_stepper_home;
+    serialTx(txPacket);
+  } else if (key == 'w'){
+    txPacket[packet_pos_flag] = packet_flag_change_state;
+    txPacket[packet_pos_data] = STATE_WIGGLE;
+    serialTx(txPacket);
   }
 }
 

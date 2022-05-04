@@ -15,23 +15,25 @@ final byte packet_pos_data            = 2;
 final byte packet_pos_footer          = packet_len - 1;
 
 // packet values
-final byte packet_header              = 0x69;
-final byte packet_footer              = 0x42;
-final byte packet_flag_motor_top_x    = 0x10;
-final byte packet_flag_motor_top_y    = 0x11;
-final byte packet_flag_motor_bottom_x = 0x20;
-final byte packet_flag_motor_bottom_y = 0x21;
-final byte packet_flag_motor_eyelid   = 0x30;
-// final byte packet_flag_motor_eyeball  = 0x31; ??
-final byte packet_flag_led_eyeball    = 0x40;
+final byte packet_header              = (byte)0x69;
+final byte packet_footer              = (byte)0x42;
+final byte packet_flag_motor_top_x    = (byte)0x10;
+final byte packet_flag_motor_top_y    = (byte)0x11;
+final byte packet_flag_motor_bottom_x = (byte)0x20;
+final byte packet_flag_motor_bottom_y = (byte)0x21;
+final byte packet_flag_stepper_home   = (byte)0x25;
+final byte packet_flag_motor_eyelid   = (byte)0x30;
+final byte packet_flag_led_eyeball    = (byte)0x40;
+final byte packet_flag_change_state   = (byte)0x60;
+final byte packet_flag_STOP           = (byte)0xFF;
+
+int[] lastMotorPositions = new int[4];
 
 byte[] txPacket = new byte[packet_len];
 Serial bus;
 
-final byte TOP_SECTION    = 1;
-final byte BOTTOM_SECTION = 2;
-final byte X_DIRECTION    = 1;
-final byte Y_DIRECTION    = 2;
+final byte STATE_WIGGLE = 0;
+final byte STATE_USB    = 1;
 
 void setupArduino(){
   // setup serial connection to arduino
@@ -44,69 +46,72 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
-void moveTentacle(byte direction, byte section, byte amount){
+void moveTentacle(byte motor, int position){
   byte err = 0;
-  switch(section){
-    case TOP_SECTION:
-      switch(direction){
-        case X_DIRECTION:
-          txPacket[packet_pos_flag] = packet_flag_motor_top_x;
-          break;
-        case Y_DIRECTION:
-          txPacket[packet_pos_flag] = packet_flag_motor_top_y;
-          break;
-        default:
-          err = 1;
-          break;
-      }
+  switch(motor){
+    case MOTOR_TOP_X:
+      txPacket[packet_pos_flag]     = packet_flag_motor_top_x;
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[0] = position;
       break;
-    case BOTTOM_SECTION:
-      switch(direction){
-        case X_DIRECTION:
-          txPacket[packet_pos_flag] = packet_flag_motor_bottom_x;
-          break;
-        case Y_DIRECTION:
-          txPacket[packet_pos_flag] = packet_flag_motor_bottom_y;
-          break;
-        default:
-          err = 1;
-          break;
-      }
+
+    case MOTOR_TOP_Y:
+      txPacket[packet_pos_flag]     = packet_flag_motor_top_y;
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[1] = position;
       break;
+
+    case MOTOR_BOTTOM_X:
+      txPacket[packet_pos_flag]     = packet_flag_motor_bottom_x;
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[2] = position;
+      break;
+
+    case MOTOR_BOTTOM_Y:
+      txPacket[packet_pos_flag]     = packet_flag_motor_bottom_y;
+      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      lastMotorPositions[3] = position;
+      break;
+
     default:
-      err = 2;
+      err = 1;
       break;
   }
 
   switch(err){
     case(0):
       serialTx(txPacket);
+      break;
     case(1):
-      println("ERROR: unknown direction of movement requested");
-      break;
-    case(2):
-      println("ERROR: unknown section requested to move");
-      break;
+      println("ERROR: unknown motor requested to move");
     default:
-      println("ERROR META");
+      println("how the fuck");
       break;
   }
 }
 
-void moveEyeBall(byte position){
+void moveEyeBall(int position){
   txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
-  txPacket[packet_pos_data] = position;
+  txPacket[packet_pos_data] = (byte)position;
   serialTx(txPacket);
 }
 
-void eyeLight(byte intensity){
+void eyeLight(int intensity){
   txPacket[packet_pos_flag] = packet_flag_led_eyeball;
-  txPacket[packet_pos_data] = intensity;
+  txPacket[packet_pos_data] = (byte)intensity;
   serialTx(txPacket);
 }
 
 void serialTx(byte[] packet){
-  bus.write(packet);
+  if (USING_ARDUINO) bus.write(packet);
 
   if (SERIAL_DEBUG){
     String out = "Sending to arduino:\t";
@@ -115,5 +120,16 @@ void serialTx(byte[] packet){
       out += " ";
     }
     println(out);
+  }
+}
+
+void serialRx(){
+  if (USING_ARDUINO){
+    while (bus.available() > 0) {
+      String rxMsg = bus.readStringUntil(10); // 10 = \n
+      if (rxMsg != null) {
+        println(rxMsg);
+      }
+    }
   }
 }
