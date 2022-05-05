@@ -37,7 +37,6 @@ void serialRx()
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           topX.moveTo(dirTopX * targetTopX);
-          topXEnabled = true;
 
           state = STATE_USB;
 
@@ -51,7 +50,6 @@ void serialRx()
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           topY.moveTo(dirTopY * targetTopY);
-          topYEnabled = true;
 
           state = STATE_USB;
 
@@ -65,7 +63,6 @@ void serialRx()
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           bottomX.moveTo(dirBottomX * targetBottomX);
-          bottomXEnabled = true;
 
           state = STATE_USB;
 
@@ -79,7 +76,6 @@ void serialRx()
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
           bottomY.moveTo(dirBottomY * targetBottomY);
-          bottomYEnabled = true;
 
           state = STATE_USB;
 
@@ -119,10 +115,10 @@ void serialRx()
           break;
 
         case packet_flag_STOP:
-          bottomXEnabled = false;
-          bottomYEnabled = false;
-          topXEnabled    = false;
-          topYEnabled    = false;
+          bottomX.stop();
+          bottomY.stop();
+          topX.stop();
+          topY.stop();
 
           #ifdef SERIAL_DEBUG
             Serial.println("STOPPED");
@@ -136,12 +132,3 @@ void serialRx()
     }
   }
 }
-
-// void sendIMUData(){
-//
-// }
-//
-// void serialTx(byte[] packet)
-// {
-//   Serial.write(packet);
-// }

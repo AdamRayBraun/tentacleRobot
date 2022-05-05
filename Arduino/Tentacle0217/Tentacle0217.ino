@@ -12,24 +12,20 @@
 #define SERIAL_DEBUG true
 
 #include <AccelStepper.h>
-// #include "TentacleStepper.h"
 #include <Servo.h>
-#include <Wire.h>
+// #include <Wire.h>
+#include <Adafruit_NeoPixel.h>
 
 // Pin connections
 #define bottom_servo_X_PUL_pin  9
 #define bottom_servo_X_DIR_pin  8
-// #define bottom_servo_X_EN_pin   3
 #define bottom_servo_Y_PUL_pin  7
 #define bottom_servo_Y_DIR_pin  6
-// #define bottom_servo_Y_EN_pin   6
 
 #define top_servo_X_PUL_pin     7
 #define top_servo_X_DIR_pin     8
-// #define top_servo_X_EN_pin      9
 #define top_servo_Y_PUL_pin     10
 #define top_servo_Y_DIR_pin     11
-// #define top_servo_Y_EN_pin      12
 
 // LED pin needs to be PWM
 #define end_effector_led_pin    13
