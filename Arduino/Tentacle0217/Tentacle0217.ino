@@ -15,39 +15,41 @@
 #include <Servo.h>
 // #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
+#include <EEPROM.h>
 
 // Pin connections
-#define bottom_servo_X_PUL_pin  9
-#define bottom_servo_X_DIR_pin  8
-#define bottom_servo_Y_PUL_pin  7
-#define bottom_servo_Y_DIR_pin  6
+#define bottom_servo_X_PUL_pin  20
+#define bottom_servo_X_DIR_pin  21
+#define bottom_servo_Y_PUL_pin  18
+#define bottom_servo_Y_DIR_pin  19
 
-#define top_servo_X_PUL_pin     7
-#define top_servo_X_DIR_pin     8
-#define top_servo_Y_PUL_pin     10
-#define top_servo_Y_DIR_pin     11
+// #define top_servo_X_PUL_pin     7
+// #define top_servo_X_DIR_pin     8
+// #define top_servo_Y_PUL_pin     10
+// #define top_servo_Y_DIR_pin     11
 
-// LED pin needs to be PWM
-#define end_effector_led_pin    13
+#define end_effector_led_pin    15
 
-#define eyelid_servo_pin_L      2
-#define eyelid_servo_pin_R      3
+#define eyelid_servo_pin_L      16
+#define eyelid_servo_pin_R      10
 
-#define STATE_WIGGLE 0
-#define STATE_USB    1
-int state = STATE_USB;
+#define checkpointFrequency 500
+
+unsigned long lastCheckpoint;
 
 void setup()
 {
   setupSerial();
   setupAccelSteppers();
   setupEndEffector();
-  // setupIMU();
 }
 
 void loop()
 {
   serialRx();
   handleSteppers();
-  // readIMUData();
+
+  if (millis() - lastCheckpoint > checkpointFrequency){
+    updateLastSavedPosition();
+  }
 }

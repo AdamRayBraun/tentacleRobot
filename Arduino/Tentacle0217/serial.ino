@@ -35,10 +35,8 @@ void serialRx()
       switch(rxBuff[packet_pos_flag]){
         case packet_flag_motor_top_x:
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
-          topX.moveTo(dirTopX * targetTopX);
-
-          state = STATE_USB;
+          targetTopX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_X);
+          // topX.moveTo(dirTopX * targetTopX);
 
           #ifdef SERIAL_DEBUG
             Serial.print("top x moving to: ");
@@ -48,10 +46,8 @@ void serialRx()
 
         case packet_flag_motor_top_y:
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
-          topY.moveTo(dirTopY * targetTopY);
-
-          state = STATE_USB;
+          targetTopY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_Y);
+          // topY.moveTo(dirTopY * targetTopY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("top Y moving to: ");
@@ -61,10 +57,8 @@ void serialRx()
 
         case packet_flag_motor_bottom_x:
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomX = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+          targetBottomX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_X);
           bottomX.moveTo(dirBottomX * targetBottomX);
-
-          state = STATE_USB;
 
           #ifdef SERIAL_DEBUG
             Serial.print("bottom X moving to: ");
@@ -74,10 +68,8 @@ void serialRx()
 
         case packet_flag_motor_bottom_y:
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomY = abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+          targetBottomY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_Y);
           bottomY.moveTo(dirBottomY * targetBottomY);
-
-          state = STATE_USB;
 
           #ifdef SERIAL_DEBUG
             Serial.print("bottom Y moving to: ");
@@ -88,8 +80,8 @@ void serialRx()
         case packet_flag_stepper_home:
           bottomX.setCurrentPosition(0);
           bottomY.setCurrentPosition(0);
-          topX.setCurrentPosition(0);
-          topY.setCurrentPosition(0);
+          // topX.setCurrentPosition(0);
+          // topY.setCurrentPosition(0);
 
           #ifdef SERIAL_DEBUG
             Serial.println("all motors homed ");
@@ -106,7 +98,7 @@ void serialRx()
           break;
 
         case packet_flag_led_eyeball:
-          setEndEffectorLEDBrightness(rxBuff[packet_pos_data]);
+          endEffectorLedRing(rxBuff[packet_pos_data], rxBuff[packet_pos_data + 1], rxBuff[packet_pos_data + 2]);
 
           #ifdef SERIAL_DEBUG
             Serial.print("eyeball led updated: ");
@@ -117,8 +109,8 @@ void serialRx()
         case packet_flag_STOP:
           bottomX.stop();
           bottomY.stop();
-          topX.stop();
-          topY.stop();
+          // topX.stop();
+          // topY.stop();
 
           #ifdef SERIAL_DEBUG
             Serial.println("STOPPED");
@@ -126,7 +118,6 @@ void serialRx()
           break;
 
         case packet_flag_change_state:
-          state = rxBuff[packet_pos_data];
           break;
       }
     }

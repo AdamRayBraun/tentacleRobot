@@ -35,6 +35,18 @@ Serial bus;
 final byte STATE_WIGGLE = 0;
 final byte STATE_USB    = 1;
 
+// eye lid vars
+long lastBlink;
+int blinkRate;
+final int blinkMin = 500;
+final int blinkMax = 10000;
+boolean eyeLidOpening;
+
+// heartbeat vars
+long lastHeartbeatCheck;
+final int heartbeatTimer = 3000;
+boolean reconnectingArduino = false;
+
 void setupArduino(){
   // setup serial connection to arduino
   if (USING_ARDUINO){
@@ -104,10 +116,22 @@ void moveEyeBall(int position){
   serialTx(txPacket);
 }
 
-void eyeLight(int intensity){
+void eyeLight(int r, int g, int b){
   txPacket[packet_pos_flag] = packet_flag_led_eyeball;
-  txPacket[packet_pos_data] = (byte)intensity;
+  txPacket[packet_pos_data] = (byte)r;
+  txPacket[packet_pos_data + 1] = (byte)g;
+  txPacket[packet_pos_data + 2] = (byte)b;
   serialTx(txPacket);
+}
+
+void blinkingEyelid(){
+  if (millis() - lastBlink > blinkRate){
+    lastBlink = millis();
+    blinkRate = (int)random(blinkMin, blinkMax);
+
+    moveEyeBall(eyeLidOpening ? 0 : 90);
+    eyeLidOpening = !eyeLidOpening;
+  }
 }
 
 void serialTx(byte[] packet){
@@ -129,6 +153,39 @@ void serialRx(){
       String rxMsg = bus.readStringUntil(10); // 10 = \n
       if (rxMsg != null) {
         println(rxMsg);
+      }
+      bus.clear();
+    }
+  }
+}
+
+void checkForArduinoDropOut(){
+  if (millis() - lastHeartbeatCheck > heartbeatTimer){
+    lastHeartbeatCheck = millis();
+    String[] ports = Serial.list();
+    boolean portStillConnected = false;
+
+    // check if arduino port is still found by processing
+    for (int p = 0; p < ports.length; p++){
+      String[] m1 = match(ARDUINO_PORT, ports[p]);
+      if (m1 != null){
+        portStillConnected = true;
+        return;
+      }
+    }
+
+    if (!portStillConnected) reconnectingArduino = true;
+
+    if (reconnectingArduino){
+      try {
+        printArray(Serial.list());
+        bus.clear();
+        bus.stop();
+        bus = new Serial(this, ARDUINO_PORT, 115200);
+        reconnectingArduino = false;
+      } catch(Exception e) {
+        println("ERR trying to re-open port, retrying...");
+        delay(1000);
       }
     }
   }

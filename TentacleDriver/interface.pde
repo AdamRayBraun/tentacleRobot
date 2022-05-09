@@ -16,10 +16,20 @@ void keyPressed(){
     txPacket[packet_pos_flag] = packet_flag_change_state;
     txPacket[packet_pos_data] = STATE_WIGGLE;
     serialTx(txPacket);
+  } else if (key == 'o'){
+    txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
+    txPacket[packet_pos_data] = (byte)0;
+    serialTx(txPacket);
+  } else if (key == 'c'){
+    txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
+    txPacket[packet_pos_data] = (byte)90;
+    serialTx(txPacket);
   }
 }
 
 void mousePressed(){
-  println(mouseX + ", " + mouseY);
-  if (USING_KINECT) println(depthData[(mouseY / scale) * kinectDepthW + (mouseX / scale)]);
+  if (mouseY < kinectDepthH){
+    println(mouseX + ", " + mouseY);
+    if (USING_KINECT) println(depthData[(mouseY / scale) * kinectDepthW + (mouseX / scale)]);
+  }
 }

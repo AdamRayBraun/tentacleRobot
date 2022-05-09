@@ -2,7 +2,7 @@ import org.openkinect.processing.*;
 import java.nio.FloatBuffer;
 import processing.serial.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem14601";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem1443401";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = true;
 final boolean USING_ARDUINO = true;
@@ -21,6 +21,7 @@ final byte EYE_CONTACT = 0;
 final byte WIGGLE      = 1;
 byte currentState      = EYE_CONTACT;
 byte lastState         = currentState;
+long lastStateChange;
 
 void settings(){
   size(kinectDepthW * scale, kinectDepthH * scale * 2, P3D);
@@ -31,7 +32,7 @@ void setup(){
   setupBlobDetection();
   setupArduino();
 
-  changeState(EYE_CONTACT);
+  changeState(WIGGLE);
 }
 
 void draw(){
@@ -44,12 +45,15 @@ void draw(){
     image(blobCanvas, 0, 0, width, height / 2);
   }
 
-  handleMovementState();
+  if (!reconnectingArduino) handleMovementState();
 
   serialRx();
+
+  if (USING_ARDUINO) checkForArduinoDropOut();
 }
 
 void changeState(byte newState){
+  lastStateChange = newState;
   lastState = currentState;
   currentState = newState;
 
@@ -57,13 +61,16 @@ void changeState(byte newState){
   if (currentState != lastState){
     switch(currentState){
       case EYE_CONTACT:
+        eyeLight(90, 90, 90);
         break;
 
       case WIGGLE:
-        eyeLight(200);
+        eyeLight(0, 0, 120);
         break;
     }
   }
+
+  println("State changed from " + lastState + " to " + newState);
 }
 
 void handleMovementState(){
@@ -76,4 +83,16 @@ void handleMovementState(){
       wiggle();
       break;
   }
+
+  // check for change in presence
+  if (millis() - lastStateChange > 3000){
+    lastStateChange = millis();
+    if (blobs.size() > 0){
+      if (currentState != EYE_CONTACT) changeState(EYE_CONTACT);
+    } else {
+      if (currentState != WIGGLE) changeState(WIGGLE);
+    }
+  }
+
+  blinkingEyelid();
 }

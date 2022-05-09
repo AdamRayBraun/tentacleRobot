@@ -1,7 +1,6 @@
-#define LED_PIN    4
 #define LED_COUNT  16
 
-Adafruit_NeoPixel leds(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel leds(LED_COUNT, end_effector_led_pin, NEO_GRB + NEO_KHZ800);
 
 Servo eyelidServoL, eyelidServoR;
 
@@ -10,15 +9,9 @@ void setupEndEffector()
   leds.begin();
   leds.show();
   leds.setBrightness(255);
-  endEffectorLedRing();
 
   eyelidServoL.attach(eyelid_servo_pin_L);
   eyelidServoR.attach(eyelid_servo_pin_R);
-}
-
-void setEndEffectorLEDBrightness(int brightness)
-{
-  analogWrite(end_effector_led_pin, constrain(brightness, 0, 255));
 }
 
 void setEyelidPosition(int position)
@@ -28,9 +21,9 @@ void setEyelidPosition(int position)
   eyelidServoR.write(180 - pos);
 }
 
-void endEffectorLedRing(){
+void endEffectorLedRing(int r, int g, int b){
   for(int i = 0; i < LED_COUNT; i++) {
-    leds.setPixelColor(i, 255, 255, 255);
+    leds.setPixelColor(i, constrain(r, 0, 255), constrain(g, 0, 255), constrain(b, 0, 255));
   }
   leds.show();
 }

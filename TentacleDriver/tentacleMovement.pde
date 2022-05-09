@@ -1,8 +1,8 @@
 // position of the tentacle compared to the camera
-PVector tentacleBase = new PVector(243, 229, 200);
+PVector tentacleBase = new PVector(239, 320, 200);
 
 int userDistanceThresh = 10;
-final int pulsePRev = 8000;
+final int pulsePRev = 40000;
 
 final byte MOTOR_TOP_X = 0;
 final byte MOTOR_TOP_Y = 1;
@@ -11,7 +11,7 @@ final byte MOTOR_BOTTOM_Y = 3;
 
 int motorPositions[]          = new int[4];
 float motorWaves[]            = new float[4];
-float wiggleSinSpeeds[]       = {0.001, 0.005, 0.1, 0.01};
+float wiggleSinSpeeds[]       = {0.001, 0.005, 0.2, 0.1};
 final int maxMotorPositions[] = {400, 400, 400, 400};
 
 int moveTowardsSpeed = 20;
@@ -22,20 +22,20 @@ long lastWiggleUpdate;
 // Qi Qi variables
 float motorX, motorY;
 float armDirectionAngle;
-
-final int motorMaxSteps = 2000;
-
-long lastMotorUpdate;
-final int motorUpdatePeriod = 1000;
 float rad;
+
+final int motorMaxStepsX = 2000;
+final int motorMaxStepsY = 2000;
+final int motorUpdatePeriod = 1000;
+long lastMotorUpdate;
 
 void moveTentacleToUser(){
   // if we have at least one person detected
   if (blobs.size() > 0){
     // get position of oldest blob
-    // PVector personPos = blobs.get(0).getCenter();
+    PVector personPos = blobs.get(0).getCenter();
 
-    PVector personPos = new PVector(mouseX, mouseY);
+    // PVector personPos = new PVector(mouseX, mouseY); // for debugging
 
     float distanceXY = PVector.dist(personPos, tentacleBase);
 
@@ -49,66 +49,86 @@ void moveTentacleToUser(){
     textSize(20);
     text(degrees(armDirectionAngle), tentacleBase.x + 10, tentacleBase.y + kinectDepthH);
 
-    // QiQi start
     //Calculate armDirectionAngle
-    rad = sqrt ( sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y) ) ;
+    rad = sqrt(sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y));
     if(personPos.y - tentacleBase.y > 0){
-      armDirectionAngle = acos( ( personPos.x - tentacleBase.x) / rad ) ;
+      armDirectionAngle = acos((personPos.x - tentacleBase.x) / rad);
     }
     else{
-      armDirectionAngle = 2 * PI - acos( ( personPos.x - tentacleBase.x) / rad);
+      armDirectionAngle = 2 * PI - acos((personPos.x - tentacleBase.x) / rad);
+    }
+    //Adjust Angle Error
+    armDirectionAngle = armDirectionAngle + PI / 18;
+    if (armDirectionAngle > 2 * PI){
+      armDirectionAngle -= 2 * PI ;
     }
 
     //Calculate motorX
-    if(armDirectionAngle < PI ){
-      motorX = - ( 2 / PI ) * armDirectionAngle + 1 ;
+    if(armDirectionAngle < PI){
+      motorX = -(2 / PI) * armDirectionAngle + 1;
     }
     else{
-      motorX =   ( 2 / PI ) * armDirectionAngle - 3 ;
+      motorX = (2 / PI) * armDirectionAngle - 3;
     }
+    motorX = -motorX;
 
     //Calculate motorY
-    if(armDirectionAngle < PI / 2 ){
-      motorY =   ( 2 / PI ) * armDirectionAngle ;
+    if(armDirectionAngle < PI / 2){
+      motorY = (2 / PI) * armDirectionAngle;
     }
-    else if(armDirectionAngle < PI * 3 / 2 ){
-      motorY = - ( 2 / PI ) * armDirectionAngle + 2 ;
+    else if (armDirectionAngle < PI * 3 / 2){
+      motorY = -(2 / PI) * armDirectionAngle + 2;
     }
     else{
-      motorY =   ( 2 / PI ) * armDirectionAngle - 4 ;
+      motorY = (2 / PI) * armDirectionAngle - 4;
     }
     motorY = -motorY;
+
+    //enlarge motorX&Y
+    if (motorX >= 0){
+      motorX = sqrt(motorX);
+    }
+    else{
+      motorX = -sqrt(-motorX);
+    }
+    if (motorY >= 0){
+      motorY = sqrt(motorY);
+    }
+    else{
+      motorY = -sqrt(-motorY);
+    }
 
     text(motorX + "\n" + motorY, tentacleBase.x, tentacleBase.y + kinectDepthH + 60);
 
     if (millis() - lastMotorUpdate > motorUpdatePeriod){
       lastMotorUpdate = millis();
-      moveTentacle(MOTOR_BOTTOM_X, (int)(motorX * motorMaxSteps));
-      moveTentacle(MOTOR_BOTTOM_Y, (int)(motorY * motorMaxSteps));
+      moveTentacle(MOTOR_BOTTOM_X, (int)(motorX * motorMaxStepsX));
+      moveTentacle(MOTOR_BOTTOM_Y, (int)(motorY * motorMaxStepsY));
     }
   }
 }
 
 void wiggle(){
-  // increment all 4 motor sine wave values
-  // for (byte m = 0; m < 4; m++){
-
   if (millis() - lastWiggleUpdate > wiggleSpeed){
     lastWiggleUpdate = millis();
+    motorWaves[MOTOR_BOTTOM_X] += wiggleSinSpeeds[MOTOR_BOTTOM_X];
+    motorPositions[MOTOR_BOTTOM_X] = floor(sin(motorWaves[MOTOR_BOTTOM_X]) * motorMaxStepsX);
 
-      byte m = 2;
-      motorWaves[m] += wiggleSinSpeeds[m];
-      motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorPositions[m]);
+    motorWaves[MOTOR_BOTTOM_Y] += wiggleSinSpeeds[MOTOR_BOTTOM_Y];
+    motorPositions[MOTOR_BOTTOM_Y] = floor(sin(motorWaves[MOTOR_BOTTOM_Y]) * motorMaxStepsY);
 
-      moveTentacle(m, motorPositions[m]);
+    //Qi Qi limit motor move
+    float addXY = sqrt( sq(motorPositions[MOTOR_BOTTOM_X]) + motorPositions[MOTOR_BOTTOM_Y]) / motorMaxStepsX ;
+    if ( addXY > 1 ){
+      motorPositions[MOTOR_BOTTOM_X] = (int)(motorPositions[MOTOR_BOTTOM_X] / addXY);
+      motorPositions[MOTOR_BOTTOM_Y] = (int)(motorPositions[MOTOR_BOTTOM_Y] / addXY);
+    }
 
-    // for (byte m = 2; m < 4; m++){
-    //   motorWaves[m] += wiggleSinSpeeds[m];
-    //   motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorPositions[m]);
-    //
-    //   moveTentacle(m, motorPositions[m]);
-    // }
+    // println(motorPositions[MOTOR_BOTTOM_X] + ", " + motorPositions[MOTOR_BOTTOM_Y]);
   }
 
-  // TODO wiggle eye lid occasionally
+  if (millis() - lastMotorUpdate > motorUpdatePeriod){
+    moveTentacle(MOTOR_BOTTOM_X, motorPositions[MOTOR_BOTTOM_X]);
+    moveTentacle(MOTOR_BOTTOM_Y, motorPositions[MOTOR_BOTTOM_Y]);
+  }
 }
