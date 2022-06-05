@@ -2,9 +2,9 @@ import org.openkinect.processing.*;
 import java.nio.FloatBuffer;
 import processing.serial.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem1443401";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem14601";
 final boolean SERIAL_DEBUG  = false;
-final boolean USING_KINECT  = true;
+final boolean USING_KINECT  = false;
 final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;

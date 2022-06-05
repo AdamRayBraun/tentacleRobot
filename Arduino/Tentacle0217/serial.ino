@@ -35,19 +35,19 @@ void serialRx()
       switch(rxBuff[packet_pos_flag]){
         case packet_flag_motor_top_x:
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_X);
-          // topX.moveTo(dirTopX * targetTopX);
+          targetTopX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_X);
+          topX.moveTo(dirTopX * targetTopX);
 
           #ifdef SERIAL_DEBUG
-            Serial.print("top x moving to: ");
+            Serial.print("top X moving to: ");
             Serial.println(dirTopX * targetTopX);
           #endif
           break;
 
         case packet_flag_motor_top_y:
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetTopY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_Y);
-          // topY.moveTo(dirTopY * targetTopY);
+          targetTopY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_Y);
+          topY.moveTo(dirTopY * targetTopY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("top Y moving to: ");
@@ -57,7 +57,7 @@ void serialRx()
 
         case packet_flag_motor_bottom_x:
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_X);
+          targetBottomX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_X);
           bottomX.moveTo(dirBottomX * targetBottomX);
 
           #ifdef SERIAL_DEBUG
@@ -68,7 +68,7 @@ void serialRx()
 
         case packet_flag_motor_bottom_y:
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
-          targetBottomY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_MAX_STEPS_Y);
+          targetBottomY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_Y);
           bottomY.moveTo(dirBottomY * targetBottomY);
 
           #ifdef SERIAL_DEBUG
@@ -80,11 +80,11 @@ void serialRx()
         case packet_flag_stepper_home:
           bottomX.setCurrentPosition(0);
           bottomY.setCurrentPosition(0);
-          // topX.setCurrentPosition(0);
-          // topY.setCurrentPosition(0);
+          topX.setCurrentPosition(0);
+          topY.setCurrentPosition(0);
 
           #ifdef SERIAL_DEBUG
-            Serial.println("all motors homed ");
+            Serial.println("all motors homed");
           #endif
           break;
 
@@ -109,8 +109,8 @@ void serialRx()
         case packet_flag_STOP:
           bottomX.stop();
           bottomY.stop();
-          // topX.stop();
-          // topY.stop();
+          topX.stop();
+          topY.stop();
 
           #ifdef SERIAL_DEBUG
             Serial.println("STOPPED");

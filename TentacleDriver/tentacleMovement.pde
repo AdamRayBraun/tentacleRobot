@@ -4,15 +4,16 @@ PVector tentacleBase = new PVector(239, 320, 200);
 int userDistanceThresh = 10;
 final int pulsePRev = 40000;
 
-final byte MOTOR_TOP_X = 0;
-final byte MOTOR_TOP_Y = 1;
+final byte MOTOR_TOP_X    = 0;
+final byte MOTOR_TOP_Y    = 1;
 final byte MOTOR_BOTTOM_X = 2;
 final byte MOTOR_BOTTOM_Y = 3;
 
 int motorPositions[]          = new int[4];
 float motorWaves[]            = new float[4];
-float wiggleSinSpeeds[]       = {0.001, 0.005, 0.2, 0.1};
+float wiggleSinSpeeds[]       = {0.1, 0.1, 0.2, 0.1};
 final int maxMotorPositions[] = {400, 400, 400, 400};
+final int maxMotorSteps[]     = {16000, 16000, 2000, 2000};
 
 int moveTowardsSpeed = 20;
 
@@ -24,8 +25,6 @@ float motorX, motorY;
 float armDirectionAngle;
 float rad;
 
-final int motorMaxStepsX = 2000;
-final int motorMaxStepsY = 2000;
 final int motorUpdatePeriod = 1000;
 long lastMotorUpdate;
 
@@ -102,8 +101,8 @@ void moveTentacleToUser(){
 
     if (millis() - lastMotorUpdate > motorUpdatePeriod){
       lastMotorUpdate = millis();
-      moveTentacle(MOTOR_BOTTOM_X, (int)(motorX * motorMaxStepsX));
-      moveTentacle(MOTOR_BOTTOM_Y, (int)(motorY * motorMaxStepsY));
+      moveTentacle(MOTOR_BOTTOM_X, (int)(motorX * maxMotorSteps[MOTOR_BOTTOM_X]));
+      moveTentacle(MOTOR_BOTTOM_Y, (int)(motorY * maxMotorSteps[MOTOR_BOTTOM_Y]));
     }
   }
 }
@@ -111,24 +110,30 @@ void moveTentacleToUser(){
 void wiggle(){
   if (millis() - lastWiggleUpdate > wiggleSpeed){
     lastWiggleUpdate = millis();
-    motorWaves[MOTOR_BOTTOM_X] += wiggleSinSpeeds[MOTOR_BOTTOM_X];
-    motorPositions[MOTOR_BOTTOM_X] = floor(sin(motorWaves[MOTOR_BOTTOM_X]) * motorMaxStepsX);
 
-    motorWaves[MOTOR_BOTTOM_Y] += wiggleSinSpeeds[MOTOR_BOTTOM_Y];
-    motorPositions[MOTOR_BOTTOM_Y] = floor(sin(motorWaves[MOTOR_BOTTOM_Y]) * motorMaxStepsY);
-
-    //Qi Qi limit motor move
-    float addXY = sqrt( sq(motorPositions[MOTOR_BOTTOM_X]) + motorPositions[MOTOR_BOTTOM_Y]) / motorMaxStepsX ;
-    if ( addXY > 1 ){
-      motorPositions[MOTOR_BOTTOM_X] = (int)(motorPositions[MOTOR_BOTTOM_X] / addXY);
-      motorPositions[MOTOR_BOTTOM_Y] = (int)(motorPositions[MOTOR_BOTTOM_Y] / addXY);
+    for (byte m = 0; m < 4; m++){
+      motorWaves[m] += wiggleSinSpeeds[m];
+      motorPositions[m] = floor(sin(motorWaves[m]) * maxMotorSteps[m]);
     }
 
-    // println(motorPositions[MOTOR_BOTTOM_X] + ", " + motorPositions[MOTOR_BOTTOM_Y]);
+    // Limit bottom section combined extension
+    float addBottomXY = sqrt(sq(motorPositions[MOTOR_BOTTOM_X]) + motorPositions[MOTOR_BOTTOM_Y]) / maxMotorSteps[MOTOR_BOTTOM_X];
+    if ( addBottomXY > 1 ){
+      motorPositions[MOTOR_BOTTOM_X] = (int)(motorPositions[MOTOR_BOTTOM_X] / addBottomXY);
+      motorPositions[MOTOR_BOTTOM_Y] = (int)(motorPositions[MOTOR_BOTTOM_Y] / addBottomXY);
+    }
+
+    // Limit bottom section combined extension
+    float addTopXY = sqrt(sq(motorPositions[MOTOR_TOP_X]) + motorPositions[MOTOR_TOP_Y]) / maxMotorSteps[MOTOR_TOP_X];
+    if ( addTopXY > 1 ){
+      motorPositions[MOTOR_TOP_X] = (int)(motorPositions[MOTOR_TOP_X] / addTopXY);
+      motorPositions[MOTOR_TOP_Y] = (int)(motorPositions[MOTOR_TOP_Y] / addTopXY);
+    }
   }
 
   if (millis() - lastMotorUpdate > motorUpdatePeriod){
-    moveTentacle(MOTOR_BOTTOM_X, motorPositions[MOTOR_BOTTOM_X]);
-    moveTentacle(MOTOR_BOTTOM_Y, motorPositions[MOTOR_BOTTOM_Y]);
+    for (byte m = 0; m < 4; m++){
+      moveTentacle(m, motorPositions[m]);
+    }
   }
 }

@@ -66,7 +66,7 @@ void moveTentacle(byte motor, int position){
       txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
-      lastMotorPositions[0] = position;
+      lastMotorPositions[MOTOR_TOP_X] = position;
       break;
 
     case MOTOR_TOP_Y:
@@ -74,7 +74,7 @@ void moveTentacle(byte motor, int position){
       txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
-      lastMotorPositions[1] = position;
+      lastMotorPositions[MOTOR_TOP_Y] = position;
       break;
 
     case MOTOR_BOTTOM_X:
@@ -82,7 +82,7 @@ void moveTentacle(byte motor, int position){
       txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
-      lastMotorPositions[2] = position;
+      lastMotorPositions[MOTOR_BOTTOM_X] = position;
       break;
 
     case MOTOR_BOTTOM_Y:
@@ -90,7 +90,7 @@ void moveTentacle(byte motor, int position){
       txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
       txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
       txPacket[packet_pos_data + 2] = byte(position & 0xFF);
-      lastMotorPositions[3] = position;
+      lastMotorPositions[MOTOR_BOTTOM_Y] = position;
       break;
 
     default:
@@ -154,8 +154,8 @@ void serialRx(){
       if (rxMsg != null) {
         println(rxMsg);
       }
-      bus.clear();
     }
+    bus.clear();
   }
 }
 

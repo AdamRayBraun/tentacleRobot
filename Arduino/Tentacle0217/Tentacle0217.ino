@@ -23,10 +23,10 @@
 #define bottom_servo_Y_PUL_pin  18
 #define bottom_servo_Y_DIR_pin  19
 
-// #define top_servo_X_PUL_pin     7
-// #define top_servo_X_DIR_pin     8
-// #define top_servo_Y_PUL_pin     10
-// #define top_servo_Y_DIR_pin     11
+#define top_servo_X_PUL_pin     7
+#define top_servo_X_DIR_pin     8
+#define top_servo_Y_PUL_pin     9
+#define top_servo_Y_DIR_pin     6
 
 #define end_effector_led_pin    15
 
