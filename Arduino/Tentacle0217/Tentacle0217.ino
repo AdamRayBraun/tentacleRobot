@@ -18,20 +18,20 @@
 #include <EEPROM.h>
 
 // Pin connections
-#define bottom_servo_X_PUL_pin  20
-#define bottom_servo_X_DIR_pin  21
-#define bottom_servo_Y_PUL_pin  18
-#define bottom_servo_Y_DIR_pin  19
+#define bottom_servo_X_PUL_pin  6
+#define bottom_servo_X_DIR_pin  5
+#define bottom_servo_Y_PUL_pin  9
+#define bottom_servo_Y_DIR_pin  8
 
-#define top_servo_X_PUL_pin     7
-#define top_servo_X_DIR_pin     8
-#define top_servo_Y_PUL_pin     9
-#define top_servo_Y_DIR_pin     6
+#define top_servo_X_PUL_pin     10
+#define top_servo_X_DIR_pin     16
+#define top_servo_Y_PUL_pin     14
+#define top_servo_Y_DIR_pin     15
 
-#define end_effector_led_pin    15
+#define end_effector_led_pin    2
 
-#define eyelid_servo_pin_L      16
-#define eyelid_servo_pin_R      10
+#define eyelid_servo_pin_L      4
+#define eyelid_servo_pin_R      3
 
 #define checkpointFrequency 500
 
@@ -42,6 +42,7 @@ void setup()
   setupSerial();
   setupAccelSteppers();
   setupEndEffector();
+  // resetFromLastSavedPosition();
 }
 
 void loop()

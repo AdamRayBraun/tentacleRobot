@@ -25,6 +25,11 @@ void keyPressed(){
     txPacket[packet_pos_data] = (byte)90;
     serialTx(txPacket);
   }
+
+  byte keyNum = (byte)key;
+  if (keyNum >= 48 && keyNum <= 57){
+    changeState((byte)(keyNum - 48));
+  }
 }
 
 void mousePressed(){
