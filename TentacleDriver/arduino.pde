@@ -58,6 +58,14 @@ void setupArduino(){
   txPacket[packet_pos_footer] = packet_footer;
 }
 
+void runHardware(){
+  if (!reconnectingArduino) handleMovementState();
+
+  serialRx();
+
+  if (USING_ARDUINO) checkForArduinoDropOut();
+}
+
 void moveTentacle(byte motor, int position){
   byte err = 0;
   switch(motor){
@@ -108,6 +116,12 @@ void moveTentacle(byte motor, int position){
       println("how the fuck");
       break;
   }
+
+  topMotorSlider.setValue((float)lastMotorPositions[MOTOR_TOP_X],
+                          (float)lastMotorPositions[MOTOR_TOP_Y]);
+
+  bottomMotorSlider.setValue((float)lastMotorPositions[MOTOR_BOTTOM_X],
+                             (float)lastMotorPositions[MOTOR_BOTTOM_Y]);
 }
 
 void moveEyeBall(int position){

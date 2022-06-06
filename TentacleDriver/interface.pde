@@ -1,3 +1,40 @@
+ControlP5 cp5;
+
+Slider2D topMotorSlider, bottomMotorSlider;
+
+final int border = 50;
+final int sliderSize = 200;
+
+void setupInterface(){
+  cp5 = new ControlP5(this);
+
+  topMotorSlider = cp5.addSlider2D("TopPositions")
+                      .setPosition(border, border)
+                      .setSize(sliderSize, sliderSize)
+                      .setMinMax(-maxMotorSteps[MOTOR_TOP_X],
+                                 -maxMotorSteps[MOTOR_TOP_Y],
+                                 maxMotorSteps[MOTOR_TOP_X],
+                                 maxMotorSteps[MOTOR_TOP_Y])
+                      .setValue(0, 0)
+                      ;
+
+  bottomMotorSlider = cp5.addSlider2D("BottomPositions")
+                         .setPosition(border, border * 2 + sliderSize)
+                         .setSize(sliderSize, sliderSize)
+                         .setMinMax(-maxMotorSteps[MOTOR_BOTTOM_X],
+                                    -maxMotorSteps[MOTOR_BOTTOM_Y],
+                                     maxMotorSteps[MOTOR_BOTTOM_X],
+                                     maxMotorSteps[MOTOR_BOTTOM_Y])
+                         .setValue(0, 0)
+                         ;
+}
+
+void drawInterface(){
+  fill(255);
+  textSize(10);
+  text("Current state:  " + stateNames[currentState], border, (border * 3) + (sliderSize * 2));
+}
+
 void keyPressed(){
   if (key == 'f'){
     depthMode = DEPTH_FLAT_THRESH;

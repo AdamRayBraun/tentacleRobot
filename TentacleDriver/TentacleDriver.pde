@@ -1,11 +1,12 @@
 import org.openkinect.processing.*;
 import java.nio.FloatBuffer;
 import processing.serial.*;
+import controlP5.*;
 
 final String  ARDUINO_PORT  = "/dev/tty.usbmodem14401";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = false;
-final boolean USING_ARDUINO = false;
+final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;
 
@@ -27,38 +28,53 @@ final byte PRESENT_BODY  = 6;
 final byte PRESENT_WAIST = 7;
 final byte PRESENT_HEAD  = 8;
 final byte END_EFFECTOR  = 9;
+final byte MANUAL        = 9;
+
+final String[] stateNames = { "Homing",
+                              "Eye contact",
+                              "Wiggling",
+                              "Increasing wiggling",
+                              "Looking at audience",
+                              "Looking around audience",
+                              "Presenting body",
+                              "Presenting waist",
+                              "Presenting head",
+                              "Showing end effector"
+                          };
 
 byte currentState      = EYE_CONTACT;
 byte lastState         = currentState;
 long lastStateChange;
 
 void settings(){
-  size(kinectDepthW * scale, kinectDepthH * scale * 2, P3D);
+  size(kinectDepthW * scale * 2, kinectDepthH * scale * 2, P3D);
 }
 
 void setup(){
   setupKinect();
   setupBlobDetection();
   setupArduino();
+  setupInterface();
 
   changeState(WIGGLE_INC);
 }
 
 void draw(){
+  background(0);
+
   if (USING_KINECT){
     drawDepth();
-    image(kinectCanvas, 0, 0, width, height / 2);
-    image(kinect2.getVideoImage(), 0, height / 2, width, height / 2);
+    image(kinectCanvas, kinectDepthW * scale, 0, width, height / 2);
+    image(kinect2.getVideoImage(), kinectDepthW * scale, height / 2, width, height / 2);
     detectBlobs();
     drawBlobs();
-    image(blobCanvas, 0, 0, width, height / 2);
+    image(blobCanvas, kinectDepthW * scale, 0, width, height / 2);
   }
 
-  if (!reconnectingArduino) handleMovementState();
+  drawInterface();
 
-  serialRx();
+  runHardware();
 
-  if (USING_ARDUINO) checkForArduinoDropOut();
 }
 
 void changeState(byte newState){
