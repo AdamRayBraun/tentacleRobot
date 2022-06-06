@@ -17,14 +17,16 @@ final int scale        = 1;
 PGraphics kinectCanvas, blobCanvas;
 
 // Movement modes
-final byte EYE_CONTACT   = 0;
-final byte WIGGLE        = 1;
-final byte WIGGLE_INC    = 2;
-final byte AUDIENCE_LOOK = 3;
-final byte PRESENT_BODY  = 4;
-final byte PRESENT_WAIST = 5;
-final byte PRESENT_HEAD  = 6;
-final byte END_EFFECTOR  = 7;
+final byte HOME          = 0;
+final byte EYE_CONTACT   = 1;
+final byte WIGGLE        = 2;
+final byte WIGGLE_INC    = 3;
+final byte AUDIENCE_LOOK = 4;
+final byte AUDIENCE_MOVE = 5;
+final byte PRESENT_BODY  = 6;
+final byte PRESENT_WAIST = 7;
+final byte PRESENT_HEAD  = 8;
+final byte END_EFFECTOR  = 9;
 
 byte currentState      = EYE_CONTACT;
 byte lastState         = currentState;
@@ -80,6 +82,26 @@ void changeState(byte newState){
           sinAmplitude[m] = 0;
         }
         break;
+
+      case AUDIENCE_LOOK:
+        lookTowardsAudience();
+        break;
+
+      case PRESENT_BODY:
+        presentBody();
+        break;
+
+      case PRESENT_WAIST:
+        presentWaist();
+        break;
+
+      case PRESENT_HEAD:
+        presentHead();
+        break;
+
+      case HOME:
+        moveHome();
+        break;
     }
     println("State changed from " + lastState + " to " + newState);
   }
@@ -98,17 +120,9 @@ void handleMovementState(){
     case WIGGLE_INC:
       wiggleIncreasing();
       break;
-  }
 
-  // bloomsbury code
-  // // check for change in presence
-  // if (millis() - lastStateChange > 3000){
-  //   lastStateChange = millis();
-  //   if (blobs.size() > 0){
-  //     if (currentState != EYE_CONTACT) changeState(EYE_CONTACT);
-  //   } else {
-  //     if (currentState != WIGGLE) changeState(WIGGLE);
-  //   }
-  // }
-  // blinkingEyelid();
+    case AUDIENCE_MOVE:
+      lookAroundAudience();
+      break;
+  }
 }

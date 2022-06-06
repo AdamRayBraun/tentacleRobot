@@ -6,24 +6,39 @@ final byte MOTOR_TOP_Y    = 1;
 final byte MOTOR_BOTTOM_X = 2;
 final byte MOTOR_BOTTOM_Y = 3;
 
-// general motor vars
+// general motor variables
 int motorPositions[]        = new int[4];
 final int maxMotorSteps[]   = {6000, 6000, 2000, 2000};
 final int motorUpdatePeriod = 1000;
 long lastMotorUpdate;
 
-// WIGGLE vars
+// WIGGLE variables
 float motorWaves[]          = new float[4];
-float wiggleSinSpeeds[]     = {0.1, 0.1, 0.1, 0.1};
+float wiggleSinSpeeds[]     = {0.1, 0.08, 0.1, 0.12};
 float sinAmplitude[]        = {0, 0, 0, 0};
 int wiggleSpeed             = 300;
-int wiggleIncreaseSpeed     = 300; 
+int wiggleIncreaseSpeed     = 80;
 long lastWiggleUpdate;
 
 // EYE_CONTACT variables
 float motorX, motorY;
 float armDirectionAngle;
 float rad;
+
+// AUDIENCE LOOK AROUND variables
+int audienceLookAroundPositions[] = {0, 0, 0, 0};
+
+// AUDIENCE_LOOK variables
+int audienceLookPositions[] = {0, 0, 0, 0};
+
+// PRESENT_BODY variables
+int presentBodyPositions[]  = {0, 0, 0, 0};
+
+// PRESENT_WAIST variables
+int presentWaistPositions[] = {0, 0, 0, 0};
+
+// PRESENT_HEAD variables
+int presentHeadPositions[]  = {0, 0, 0, 0};
 
 void moveTentacleToUser(){
   // if we have at least one person detected
@@ -144,16 +159,15 @@ void wiggleIncreasing(){
       motorPositions[m] = floor(sin(motorWaves[m]) * sinAmplitude[m]);
     }
 
+    byte motorsFinished = 0;
     for (byte m = 0; m < 4; m++){
       int amplitudeIncrease = maxMotorSteps[m] / wiggleIncreaseSpeed;
-      byte motorsFinished = 0;
-      if (sinAmplitude[m] < maxMotorSteps[m] - amplitudeIncrease){
-        sinAmplitude[m] += amplitudeIncrease;
-      } else{
+      if (sinAmplitude[m] >= maxMotorSteps[m]){
         sinAmplitude[m] = maxMotorSteps[m];
         motorsFinished++;
+      } else{
+        sinAmplitude[m] += amplitudeIncrease;
       }
-
       if (motorsFinished >= 4) changeState(WIGGLE);
     }
 
@@ -176,5 +190,41 @@ void wiggleIncreasing(){
     for (byte m = 0; m < 4; m++){
       moveTentacle(m, motorPositions[m]);
     }
+  }
+}
+
+void lookAroundAudience(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, audienceLookAroundPositions[m]);
+  }
+}
+
+void lookTowardsAudience(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, audienceLookPositions[m]);
+  }
+}
+
+void presentBody(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, presentBodyPositions[m]);
+  }
+}
+
+void presentWaist(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, presentWaistPositions[m]);
+  }
+}
+
+void presentHead(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, presentHeadPositions[m]);
+  }
+}
+
+void moveHome(){
+  for (byte m = 0; m < 4; m++){
+    moveTentacle(m, 0);
   }
 }
