@@ -18,10 +18,10 @@
 #include <EEPROM.h>
 
 // Pin connections
-#define bottom_servo_X_PUL_pin  6
-#define bottom_servo_X_DIR_pin  5
-#define bottom_servo_Y_PUL_pin  9
-#define bottom_servo_Y_DIR_pin  8
+#define bottom_servo_X_PUL_pin  9
+#define bottom_servo_X_DIR_pin  8
+#define bottom_servo_Y_PUL_pin  6
+#define bottom_servo_Y_DIR_pin  5
 
 #define top_servo_X_PUL_pin     10
 #define top_servo_X_DIR_pin     16

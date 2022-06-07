@@ -70,8 +70,8 @@ void keyPressed(){
 }
 
 void mousePressed(){
-  if (mouseY < kinectDepthH){
-    println(mouseX + ", " + mouseY);
+  if (mouseY < kinectDepthH && mouseX > kinectDepthW * scale){
+    println((mouseX -  kinectDepthW * scale) + ", " + mouseY);
     if (USING_KINECT) println(depthData[(mouseY / scale) * kinectDepthW + (mouseX / scale)]);
   }
 }

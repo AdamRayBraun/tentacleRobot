@@ -8,7 +8,7 @@ int maxLife = 30;
 color trackColor;
 float threshold = 10;
 float distThreshold = 2;
-int minBlobSize = 4500;
+int minBlobSize = 7500;
 
 void setupBlobDetection(){
   trackColor = color(255);

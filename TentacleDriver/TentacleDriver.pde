@@ -3,16 +3,17 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 import controlP5.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem1463401";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem14401";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = true;
-final boolean USING_ARDUINO = false;
+final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;
 
 final int kinectDepthW = 512;
 final int kinectDepthH = 424;
 final int scale        = 1;
+final int shift        = kinectDepthW * scale;
 
 // graphics canvases
 PGraphics kinectCanvas, blobCanvas;
@@ -56,9 +57,7 @@ void setup(){
   setupArduino();
   setupInterface();
 
-  changeState(WIGGLE_INC);
-
-  eyeLight(0, 100, 0);
+  changeState(EYE_CONTACT);
 }
 
 void draw(){
@@ -70,7 +69,7 @@ void draw(){
     image(kinect2.getVideoImage(), kinectDepthW * scale, height / 2, kinectDepthW * scale, height / 2);
     detectBlobs();
     drawBlobs();
-    image(blobCanvas, kinectDepthW * scale, 0, width, height / 2);
+    image(blobCanvas, kinectDepthW * scale, 0, kinectDepthW * scale, height / 2);
   }
   drawInterface();
 

@@ -12,6 +12,8 @@ EEPFormat lastPositions = {
 
 void updateLastSavedPosition()
 {
+// THIS DEFFO CAUSES A DROP OUT BUG
+
   // lastPositions.lastXpos = bottomX.currentPosition();
   // lastPositions.lastYpos = bottomY.currentPosition();
   // EEPROM.put(EEPROM_ADDRESS, lastPositions);

@@ -147,7 +147,13 @@ void blinkingEyelid(){
 }
 
 void serialTx(byte[] packet){
-  if (USING_ARDUINO) bus.write(packet);
+  if (USING_ARDUINO){
+    try{
+      bus.write(packet);
+    } catch(Exception e){
+      e.printStackTrace();
+    }
+  }
 
   if (SERIAL_DEBUG){
     String out = "Sending to arduino:\t";

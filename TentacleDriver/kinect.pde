@@ -1,6 +1,6 @@
 int[] depthData;
 float depthMin  = 1500;
-float depthMax  = 2319;
+float depthMax  = 2320;
 int numKinectPixels = kinectDepthW * kinectDepthH;
 
 final int DEPTH_ALL             = 0;

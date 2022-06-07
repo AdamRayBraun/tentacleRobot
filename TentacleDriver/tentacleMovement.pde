@@ -1,5 +1,5 @@
 // position of the tentacle compared to the camera
-PVector tentacleBase = new PVector(239, 320, 200);
+PVector tentacleBase = new PVector(257, 282, 200);
 
 final byte MOTOR_TOP_X    = 0;
 final byte MOTOR_TOP_Y    = 1;
@@ -23,7 +23,7 @@ long lastWiggleUpdate;
 // EYE_CONTACT variables
 float bottomMotorX, bottomMotorY, topMotorX, topMotorY, farOrNot;
 float armDirectionAngle;
-float rad;
+float rad, bottomScale;
 //float checkDistance = 1 ;
 //float topScale = 0.5 ;
 
@@ -48,7 +48,7 @@ void moveTentacleToUser(){
     // get position of oldest blob
     PVector personPos = blobs.get(0).getCenter();
 
-    // PVector personPos = new PVector(mouseX, mouseY); // for debugging
+    // PVector personPos = new PVector(mouseX - shift, mouseY); // for debugging
 
     float distanceXY = PVector.dist(personPos, tentacleBase);
 
@@ -56,11 +56,11 @@ void moveTentacleToUser(){
     stroke(255, 0, 0);
     strokeWeight(4);
     noFill();
-    line(tentacleBase.x, tentacleBase.y, personPos.x, personPos.y);
-    line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
+    line(tentacleBase.x + shift, tentacleBase.y, personPos.x + shift, personPos.y);
+    line(tentacleBase.x + shift, tentacleBase.y + kinectDepthH, personPos.x + shift, personPos.y + kinectDepthH);
     fill(255, 0, 0);
     textSize(20);
-    text(degrees(armDirectionAngle), tentacleBase.x + 10, tentacleBase.y + kinectDepthH);
+    text(degrees(armDirectionAngle), tentacleBase.x + 10  + shift, tentacleBase.y + kinectDepthH);
 
     //Calculate armDirectionAngle
     rad = sqrt(sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y));
@@ -72,7 +72,7 @@ void moveTentacleToUser(){
     }
     //Adjust Angle Error
     armDirectionAngle = armDirectionAngle + PI / 18;
-    if (armDirectionAngle > 2 * PI){
+    if (armDirectionAngle >= 2 * PI){
       armDirectionAngle -= 2 * PI ;
     }
 
@@ -111,17 +111,27 @@ void moveTentacleToUser(){
       bottomMotorY = -sqrt(-bottomMotorY);
     }
 
-    text(bottomMotorX + "\n" + bottomMotorY, tentacleBase.x, tentacleBase.y + kinectDepthH + 60);
+    // text(bottomMotorX + "\n" + bottomMotorY, tentacleBase.x  + shift, tentacleBase.y + kinectDepthH + 60);
 
     //Calculate farOrNot, distance = rad
-    farOrNot = map( rad , 0, 1.5, -1, 1 );
-    if ( farOrNot > 1 ){
-      farOrNot = 1 ;
-    }
+    farOrNot = map(rad , 0, 350, -3,  2);
 
     //Calculate topMotorX&Y
-    topMotorX = bottomMotorX * farOrNot ;
-    topMotorY = bottomMotorY * farOrNot ;
+    topMotorX = bottomMotorX * farOrNot;
+    topMotorY = bottomMotorY * farOrNot;
+
+    topMotorX = constrain(topMotorX, -1, 1);
+    topMotorY = constrain(topMotorY, -1, 1);
+
+    //SWAP
+    bottomMotorX = - bottomMotorX;
+    bottomMotorY = - bottomMotorY;
+
+    //scale bottom X&Y
+    bottomScale = map( rad, 0, 350, 1.5, 0.7);
+    bottomScale =  constrain(bottomScale, 0.5, 1.5);
+    bottomMotorX = bottomMotorX * bottomScale;
+    bottomMotorY = bottomMotorY * bottomScale;
 
     //move Motors
     if (millis() - lastMotorUpdate > motorUpdatePeriod){
