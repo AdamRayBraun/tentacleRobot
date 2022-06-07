@@ -21,9 +21,11 @@ int wiggleIncreaseSpeed     = 80;
 long lastWiggleUpdate;
 
 // EYE_CONTACT variables
-float motorX, motorY;
+float bottomMotorX, bottomMotorY, topMotorX, topMotorY, farOrNot;
 float armDirectionAngle;
 float rad;
+//float checkDistance = 1 ;
+//float topScale = 0.5 ;
 
 // AUDIENCE LOOK AROUND variables
 int audienceLookAroundPositions[] = {0, 0, 0, 0};
@@ -74,47 +76,60 @@ void moveTentacleToUser(){
       armDirectionAngle -= 2 * PI ;
     }
 
-    //Calculate motorX
+    //Calculate bottomMotorX
     if(armDirectionAngle < PI){
-      motorX = -(2 / PI) * armDirectionAngle + 1;
+      bottomMotorX = -(2 / PI) * armDirectionAngle + 1;
     }
     else{
-      motorX = (2 / PI) * armDirectionAngle - 3;
+      bottomMotorX = (2 / PI) * armDirectionAngle - 3;
     }
-    motorX = -motorX;
+    bottomMotorX = -bottomMotorX;
 
-    //Calculate motorY
+    //Calculate bottomMotorY
     if(armDirectionAngle < PI / 2){
-      motorY = (2 / PI) * armDirectionAngle;
+      bottomMotorY = (2 / PI) * armDirectionAngle;
     }
     else if (armDirectionAngle < PI * 3 / 2){
-      motorY = -(2 / PI) * armDirectionAngle + 2;
+      bottomMotorY = -(2 / PI) * armDirectionAngle + 2;
     }
     else{
-      motorY = (2 / PI) * armDirectionAngle - 4;
+      bottomMotorY = (2 / PI) * armDirectionAngle - 4;
     }
-    motorY = -motorY;
+    bottomMotorY = -bottomMotorY;
 
-    //enlarge motorX&Y
-    if (motorX >= 0){
-      motorX = sqrt(motorX);
+    //enlarge bottomMotorX&Y
+    if (bottomMotorX >= 0){
+      bottomMotorX = sqrt(bottomMotorX);
     }
     else{
-      motorX = -sqrt(-motorX);
+      bottomMotorX = -sqrt(-bottomMotorX);
     }
-    if (motorY >= 0){
-      motorY = sqrt(motorY);
+    if (bottomMotorY >= 0){
+      bottomMotorY = sqrt(bottomMotorY);
     }
     else{
-      motorY = -sqrt(-motorY);
+      bottomMotorY = -sqrt(-bottomMotorY);
     }
 
-    text(motorX + "\n" + motorY, tentacleBase.x, tentacleBase.y + kinectDepthH + 60);
+    text(bottomMotorX + "\n" + bottomMotorY, tentacleBase.x, tentacleBase.y + kinectDepthH + 60);
 
+    //Calculate farOrNot, distance = rad
+    farOrNot = map( rad , 0, 1.5, -1, 1 );
+    if ( farOrNot > 1 ){
+      farOrNot = 1 ;
+    }
+
+    //Calculate topMotorX&Y
+    topMotorX = bottomMotorX * farOrNot ;
+    topMotorY = bottomMotorY * farOrNot ;
+
+    //move Motors
     if (millis() - lastMotorUpdate > motorUpdatePeriod){
       lastMotorUpdate = millis();
-      moveTentacle(MOTOR_BOTTOM_X, (int)(motorX * maxMotorSteps[MOTOR_BOTTOM_X]));
-      moveTentacle(MOTOR_BOTTOM_Y, (int)(motorY * maxMotorSteps[MOTOR_BOTTOM_Y]));
+      moveTentacle(MOTOR_BOTTOM_X, (int)(bottomMotorX * maxMotorSteps[MOTOR_BOTTOM_X]));
+      moveTentacle(MOTOR_BOTTOM_Y, (int)(bottomMotorY * maxMotorSteps[MOTOR_BOTTOM_Y]));
+      moveTentacle(MOTOR_TOP_X,    (int)(topMotorX * maxMotorSteps[MOTOR_TOP_X]));
+      moveTentacle(MOTOR_TOP_Y,    (int)(topMotorY * maxMotorSteps[MOTOR_TOP_Y]));
     }
   }
 }

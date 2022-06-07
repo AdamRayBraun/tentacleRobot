@@ -28,10 +28,10 @@
 #define top_servo_Y_PUL_pin     14
 #define top_servo_Y_DIR_pin     15
 
-#define end_effector_led_pin    2
+#define end_effector_led_pin    A0
 
-#define eyelid_servo_pin_L      4
-#define eyelid_servo_pin_R      3
+#define eyelid_servo_pin_L      A2
+#define eyelid_servo_pin_R      A1
 
 #define checkpointFrequency 500
 

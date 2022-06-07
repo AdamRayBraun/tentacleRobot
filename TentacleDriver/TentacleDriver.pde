@@ -3,10 +3,10 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 import controlP5.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem14401";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem1463401";
 final boolean SERIAL_DEBUG  = false;
-final boolean USING_KINECT  = false;
-final boolean USING_ARDUINO = true;
+final boolean USING_KINECT  = true;
+final boolean USING_ARDUINO = false;
 
 Kinect2 kinect2;
 
@@ -28,7 +28,7 @@ final byte PRESENT_BODY  = 6;
 final byte PRESENT_WAIST = 7;
 final byte PRESENT_HEAD  = 8;
 final byte END_EFFECTOR  = 9;
-final byte MANUAL        = 9;
+final byte MANUAL        = 10;
 
 final String[] stateNames = { "Homing",
                               "Eye contact",
@@ -57,24 +57,30 @@ void setup(){
   setupInterface();
 
   changeState(WIGGLE_INC);
+
+  eyeLight(0, 100, 0);
 }
 
 void draw(){
+  // GUI
   background(0);
-
   if (USING_KINECT){
     drawDepth();
-    image(kinectCanvas, kinectDepthW * scale, 0, width, height / 2);
-    image(kinect2.getVideoImage(), kinectDepthW * scale, height / 2, width, height / 2);
+    image(kinectCanvas, kinectDepthW * scale, 0, kinectDepthW * scale, height / 2);
+    image(kinect2.getVideoImage(), kinectDepthW * scale, height / 2, kinectDepthW * scale, height / 2);
     detectBlobs();
     drawBlobs();
     image(blobCanvas, kinectDepthW * scale, 0, width, height / 2);
   }
-
   drawInterface();
 
+  // Movement
+  if (!reconnectingArduino) handleMovementState();
+
+  // Hardware
   runHardware();
 
+  blinkingEyelid();
 }
 
 void changeState(byte newState){

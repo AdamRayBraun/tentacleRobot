@@ -59,8 +59,6 @@ void setupArduino(){
 }
 
 void runHardware(){
-  if (!reconnectingArduino) handleMovementState();
-
   serialRx();
 
   if (USING_ARDUINO) checkForArduinoDropOut();
