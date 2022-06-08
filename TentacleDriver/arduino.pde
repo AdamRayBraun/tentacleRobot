@@ -38,9 +38,13 @@ final byte STATE_USB    = 1;
 // eye lid vars
 long lastBlink;
 int blinkRate;
-final int blinkMin = 500;
-final int blinkMax = 10000;
 boolean eyeLidOpening;
+final int eyelidOpenMin   = 50;
+final int eyelidOpenMax   = 10000;
+final int eyelidClosedMin = 300;
+final int eyelidClosedMax = 1000;
+final int EYELID_OPEN     = 0;
+final int EYELID_CLOSED   = 90;
 
 // heartbeat vars
 long lastHeartbeatCheck;
@@ -139,11 +143,17 @@ void eyeLight(int r, int g, int b){
 void blinkingEyelid(){
   if (millis() - lastBlink > blinkRate){
     lastBlink = millis();
-    blinkRate = (int)random(blinkMin, blinkMax);
+    blinkRate = eyeLidOpening ? ((int)random(eyelidOpenMin, eyelidOpenMax)) : ((int)random(eyelidClosedMin, eyelidClosedMax));
 
     moveEyeBall(eyeLidOpening ? 0 : 90);
     eyeLidOpening = !eyeLidOpening;
   }
+}
+
+void eyeLidPosition(int pos){
+  pos = constrain(pos, 0, 90);
+
+  moveEyeBall(pos);
 }
 
 void serialTx(byte[] packet){

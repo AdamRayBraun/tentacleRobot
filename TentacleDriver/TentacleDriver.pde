@@ -88,7 +88,7 @@ void changeState(byte newState){
   if (currentState != lastState){
     switch(currentState){
       case EYE_CONTACT:
-        eyeLight(90, 90, 90);
+        eyeLight(0, 0, 200);
         break;
 
       case WIGGLE:
@@ -96,31 +96,37 @@ void changeState(byte newState){
         break;
 
       case WIGGLE_INC:
+        eyeLight(0, 0, 120);
+        eyeLidPosition(EYELID_CLOSED);
         for (byte m = 0; m < 4; m++){
           sinAmplitude[m] = 0;
         }
         break;
 
       case AUDIENCE_LOOK:
+        eyeLight(0, 50, 0);
+        eyeLidPosition(EYELID_OPEN);
         lookTowardsAudience();
         break;
 
       case PRESENT_WAIST:
+        eyeLight(0, 0, 0);
+        eyeLidPosition(EYELID_CLOSED);
         presentWaist();
         break;
 
       case HOME:
+        eyeLidPosition(EYELID_CLOSED);
         eyeLight(0, 0, 0);
         moveHome();
         break;
 
       case AUDIENCE_MOVE:
+        eyeLight(0, 0, 120);
         for (byte m = 0; m < 4; m++){
           moveTentacle(m, audienceLookPositions[m]);
         }
         break;
-
-
     }
     println("State changed from " + lastState + " to " + newState);
   }
@@ -140,11 +146,11 @@ void handleMovementState(){
 
     case WIGGLE_INC:
       wiggleIncreasing();
-      blinkingEyelid();
       break;
 
     case AUDIENCE_MOVE:
       lookAroundAudience();
+      blinkingEyelid();
       break;
   }
 }
