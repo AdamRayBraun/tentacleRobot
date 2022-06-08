@@ -31,16 +31,10 @@ float rad, bottomScale;
 int audienceLookAroundPositions[] = {0, 0, 0, 0};
 
 // AUDIENCE_LOOK variables
-int audienceLookPositions[] = {0, 0, 0, 0};
-
-// PRESENT_BODY variables
-int presentBodyPositions[]  = {0, 0, 0, 0};
+int audienceLookPositions[] = {0, 6000, 0, -1300};
 
 // PRESENT_WAIST variables
-int presentWaistPositions[] = {0, 0, 0, 0};
-
-// PRESENT_HEAD variables
-int presentHeadPositions[]  = {0, 0, 0, 0};
+int presentWaistPositions[] = {-6000, 0, -2000, 0};
 
 void moveTentacleToUser(){
   // if we have at least one person detected
@@ -219,8 +213,17 @@ void wiggleIncreasing(){
 }
 
 void lookAroundAudience(){
-  for (byte m = 0; m < 4; m++){
-    moveTentacle(m, audienceLookAroundPositions[m]);
+  byte m = MOTOR_BOTTOM_X;
+
+  if (millis() - lastWiggleUpdate > wiggleSpeed){
+    lastWiggleUpdate = millis();
+
+    motorWaves[m] += wiggleSinSpeeds[m];
+    motorPositions[m] = floor(sin(motorWaves[m]) * 1000);
+  }
+
+  if (millis() - lastMotorUpdate > motorUpdatePeriod){
+    moveTentacle(m, motorPositions[m]);
   }
 }
 
@@ -230,21 +233,9 @@ void lookTowardsAudience(){
   }
 }
 
-void presentBody(){
-  for (byte m = 0; m < 4; m++){
-    moveTentacle(m, presentBodyPositions[m]);
-  }
-}
-
 void presentWaist(){
   for (byte m = 0; m < 4; m++){
     moveTentacle(m, presentWaistPositions[m]);
-  }
-}
-
-void presentHead(){
-  for (byte m = 0; m < 4; m++){
-    moveTentacle(m, presentHeadPositions[m]);
   }
 }
 

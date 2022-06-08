@@ -3,7 +3,7 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 import controlP5.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem14401";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem14501";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = true;
 final boolean USING_ARDUINO = true;
@@ -20,27 +20,26 @@ PGraphics kinectCanvas, blobCanvas;
 
 // Movement modes
 final byte HOME          = 0;
-final byte EYE_CONTACT   = 1;
+final byte WIGGLE_INC    = 1;
 final byte WIGGLE        = 2;
-final byte WIGGLE_INC    = 3;
+final byte EYE_CONTACT   = 3;
 final byte AUDIENCE_LOOK = 4;
 final byte AUDIENCE_MOVE = 5;
-final byte PRESENT_BODY  = 6;
-final byte PRESENT_WAIST = 7;
-final byte PRESENT_HEAD  = 8;
-final byte END_EFFECTOR  = 9;
+final byte PRESENT_WAIST = 6;
 final byte MANUAL        = 10;
 
 final String[] stateNames = { "Homing",
-                              "Eye contact",
-                              "Wiggling",
                               "Increasing wiggling",
+                              "Wiggling",
+                              "Eye contact",
                               "Looking at audience",
                               "Looking around audience",
-                              "Presenting body",
                               "Presenting waist",
-                              "Presenting head",
-                              "Showing end effector"
+                              "",
+                              "",
+                              "",
+                              "",
+                              "MANUAL",
                           };
 
 byte currentState      = EYE_CONTACT;
@@ -57,7 +56,7 @@ void setup(){
   setupArduino();
   setupInterface();
 
-  changeState(EYE_CONTACT);
+  changeState(HOME);
 }
 
 void draw(){
@@ -78,8 +77,6 @@ void draw(){
 
   // Hardware
   runHardware();
-
-  blinkingEyelid();
 }
 
 void changeState(byte newState){
@@ -108,21 +105,22 @@ void changeState(byte newState){
         lookTowardsAudience();
         break;
 
-      case PRESENT_BODY:
-        presentBody();
-        break;
-
       case PRESENT_WAIST:
         presentWaist();
         break;
 
-      case PRESENT_HEAD:
-        presentHead();
-        break;
-
       case HOME:
+        eyeLight(0, 0, 0);
         moveHome();
         break;
+
+      case AUDIENCE_MOVE:
+        for (byte m = 0; m < 4; m++){
+          moveTentacle(m, audienceLookPositions[m]);
+        }
+        break;
+
+
     }
     println("State changed from " + lastState + " to " + newState);
   }
@@ -132,14 +130,17 @@ void handleMovementState(){
   switch(currentState){
     case EYE_CONTACT:
       moveTentacleToUser();
+      blinkingEyelid();
       break;
 
     case WIGGLE:
       wiggle();
+      blinkingEyelid();
       break;
 
     case WIGGLE_INC:
       wiggleIncreasing();
+      blinkingEyelid();
       break;
 
     case AUDIENCE_MOVE:
