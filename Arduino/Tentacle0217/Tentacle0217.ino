@@ -9,13 +9,14 @@
   Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
-#define SERIAL_DEBUG true
+// #define SERIAL_DEBUG true
+#define SERIAL_HEARTBEAT true
 
 #include <AccelStepper.h>
 #include <Servo.h>
 // #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
-#include <EEPROM.h>
+// #include <EEPROM.h>
 
 // Pin connections
 #define bottom_servo_X_PUL_pin  9
@@ -50,7 +51,9 @@ void loop()
   serialRx();
   handleSteppers();
 
-  if (millis() - lastCheckpoint > checkpointFrequency){
-    updateLastSavedPosition();
-  }
+  // if (millis() - lastCheckpoint > checkpointFrequency){
+  //   updateLastSavedPosition();
+  // }
+
+  serialHeartBeat();
 }

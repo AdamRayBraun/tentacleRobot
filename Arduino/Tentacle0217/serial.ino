@@ -16,6 +16,9 @@
 #define packet_flag_change_state   0x60
 #define packet_flag_STOP           0xFF
 
+#define heartbeatPeriod            500
+unsigned long lastHeartbeat;
+
 byte rxBuff[packet_len];
 byte txBuff[packet_len];
 
@@ -39,7 +42,7 @@ void serialRx()
           topX.moveTo(dirTopX * targetTopX);
 
           #ifdef SERIAL_DEBUG
-            Serial.print("top X moving to: ");
+            Serial.print("TX : ");
             Serial.println(dirTopX * targetTopX);
           #endif
           break;
@@ -50,7 +53,7 @@ void serialRx()
           topY.moveTo(dirTopY * targetTopY);
 
           #ifdef SERIAL_DEBUG
-            Serial.print("top Y moving to: ");
+            Serial.print("TY : ");
             Serial.println(dirTopY * targetTopY);
           #endif
           break;
@@ -61,7 +64,7 @@ void serialRx()
           bottomX.moveTo(dirBottomX * targetBottomX);
 
           #ifdef SERIAL_DEBUG
-            Serial.print("bottom X moving to: ");
+            Serial.print("BX : ");
             Serial.println(dirBottomX * targetBottomX);
           #endif
           break;
@@ -72,7 +75,7 @@ void serialRx()
           bottomY.moveTo(dirBottomY * targetBottomY);
 
           #ifdef SERIAL_DEBUG
-            Serial.print("bottom Y moving to: ");
+            Serial.print("BY : ");
             Serial.println(dirBottomY * targetBottomY);
           #endif
           break;
@@ -122,4 +125,14 @@ void serialRx()
       }
     }
   }
+}
+
+void serialHeartBeat()
+{
+  #ifdef SERIAL_HEARTBEAT
+    if (millis() - lastHeartbeat > heartbeatPeriod){
+      lastHeartbeat = millis();
+      Serial.println(random(1, 10));
+    }
+  #endif
 }
