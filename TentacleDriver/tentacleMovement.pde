@@ -1,5 +1,5 @@
 // position of the tentacle compared to the camera
-PVector tentacleBase = new PVector(257, 282, 200);
+PVector tentacleBase = new PVector(247, 333, 200);
 
 final byte MOTOR_TOP_X    = 0;
 final byte MOTOR_TOP_Y    = 1;
@@ -65,7 +65,7 @@ void moveTentacleToUser(){
       armDirectionAngle = 2 * PI - acos((personPos.x - tentacleBase.x) / rad);
     }
     //Adjust Angle Error
-    armDirectionAngle = armDirectionAngle + PI / 18;
+    armDirectionAngle = armDirectionAngle + PI / 18 + map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
     if (armDirectionAngle >= 2 * PI){
       armDirectionAngle -= 2 * PI ;
     }
@@ -122,8 +122,8 @@ void moveTentacleToUser(){
     bottomMotorY = - bottomMotorY;
 
     //scale bottom X&Y
-    bottomScale = map( rad, 0, 350, 1.5, 0.7);
-    bottomScale =  constrain(bottomScale, 0.5, 1.5);
+    bottomScale = map( rad, 0, 350, 1.9, 0.9);//1.5 0.7
+    bottomScale =  constrain(bottomScale, 0.5, 1.9);//0.5 1.5
     bottomMotorX = bottomMotorX * bottomScale;
     bottomMotorY = bottomMotorY * bottomScale;
 
