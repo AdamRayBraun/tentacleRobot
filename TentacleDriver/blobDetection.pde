@@ -8,7 +8,12 @@ int maxLife = 30;
 color trackColor;
 float threshold = 10;
 float distThreshold = 2;
-int minBlobSize = 5900;
+int minBlobSize = 4000;
+
+int cornerCropX = 54;
+int cornerCropY = 197;
+
+int yCrop = 354;
 
 void setupBlobDetection(){
   trackColor = color(255);
@@ -26,31 +31,33 @@ void detectBlobs(){
 
   // Begin loop to walk through every pixel
   for (int x = 0; x < kinectDepthW; x++){
-    for (int y = 0; y < kinectDepthH; y++){
-      int loc = x + y * kinectCanvas.width;
+    for (int y = 0; y < yCrop; y++){
+      if (!(x < cornerCropX && y > cornerCropY)){
+        int loc = x + y * kinectCanvas.width;
 
-      color currentColour = kinectCanvas.pixels[loc];
-      float colourDiff = distSq(red(currentColour),
-                                green(currentColour),
-                                blue(currentColour),
-                                red(trackColor),
-                                green(trackColor),
-                                blue(trackColor)
-                               );
+        color currentColour = kinectCanvas.pixels[loc];
+        float colourDiff = distSq(red(currentColour),
+                                  green(currentColour),
+                                  blue(currentColour),
+                                  red(trackColor),
+                                  green(trackColor),
+                                  blue(trackColor)
+                                 );
 
-      if (colourDiff < threshold) {
-        boolean found = false;
-        for (Blob b : currentBlobs) {
-          if (b.isNear(x, y)) {
-            b.add(x, y);
-            found = true;
-            break;
+        if (colourDiff < threshold) {
+          boolean found = false;
+          for (Blob b : currentBlobs) {
+            if (b.isNear(x, y)) {
+              b.add(x, y);
+              found = true;
+              break;
+            }
           }
-        }
 
-        if (!found) {
-          Blob b = new Blob(x, y);
-          currentBlobs.add(b);
+          if (!found) {
+            Blob b = new Blob(x, y);
+            currentBlobs.add(b);
+          }
         }
       }
     }
