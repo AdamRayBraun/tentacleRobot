@@ -8,7 +8,7 @@ int maxLife = 30;
 color trackColor;
 float threshold = 10;
 float distThreshold = 2;
-int minBlobSize = 4000;
+int minBlobSize = 3300;
 
 int cornerCropX = 54;
 int cornerCropY = 197;

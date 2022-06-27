@@ -26,6 +26,9 @@ float armDirectionAngle;
 float rad, bottomScale;
 //float checkDistance = 1 ;
 //float topScale = 0.5 ;
+int blobTargetIndex;
+long chosenTargetTime;
+final int targetAttentionSpan = 8000;
 
 // AUDIENCE LOOK AROUND variables
 int audienceLookAroundPositions[] = {0, 0, 0, 0};
@@ -38,9 +41,10 @@ int presentWaistPositions[] = {-6000, 0, -2000, 0};
 
 void moveTentacleToUser(){
   // if we have at least one person detected
-  if (blobs.size() > 0){
+  if (blobs.size() > blobTargetIndex){
     // get position of oldest blob
-    PVector personPos = blobs.get(0).getCenter();
+    // PVector personPos = blobs.get(0).getCenter();
+    PVector personPos = blobs.get(blobTargetIndex).getCenter();
 
     // PVector personPos = new PVector(mouseX - shift, mouseY); // for debugging
 
@@ -124,8 +128,8 @@ void moveTentacleToUser(){
     //scale bottom X&Y
     bottomScale = map( rad, 0, 350, 1.9, 0.9);//1.5 0.7
     bottomScale =  constrain(bottomScale, 0.5, 1.9);//0.5 1.5
-    bottomMotorX = bottomMotorX * bottomScale;
-    bottomMotorY = bottomMotorY * bottomScale;
+    bottomMotorX = bottomMotorX * bottomScale * 1.1;
+    bottomMotorY = bottomMotorY * bottomScale * 0.8;
 
     //move Motors
     if (millis() - lastMotorUpdate > motorUpdatePeriod){
@@ -135,6 +139,20 @@ void moveTentacleToUser(){
       moveTentacle(MOTOR_TOP_X,    (int)(topMotorX * maxMotorSteps[MOTOR_TOP_X]));
       moveTentacle(MOTOR_TOP_Y,    (int)(topMotorY * maxMotorSteps[MOTOR_TOP_Y]));
     }
+
+    if (millis() - chosenTargetTime > targetAttentionSpan){
+      chosenTargetTime = millis();
+      pickNewTarget();
+    }
+  } else {
+    pickNewTarget();
+  }
+}
+
+void pickNewTarget(){
+  if (blobs.size() > 0){
+    blobTargetIndex = floor(random(0, blobs.size()));
+    println("new target chosen: " + blobTargetIndex);
   }
 }
 

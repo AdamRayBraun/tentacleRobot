@@ -3,7 +3,7 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 import controlP5.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem14501";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem1443401";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = true;
 final boolean USING_ARDUINO = true;
@@ -77,6 +77,16 @@ void draw(){
 
   // Hardware
   runHardware();
+
+  // check for change in presence
+  if (millis() - lastStateChange > 5000 && currentState != HOME){
+    lastStateChange = millis();
+    if (blobs.size() > 0){
+      if (currentState != EYE_CONTACT) changeState(EYE_CONTACT);
+    } else {
+      if (currentState != WIGGLE) changeState(WIGGLE);
+    }
+  }
 }
 
 void changeState(byte newState){
