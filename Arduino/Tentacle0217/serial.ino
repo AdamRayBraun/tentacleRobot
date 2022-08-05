@@ -6,14 +6,18 @@
 // packet values
 #define packet_header              0x69
 #define packet_footer              0x42
+
 #define packet_flag_motor_top_x    0x10
 #define packet_flag_motor_top_y    0x11
-#define packet_flag_motor_bottom_x 0x20
-#define packet_flag_motor_bottom_y 0x21
-#define packet_flag_stepper_home   0x25
-#define packet_flag_motor_eyelid   0x30
+#define packet_flag_motor_bottom_x 0x12
+#define packet_flag_motor_bottom_y 0x13
+#define packet_flag_motor_speed    0x20
+#define packet_flag_motor_accel    0x30
+
+#define packet_flag_stepper_home   0x09
 #define packet_flag_led_eyeball    0x40
-#define packet_flag_change_state   0x60
+#define packet_flag_motor_eyelid   0x41
+
 #define packet_flag_STOP           0xFF
 
 #define heartbeatPeriod            500
@@ -36,10 +40,12 @@ void serialRx()
     Serial.readBytes(rxBuff, packet_len);
     if (rxBuff[packet_pos_footer] == packet_footer){
       switch(rxBuff[packet_pos_flag]){
+
+        // MOVE TOP X MOTOR
         case packet_flag_motor_top_x:
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_X);
-          topX.moveTo(dirTopX * targetTopX);
+          motors[MOTOR_TOP_X]->moveTo(dirTopX * targetTopX);
 
           #ifdef SERIAL_DEBUG
             Serial.print("TX : ");
@@ -47,10 +53,11 @@ void serialRx()
           #endif
           break;
 
+        // MOVE TOP Y MOTOR
         case packet_flag_motor_top_y:
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_Y);
-          topY.moveTo(dirTopY * targetTopY);
+          motors[MOTOR_TOP_Y]->moveTo(dirTopY * targetTopY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("TY : ");
@@ -58,10 +65,11 @@ void serialRx()
           #endif
           break;
 
+        // MOVE BOTTOM X MOTOR
         case packet_flag_motor_bottom_x:
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_X);
-          bottomX.moveTo(dirBottomX * targetBottomX);
+          motors[MOTOR_BOTTOM_X]->moveTo(dirBottomX * targetBottomX);
 
           #ifdef SERIAL_DEBUG
             Serial.print("BX : ");
@@ -69,10 +77,11 @@ void serialRx()
           #endif
           break;
 
+        // MOVE BOTTOM Y MOTOR
         case packet_flag_motor_bottom_y:
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_Y);
-          bottomY.moveTo(dirBottomY * targetBottomY);
+          motors[MOTOR_BOTTOM_Y]->moveTo(dirBottomY * targetBottomY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("BY : ");
@@ -80,17 +89,26 @@ void serialRx()
           #endif
           break;
 
+        // UPDATE A MOTOR'S MAX SPEED
+        case packet_flag_motor_speed:
+          updateMotorSpeed(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+          break;
+
+        // UPDATE A MOTOR'S MAX ACCELERATION
+        case packet_flag_motor_accel:
+          updateMotorAcceleration(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+          break;
+
+        // RESET ALL STEPPER POSITIONS TO 0
         case packet_flag_stepper_home:
-          bottomX.setCurrentPosition(0);
-          bottomY.setCurrentPosition(0);
-          topX.setCurrentPosition(0);
-          topY.setCurrentPosition(0);
+          homeMotors();
 
           #ifdef SERIAL_DEBUG
             Serial.println("all motors homed");
           #endif
           break;
 
+        // MOVE EYELID SERVOS
         case packet_flag_motor_eyelid:
           setEyelidPosition(rxBuff[packet_pos_data]);
 
@@ -100,6 +118,7 @@ void serialRx()
           #endif
           break;
 
+        // CHANGE EYEBALL LED COLOUR
         case packet_flag_led_eyeball:
           endEffectorLedRing(rxBuff[packet_pos_data], rxBuff[packet_pos_data + 1], rxBuff[packet_pos_data + 2]);
 
@@ -109,18 +128,13 @@ void serialRx()
           #endif
           break;
 
+        // EMERGENCY STOP ALL MOTORS
         case packet_flag_STOP:
-          bottomX.stop();
-          bottomY.stop();
-          topX.stop();
-          topY.stop();
+          stopMotors();
 
           #ifdef SERIAL_DEBUG
             Serial.println("STOPPED");
           #endif
-          break;
-
-        case packet_flag_change_state:
           break;
       }
     }

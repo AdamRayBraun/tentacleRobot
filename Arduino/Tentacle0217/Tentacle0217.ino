@@ -34,6 +34,11 @@
 #define eyelid_servo_pin_L      A2
 #define eyelid_servo_pin_R      A1
 
+#define MOTOR_TOP_X    0
+#define MOTOR_TOP_Y    1
+#define MOTOR_BOTTOM_X 2
+#define MOTOR_BOTTOM_Y 3
+
 #define checkpointFrequency 500
 
 unsigned long lastCheckpoint;
@@ -43,17 +48,11 @@ void setup()
   setupSerial();
   setupAccelSteppers();
   setupEndEffector();
-  // resetFromLastSavedPosition();
 }
 
 void loop()
 {
   serialRx();
   handleSteppers();
-
-  // if (millis() - lastCheckpoint > checkpointFrequency){
-  //   updateLastSavedPosition();
-  // }
-
   serialHeartBeat();
 }
