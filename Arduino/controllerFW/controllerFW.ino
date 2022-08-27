@@ -67,13 +67,21 @@ void sendUpdate()
   txBuff[2]  = lXpos && 0xFF;
   txBuff[3]  = (lYpos >> 8) && 0xFF;
   txBuff[4]  = lYpos && 0xFF;
-  txBuff[5]  = lState;
+
+  if (lState){
+    txBuff[5] = 1;
+    lState = !lState;
+  }
 
   txBuff[6]  = (rXpos >> 8) && 0xFF;
   txBuff[7]  = rXpos && 0xFF;
   txBuff[8]  = (rYpos >> 8) && 0xFF;
   txBuff[9]  = rYpos && 0xFF;
-  txBuff[10] = rState;
+
+  if (rState){
+    txBuff[10] = 1;
+    rState = !rState;
+  }
 
   Serial.write(txBuff, PACKET_LEN);
 }
