@@ -15,13 +15,16 @@ void controllerInput(){
 
     if (rxBuff != null){
       if (rxBuff[0] == CONTR_PACKET_HEADER){
-        leftX  = ((rxBuff[1] << 8) | rxBuff[2]);
-        leftY  = ((rxBuff[3] << 8) | rxBuff[4]);
-        rightX = ((rxBuff[6] << 8) | rxBuff[7]);
-        rightY = ((rxBuff[8] << 8) | rxBuff[9]);
+        leftX  = (int)map(((rxBuff[1] << 8) | rxBuff[2]), 0, 1023, -STEPPER_TOP_MAX_STEPS_X,    STEPPER_TOP_MAX_STEPS_X);
+        leftY  = (int)map(((rxBuff[3] << 8) | rxBuff[4]), 0, 1023, -STEPPER_TOP_MAX_STEPS_Y,    STEPPER_TOP_MAX_STEPS_Y);
+        rightX = (int)map(((rxBuff[6] << 8) | rxBuff[7]), 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_X, STEPPER_BOTTOM_MAX_STEPS_X);
+        rightY = (int)map(((rxBuff[8] << 8) | rxBuff[9]), 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_Y, STEPPER_BOTTOM_MAX_STEPS_Y);
 
         if (rxBuff[5]  != 0) leftButton();
         if (rxBuff[10] != 0) rightButton();
+
+        topMotorSlider.setValue((float)leftX, (float)leftY);
+        bottomMotorSlider.setValue((float)rightX, (float)rightY);
       }
     }
   }

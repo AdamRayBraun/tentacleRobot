@@ -31,10 +31,10 @@ void updateMotors(){
     return;
   }
 
-  sendMotorMsg(TOP_X,    (int)map(leftX,  0, 1023, -STEPPER_TOP_MAX_STEPS_X, STEPPER_TOP_MAX_STEPS_X));
-  sendMotorMsg(TOP_Y,    (int)map(leftY,  0, 1023, -STEPPER_TOP_MAX_STEPS_Y, STEPPER_TOP_MAX_STEPS_Y));
-  sendMotorMsg(BOTTOM_X, (int)map(rightX, 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_X, STEPPER_BOTTOM_MAX_STEPS_X));
-  sendMotorMsg(BOTTOM_Y, (int)map(rightY, 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_Y, STEPPER_BOTTOM_MAX_STEPS_Y));
+  sendMotorMsg(TOP_X,    leftX);
+  sendMotorMsg(TOP_Y,    leftY);
+  sendMotorMsg(BOTTOM_X, rightX);
+  sendMotorMsg(BOTTOM_Y, rightY);
 
   lastMotorUpdate = millis();
 }
@@ -52,7 +52,7 @@ void sendMotorMsg(byte motor, int val){
 
 void robotRx(){
   while (robotBus.available() > 0) {
-    String rxMsg = robotBus.readStringUntil(10); // 10 = \n
+    String rxMsg = robotBus.readStringUntil(10); // 10 == \n
     if (rxMsg != null) {
       println(rxMsg);
     }

@@ -72,34 +72,34 @@ void moveTentacle(byte motor, int position){
   byte err = 0;
   switch(motor){
     case MOTOR_TOP_X:
-      txPacket[packet_pos_flag]     = packet_flag_motor_top_x;
-      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_flag]       = packet_flag_motor_top_x;
+      txPacket[packet_pos_data]       = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1]   = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2]   = byte(position & 0xFF);
       lastMotorPositions[MOTOR_TOP_X] = position;
       break;
 
     case MOTOR_TOP_Y:
-      txPacket[packet_pos_flag]     = packet_flag_motor_top_y;
-      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_flag]       = packet_flag_motor_top_y;
+      txPacket[packet_pos_data]       = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1]   = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2]   = byte(position & 0xFF);
       lastMotorPositions[MOTOR_TOP_Y] = position;
       break;
 
     case MOTOR_BOTTOM_X:
-      txPacket[packet_pos_flag]     = packet_flag_motor_bottom_x;
-      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_flag]          = packet_flag_motor_bottom_x;
+      txPacket[packet_pos_data]          = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1]      = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2]      = byte(position & 0xFF);
       lastMotorPositions[MOTOR_BOTTOM_X] = position;
       break;
 
     case MOTOR_BOTTOM_Y:
-      txPacket[packet_pos_flag]     = packet_flag_motor_bottom_y;
-      txPacket[packet_pos_data]     = byte((position > 0) ? 0 : 1);
-      txPacket[packet_pos_data + 1] = byte((position >> 8) & 0xFF);
-      txPacket[packet_pos_data + 2] = byte(position & 0xFF);
+      txPacket[packet_pos_flag]          = packet_flag_motor_bottom_y;
+      txPacket[packet_pos_data]          = byte((position > 0) ? 0 : 1);
+      txPacket[packet_pos_data + 1]      = byte((position >> 8) & 0xFF);
+      txPacket[packet_pos_data + 2]      = byte(position & 0xFF);
       lastMotorPositions[MOTOR_BOTTOM_Y] = position;
       break;
 
