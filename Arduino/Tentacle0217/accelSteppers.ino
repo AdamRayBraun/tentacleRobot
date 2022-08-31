@@ -37,7 +37,7 @@ void handleSteppers()
 
 void updateMotorSpeed(byte motorIndex, int newMotorSpeed)
 {
-  if (motorIndex > 0 && motorIndex < NUM_STEPPERS){
+  if (motorIndex >= 0 && motorIndex < NUM_STEPPERS){
     motorMaxSpeeds[motorIndex] = newMotorSpeed;
     motors[motorIndex]->setMaxSpeed(motorMaxSpeeds[motorIndex]);
   }

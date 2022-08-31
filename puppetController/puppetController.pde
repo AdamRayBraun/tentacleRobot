@@ -2,7 +2,7 @@ import processing.serial.*;
 import controlP5.*;
 
 final String controllerPort = "/dev/tty.usbmodem14401";
-final String robotPort      = "/dev/tty.usbmodem14101";
+final String robotPort      = "/dev/tty.usbmodem14501";
 
 int guiW = 300;
 int guiH = 300;
@@ -22,13 +22,13 @@ void settings(){
 
 void setup(){
   setupController();
-  // setupRobot();
+  setupRobot();
   setupGui();
 }
 
 void draw(){
   controllerInput();
-  // updateMotors();
-  // robotRx();
+  updateMotors();
+  robotRx();
   gui();
 }

@@ -23,10 +23,15 @@ void controllerInput(){
     if (rxBuff != null) {
       int[] packetVals = int(split(rxBuff, ','));
 
-      leftY  =  (int)map(packetVals[0], 1023, 0, -STEPPER_TOP_MAX_STEPS_X,    STEPPER_TOP_MAX_STEPS_X);
-      leftX  =  (int)map(packetVals[1], 0, 1023, -STEPPER_TOP_MAX_STEPS_Y,    STEPPER_TOP_MAX_STEPS_Y);
-      rightY =  (int)map(packetVals[2], 1023, 0, -STEPPER_BOTTOM_MAX_STEPS_X, STEPPER_BOTTOM_MAX_STEPS_X);
-      rightX =  (int)map(packetVals[3], 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_Y, STEPPER_BOTTOM_MAX_STEPS_Y);
+      if (packetVals.length != 6) {
+        controllerBus.clear();
+        return;
+      }
+
+      leftY  = (int)map(packetVals[0], 1023, 0, -STEPPER_TOP_MAX_STEPS_X,    STEPPER_TOP_MAX_STEPS_X);
+      leftX  = (int)map(packetVals[1], 0, 1023, -STEPPER_TOP_MAX_STEPS_Y,    STEPPER_TOP_MAX_STEPS_Y);
+      rightY = (int)map(packetVals[2], 1023, 0, -STEPPER_BOTTOM_MAX_STEPS_X, STEPPER_BOTTOM_MAX_STEPS_X);
+      rightX = (int)map(packetVals[3], 0, 1023, -STEPPER_BOTTOM_MAX_STEPS_Y, STEPPER_BOTTOM_MAX_STEPS_Y);
 
       if (packetVals[3] == 0) leftButton();
       if (packetVals[4] == 0) rightButton();
@@ -35,6 +40,7 @@ void controllerInput(){
       bottomMotorSlider.setValue((float)rightX, (float)rightY);
     }
   }
+  controllerBus.clear();
 }
 
 void leftButton(){

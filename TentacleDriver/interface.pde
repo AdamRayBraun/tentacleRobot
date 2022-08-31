@@ -34,7 +34,7 @@ void drawInterface(){
   textSize(10);
   text("Current state:  " + stateNames[currentState], border, (border * 3) + (sliderSize * 2));
 }
-
+ 
 void keyPressed(){
   if (key == 'f'){
     depthMode = DEPTH_FLAT_THRESH;

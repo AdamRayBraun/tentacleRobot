@@ -92,11 +92,25 @@ void serialRx()
         // UPDATE A MOTOR'S MAX SPEED
         case packet_flag_motor_speed:
           updateMotorSpeed(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+
+          #ifdef SERIAL_DEBUG
+            Serial.print("Motor : ");
+            Serial.print(rxBuff[packet_pos_data]);
+            Serial.print(" max speed set to: ");
+            Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
+          #endif
           break;
 
         // UPDATE A MOTOR'S MAX ACCELERATION
         case packet_flag_motor_accel:
           updateMotorAcceleration(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+
+          #ifdef SERIAL_DEBUG
+            Serial.print("Motor : ");
+            Serial.print(rxBuff[packet_pos_data]);
+            Serial.print(" max accel set to: ");
+            Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
+          #endif
           break;
 
         // RESET ALL STEPPER POSITIONS TO 0
