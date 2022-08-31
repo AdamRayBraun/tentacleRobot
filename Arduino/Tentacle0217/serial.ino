@@ -15,8 +15,6 @@
 #define packet_flag_motor_accel    0x30
 
 #define packet_flag_stepper_home   0x09
-#define packet_flag_led_eyeball    0x40
-#define packet_flag_motor_eyelid   0x41
 
 #define packet_flag_STOP           0xFF
 
@@ -119,26 +117,6 @@ void serialRx()
 
           #ifdef SERIAL_DEBUG
             Serial.println("all motors homed");
-          #endif
-          break;
-
-        // MOVE EYELID SERVOS
-        case packet_flag_motor_eyelid:
-          setEyelidPosition(rxBuff[packet_pos_data]);
-
-          #ifdef SERIAL_DEBUG
-            Serial.print("eyeball motor updated: ");
-            Serial.println(rxBuff[packet_pos_data]);
-          #endif
-          break;
-
-        // CHANGE EYEBALL LED COLOUR
-        case packet_flag_led_eyeball:
-          endEffectorLedRing(rxBuff[packet_pos_data], rxBuff[packet_pos_data + 1], rxBuff[packet_pos_data + 2]);
-
-          #ifdef SERIAL_DEBUG
-            Serial.print("eyeball led updated: ");
-            Serial.println(rxBuff[packet_pos_data]);
           #endif
           break;
 

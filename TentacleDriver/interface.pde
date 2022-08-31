@@ -34,7 +34,7 @@ void drawInterface(){
   textSize(10);
   text("Current state:  " + stateNames[currentState], border, (border * 3) + (sliderSize * 2));
 }
- 
+
 void keyPressed(){
   if (key == 'f'){
     depthMode = DEPTH_FLAT_THRESH;
@@ -53,16 +53,8 @@ void keyPressed(){
     txPacket[packet_pos_flag] = packet_flag_change_state;
     txPacket[packet_pos_data] = STATE_WIGGLE;
     serialTx(txPacket);
-  } else if (key == 'o'){
-    txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
-    txPacket[packet_pos_data] = (byte)0;
-    serialTx(txPacket);
-  } else if (key == 'c'){
-    txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
-    txPacket[packet_pos_data] = (byte)90;
-    serialTx(txPacket);
   }
-
+  
   byte keyNum = (byte)key;
   if (keyNum >= 48 && keyNum <= 57){
     changeState((byte)(keyNum - 48));

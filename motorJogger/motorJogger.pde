@@ -1,6 +1,6 @@
 import processing.serial.*;
 
-String ARDUINO_PORT = "/dev/tty.usbmodem1443401";
+String ARDUINO_PORT = "/dev/tty.usbmodem14101";
 
 
 final byte packet_len = 6;
@@ -26,9 +26,9 @@ void draw(){
   background(0);
   fill(255);
   textSize(15);
-  String gui = " topX:  " + topXPos + "\n topY:  " + topYPos + "\n bottomX:  " + bottomXPos + "\n bottomY:  " + bottomYPos; 
+  String gui = " topX:  " + topXPos + "\n topY:  " + topYPos + "\n bottomX:  " + bottomXPos + "\n bottomY:  " + bottomYPos;
   text(gui, 50, 50);
-  
+
   while (bus.available() > 0) {
     String rxMsg = bus.readStringUntil(10); // 10 = \n
     if (rxMsg != null) {
@@ -40,14 +40,14 @@ void draw(){
 
 void sendMotorMsg(byte motor, int val){
   byte dir = (byte)((val > 0) ? 0 : 1);
-  
+
   txPacket[1] = motor;
   txPacket[2] = dir;
   txPacket[3] = byte((val >> 8) & 0xFF);;
   txPacket[4] = byte(val & 0xFF);
-  
+
   bus.write(txPacket);
-  
+
   String out = "Sending to arduino:\t";
   for (int a = 0; a < txPacket.length; a++){
     out += hex(txPacket[a]);
@@ -65,7 +65,7 @@ void keyPressed(){
    topXPos += jogAmount;
    sendMotorMsg((byte)0x10, topXPos);
  }
- 
+
  // top Y
  if (key == 'a'){
    topYPos -= jogAmount;
@@ -74,22 +74,22 @@ void keyPressed(){
    topYPos += jogAmount;
    sendMotorMsg((byte)0x11, topYPos);
  }
- 
+
  // bottom X
  if (key == 'o'){
    bottomXPos -= jogAmount;
-   sendMotorMsg((byte)0x20, bottomXPos);
+   sendMotorMsg((byte)0x12, bottomXPos);
  } else if (key == 'p'){
    bottomXPos += jogAmount;
-   sendMotorMsg((byte)0x20, bottomXPos);
+   sendMotorMsg((byte)0x12, bottomXPos);
  }
- 
+
  // bottom Y
  if (key == 'k'){
    bottomYPos -= jogAmount;
-   sendMotorMsg((byte)0x21, bottomYPos);
+   sendMotorMsg((byte)0x13, bottomYPos);
  } else if (key == 'l'){
    bottomYPos += jogAmount;
-   sendMotorMsg((byte)0x21, bottomYPos);
+   sendMotorMsg((byte)0x13, bottomYPos);
  }
 }

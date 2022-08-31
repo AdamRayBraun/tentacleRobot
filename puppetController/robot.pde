@@ -20,7 +20,7 @@ long entryTime;
 
 Serial robotBus;
 
-final int mostUpdatePeriod = 1000 / 60;
+final int mostUpdatePeriod = 600;
 long lastMotorUpdate;
 
 byte[] robotTxBuff = new byte[ROBOT_PACKET_LEN];

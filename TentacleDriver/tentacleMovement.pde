@@ -1,5 +1,5 @@
 // position of the tentacle compared to the camera
-PVector tentacleBase = new PVector(247, 333, 200);
+PVector tentacleBase = new PVector(243, 249, 200);
 
 final byte MOTOR_TOP_X    = 0;
 final byte MOTOR_TOP_Y    = 1;
@@ -262,3 +262,9 @@ void moveHome(){
     moveTentacle(m, 0);
   }
 }
+
+// void manualMovement(){
+//   if (millis() - lastMotorUpdate > motorUpdatePeriod){
+//     moveTentacle(m, motorPositions[m]);
+//   }
+// }

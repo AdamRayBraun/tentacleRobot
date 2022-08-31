@@ -3,9 +3,9 @@ import java.nio.FloatBuffer;
 import processing.serial.*;
 import controlP5.*;
 
-final String  ARDUINO_PORT  = "/dev/tty.usbmodem1443401";
+final String  ARDUINO_PORT  = "/dev/tty.usbmodem14401";
 final boolean SERIAL_DEBUG  = false;
-final boolean USING_KINECT  = true;
+final boolean USING_KINECT  = false;
 final boolean USING_ARDUINO = true;
 
 Kinect2 kinect2;
@@ -56,7 +56,7 @@ void setup(){
   setupArduino();
   setupInterface();
 
-  changeState(HOME);
+  changeState(WIGGLE);
 }
 
 void draw(){
@@ -98,44 +98,48 @@ void changeState(byte newState){
   if (currentState != lastState){
     switch(currentState){
       case EYE_CONTACT:
-        eyeLight(0, 0, 200);
+        // eyeLight(0, 0, 200);
         break;
 
       case WIGGLE:
-        eyeLight(0, 0, 120);
+        // eyeLight(0, 0, 120);
         break;
 
       case WIGGLE_INC:
-        eyeLight(0, 0, 120);
-        eyeLidPosition(EYELID_CLOSED);
-        for (byte m = 0; m < 4; m++){
-          sinAmplitude[m] = 0;
-        }
+        // eyeLight(0, 0, 120);
+        // eyeLidPosition(EYELID_CLOSED);
+        // for (byte m = 0; m < 4; m++){
+        //   sinAmplitude[m] = 0;
+        // }
         break;
 
       case AUDIENCE_LOOK:
-        eyeLight(0, 50, 0);
-        eyeLidPosition(EYELID_OPEN);
+        // eyeLight(0, 50, 0);
+        // eyeLidPosition(EYELID_OPEN);
         lookTowardsAudience();
         break;
 
       case PRESENT_WAIST:
-        eyeLight(0, 0, 0);
-        eyeLidPosition(EYELID_CLOSED);
+        // eyeLight(0, 0, 0);
+        // eyeLidPosition(EYELID_CLOSED);
         presentWaist();
         break;
 
       case HOME:
-        eyeLidPosition(EYELID_CLOSED);
-        eyeLight(0, 0, 0);
+        // eyeLidPosition(EYELID_CLOSED);
+        // eyeLight(0, 0, 0);
         moveHome();
         break;
 
       case AUDIENCE_MOVE:
-        eyeLight(0, 0, 120);
+        // eyeLight(0, 0, 120);
         for (byte m = 0; m < 4; m++){
           moveTentacle(m, audienceLookPositions[m]);
         }
+        break;
+
+      case MANUAL:
+        // eyeLight(0, 0, 120);
         break;
     }
     println("State changed from " + lastState + " to " + newState);
@@ -146,12 +150,12 @@ void handleMovementState(){
   switch(currentState){
     case EYE_CONTACT:
       moveTentacleToUser();
-      blinkingEyelid();
+      // blinkingEyelid();
       break;
 
     case WIGGLE:
       wiggle();
-      blinkingEyelid();
+      // blinkingEyelid();
       break;
 
     case WIGGLE_INC:
@@ -160,7 +164,12 @@ void handleMovementState(){
 
     case AUDIENCE_MOVE:
       lookAroundAudience();
-      blinkingEyelid();
+      // blinkingEyelid();
+      break;
+
+    case MANUAL:
+      // readControllerInput();
+      // manualMovement();
       break;
   }
 }

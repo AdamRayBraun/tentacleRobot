@@ -21,9 +21,7 @@ final byte packet_flag_motor_top_x    = (byte)0x10;
 final byte packet_flag_motor_top_y    = (byte)0x11;
 final byte packet_flag_motor_bottom_x = (byte)0x12;
 final byte packet_flag_motor_bottom_y = (byte)0x13;
-final byte packet_flag_stepper_home   = (byte)0x25;
-final byte packet_flag_motor_eyelid   = (byte)0x30;
-final byte packet_flag_led_eyeball    = (byte)0x40;
+final byte packet_flag_stepper_home   = (byte)0x09;
 final byte packet_flag_change_state   = (byte)0x60;
 final byte packet_flag_STOP           = (byte)0xFF;
 
@@ -124,36 +122,6 @@ void moveTentacle(byte motor, int position){
 
   bottomMotorSlider.setValue((float)lastMotorPositions[MOTOR_BOTTOM_X],
                              (float)lastMotorPositions[MOTOR_BOTTOM_Y]);
-}
-
-void moveEyeBall(int position){
-  txPacket[packet_pos_flag] = packet_flag_motor_eyelid;
-  txPacket[packet_pos_data] = (byte)position;
-  serialTx(txPacket);
-}
-
-void eyeLight(int r, int g, int b){
-  txPacket[packet_pos_flag] = packet_flag_led_eyeball;
-  txPacket[packet_pos_data] = (byte)r;
-  txPacket[packet_pos_data + 1] = (byte)g;
-  txPacket[packet_pos_data + 2] = (byte)b;
-  serialTx(txPacket);
-}
-
-void blinkingEyelid(){
-  if (millis() - lastBlink > blinkRate){
-    lastBlink = millis();
-    blinkRate = eyeLidOpening ? ((int)random(eyelidOpenMin, eyelidOpenMax)) : ((int)random(eyelidClosedMin, eyelidClosedMax));
-
-    moveEyeBall(eyeLidOpening ? 0 : 90);
-    eyeLidOpening = !eyeLidOpening;
-  }
-}
-
-void eyeLidPosition(int pos){
-  pos = constrain(pos, 0, 90);
-
-  moveEyeBall(pos);
 }
 
 void serialTx(byte[] packet){

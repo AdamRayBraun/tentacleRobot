@@ -9,8 +9,8 @@
   Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
-// #define SERIAL_DEBUG true
-#define SERIAL_HEARTBEAT true
+ #define SERIAL_DEBUG true
+// #define SERIAL_HEARTBEAT true
 
 #include <AccelStepper.h>
 #include <Servo.h>
@@ -19,20 +19,14 @@
 // #include <EEPROM.h>
 
 // Pin connections
-#define bottom_servo_X_PUL_pin  9
-#define bottom_servo_X_DIR_pin  8
-#define bottom_servo_Y_PUL_pin  6
-#define bottom_servo_Y_DIR_pin  5
-
-#define top_servo_X_PUL_pin     10
-#define top_servo_X_DIR_pin     16
-#define top_servo_Y_PUL_pin     14
-#define top_servo_Y_DIR_pin     15
-
-#define end_effector_led_pin    A0
-
-#define eyelid_servo_pin_L      A2
-#define eyelid_servo_pin_R      A1
+#define top_servo_X_PUL_pin    13
+#define top_servo_X_DIR_pin    12
+#define bottom_servo_Y_DIR_pin 11
+#define bottom_servo_Y_PUL_pin 10
+#define top_servo_Y_DIR_pin    9
+#define bottom_servo_X_PUL_pin 8
+#define bottom_servo_X_DIR_pin 7
+#define top_servo_Y_PUL_pin    6
 
 #define MOTOR_TOP_X    0
 #define MOTOR_TOP_Y    1
@@ -47,7 +41,7 @@ void setup()
 {
   setupSerial();
   setupAccelSteppers();
-  setupEndEffector();
+  // setupEndEffector();
 }
 
 void loop()
