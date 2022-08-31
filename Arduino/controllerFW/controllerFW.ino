@@ -6,6 +6,8 @@ Reads joystick / button states and sends to main SW sketch
 compiled for Arduino uno
 */
 
+#define DEBUG 1
+
 // pin connections
 #define LEFT_X     A4
 #define LEFT_Y     A5
@@ -63,20 +65,37 @@ void loop()
 
 void sendUpdate()
 {
-  txBuff[1]  = (lXpos >> 8) && 0xFF;
-  txBuff[2]  = lXpos && 0xFF;
-  txBuff[3]  = (lYpos >> 8) && 0xFF;
-  txBuff[4]  = lYpos && 0xFF;
+#ifdef DEBUG
+
+  Serial.print(lXpos);
+  Serial.print(",");
+  Serial.print(lYpos);
+  Serial.print(",");
+  Serial.print(rXpos);
+  Serial.print(",");
+  Serial.print(rYpos);
+  Serial.print(",");
+  Serial.print(lState);
+  Serial.print(",");
+  Serial.print(rState);
+  Serial.println();
+
+#else
+
+  txBuff[1]  = (lXpos >> 8) & 0xFF;
+  txBuff[2]  = lXpos & 0xFF;
+  txBuff[3]  = (lYpos >> 8) & 0xFF;
+  txBuff[4]  = lYpos & 0xFF;
 
   if (lState){
     txBuff[5] = 1;
     lState = !lState;
   }
 
-  txBuff[6]  = (rXpos >> 8) && 0xFF;
-  txBuff[7]  = rXpos && 0xFF;
-  txBuff[8]  = (rYpos >> 8) && 0xFF;
-  txBuff[9]  = rYpos && 0xFF;
+  txBuff[6]  = (rXpos >> 8) & 0xFF;
+  txBuff[7]  = rXpos & 0xFF;
+  txBuff[8]  = (rYpos >> 8) & 0xFF;
+  txBuff[9]  = rYpos & 0xFF;
 
   if (rState){
     txBuff[10] = 1;
@@ -84,6 +103,8 @@ void sendUpdate()
   }
 
   Serial.write(txBuff, PACKET_LEN);
+
+#endif // #ifdef DEBUG
 }
 
 void debounceButtons()

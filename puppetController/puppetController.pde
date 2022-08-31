@@ -1,29 +1,34 @@
 import processing.serial.*;
 import controlP5.*;
 
-final String controllerPort = "";
-final String robotPort      = "";
+final String controllerPort = "/dev/tty.usbmodem14401";
+final String robotPort      = "/dev/tty.usbmodem14101";
 
 int guiW = 300;
 int guiH = 300;
+
+final int MOTOR_TOP_X =    0;
+final int MOTOR_TOP_Y =    1;
+final int MOTOR_BOTTOM_X = 2;
+final int MOTOR_BOTTOM_Y = 3;
 
 int leftX, leftY, rightX, rightY;
 
 Slider2D topMotorSlider, bottomMotorSlider;
 
 void settings(){
-  size((sliderSize * 2) + (border * 4), sliderSize + (border * 2));
+  size((sliderSize2D * 2) + (border * 4), (sliderSize2D * 2) + (border * 4));
 }
 
 void setup(){
   setupController();
-  setupRobot();
+  // setupRobot();
   setupGui();
 }
 
 void draw(){
   controllerInput();
-  updateMotors();
-  robotRx();
+  // updateMotors();
+  // robotRx();
   gui();
 }
