@@ -82,31 +82,31 @@ void moveHome(){
 }
 
 void updateMaxSpeed(byte motor, int newSpeed){
-  if (newSpeed <= 0){
-    return;
-  }
-
-  motorMaxSpeeds[motor - TOP_X] = newSpeed;
-
-  robotTxBuff[1] = packet_flag_motor_speed;
-  robotTxBuff[2] = motor;
-  robotTxBuff[3] = byte((newSpeed >> 8) & 0xFF);;
-  robotTxBuff[4] = byte(newSpeed & 0xFF);
-
-  robotBus.write(robotTxBuff);
+  // if (newSpeed <= 0){
+  //   return;
+  // }
+  //
+  // motorMaxSpeeds[motor - TOP_X] = newSpeed;
+  //
+  // robotTxBuff[1] = packet_flag_motor_speed;
+  // robotTxBuff[2] = motor;
+  // robotTxBuff[3] = byte((newSpeed >> 8) & 0xFF);;
+  // robotTxBuff[4] = byte(newSpeed & 0xFF);
+  //
+  // robotBus.write(robotTxBuff);
 }
 
 void updateMaxAccel(byte motor, int newAccel){
-  if (newAccel <= 0){
-    return;
-  }
-
-  motorMaxSpeeds[motor - TOP_X] = newAccel;
-
-  robotTxBuff[1] = packet_flag_motor_accel;
-  robotTxBuff[2] = motor;
-  robotTxBuff[3] = byte((newAccel >> 8) & 0xFF);;
-  robotTxBuff[4] = byte(newAccel & 0xFF);
-
-  robotBus.write(robotTxBuff);
+  // if (newAccel <= 0){
+  //   return;
+  // }
+  //
+  // motorMaxSpeeds[motor - TOP_X] = newAccel;
+  //
+  // robotTxBuff[1] = packet_flag_motor_accel;
+  // robotTxBuff[2] = motor;
+  // robotTxBuff[3] = byte((newAccel >> 8) & 0xFF);;
+  // robotTxBuff[4] = byte(newAccel & 0xFF);
+  //
+  // robotBus.write(robotTxBuff);
 }

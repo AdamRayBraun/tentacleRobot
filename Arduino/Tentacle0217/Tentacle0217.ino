@@ -9,7 +9,7 @@
   Using Arduino Pro Micro - set board to "Arduino Leonardo"
 **/
 
- #define SERIAL_DEBUG true
+ // #define SERIAL_DEBUG true
 // #define SERIAL_HEARTBEAT true
 
 #include <AccelStepper.h>

@@ -43,7 +43,7 @@ void serialRx()
         case packet_flag_motor_top_x:
           dirTopX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_X);
-          motors[MOTOR_TOP_X]->moveTo(dirTopX * targetTopX);
+          topX.moveTo(dirTopX * targetTopX);
 
           #ifdef SERIAL_DEBUG
             Serial.print("TX : ");
@@ -51,11 +51,10 @@ void serialRx()
           #endif
           break;
 
-        // MOVE TOP Y MOTOR
         case packet_flag_motor_top_y:
           dirTopY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetTopY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_TOP_MAX_STEPS_Y);
-          motors[MOTOR_TOP_Y]->moveTo(dirTopY * targetTopY);
+          topY.moveTo(dirTopY * targetTopY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("TY : ");
@@ -63,11 +62,10 @@ void serialRx()
           #endif
           break;
 
-        // MOVE BOTTOM X MOTOR
         case packet_flag_motor_bottom_x:
           dirBottomX = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomX = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_X);
-          motors[MOTOR_BOTTOM_X]->moveTo(dirBottomX * targetBottomX);
+          bottomX.moveTo(dirBottomX * targetBottomX);
 
           #ifdef SERIAL_DEBUG
             Serial.print("BX : ");
@@ -75,11 +73,10 @@ void serialRx()
           #endif
           break;
 
-        // MOVE BOTTOM Y MOTOR
         case packet_flag_motor_bottom_y:
           dirBottomY = (rxBuff[packet_pos_data] == 0) ? -1 : 1;
           targetBottomY = constrain(abs((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]), 0, STEPPER_BOTTOM_MAX_STEPS_Y);
-          motors[MOTOR_BOTTOM_Y]->moveTo(dirBottomY * targetBottomY);
+          bottomY.moveTo(dirBottomY * targetBottomY);
 
           #ifdef SERIAL_DEBUG
             Serial.print("BY : ");
@@ -87,29 +84,29 @@ void serialRx()
           #endif
           break;
 
-        // UPDATE A MOTOR'S MAX SPEED
-        case packet_flag_motor_speed:
-          updateMotorSpeed(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
-
-          #ifdef SERIAL_DEBUG
-            Serial.print("Motor : ");
-            Serial.print(rxBuff[packet_pos_data]);
-            Serial.print(" max speed set to: ");
-            Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
-          #endif
-          break;
-
-        // UPDATE A MOTOR'S MAX ACCELERATION
-        case packet_flag_motor_accel:
-          updateMotorAcceleration(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
-
-          #ifdef SERIAL_DEBUG
-            Serial.print("Motor : ");
-            Serial.print(rxBuff[packet_pos_data]);
-            Serial.print(" max accel set to: ");
-            Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
-          #endif
-          break;
+        // // UPDATE A MOTOR'S MAX SPEED
+        // case packet_flag_motor_speed:
+        //   updateMotorSpeed(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+        //
+        //   #ifdef SERIAL_DEBUG
+        //     Serial.print("Motor : ");
+        //     Serial.print(rxBuff[packet_pos_data]);
+        //     Serial.print(" max speed set to: ");
+        //     Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
+        //   #endif
+        //   break;
+        //
+        // // UPDATE A MOTOR'S MAX ACCELERATION
+        // case packet_flag_motor_accel:
+        //   updateMotorAcceleration(rxBuff[packet_pos_data], (rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]);
+        //
+        //   #ifdef SERIAL_DEBUG
+        //     Serial.print("Motor : ");
+        //     Serial.print(rxBuff[packet_pos_data]);
+        //     Serial.print(" max accel set to: ");
+        //     Serial.println(((rxBuff[packet_pos_data + 1] << 8) | rxBuff[packet_pos_data + 2]));
+        //   #endif
+        //   break;
 
         // RESET ALL STEPPER POSITIONS TO 0
         case packet_flag_stepper_home:
