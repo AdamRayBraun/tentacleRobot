@@ -10,35 +10,51 @@
 */
 
 // config
-#define EN_SERIAL     true
-#define EN_LEDS       true
-#define EN_TOUCH      true
+// #define EN_MQTT       true
+
+#define STATE_INDIVIDUAL 0
+#define STATE_CLUSTERED  1
+int state = STATE_INDIVIDUAL;
 
 #include <Arduino.h>
+#include <WiFi.h>
+#include "LED.h"
 
-#define TOUCH_1 33
-#define TOUCH_2 0
-#define TOUCH_3 32
+#ifdef EN_MQTT
+  #include <PubSubClient.h>
+#endif
 
-#define ssid "H&M"
-#define password "weLoveInternetting"
+boolean touched = false;
 
 void setup()
 {
-  #ifdef EN_SERIAL
-    Serial.begin(115200);
-  #endif
+  Serial.begin(115200);
 
-  #ifdef EN_LEDS
   setupLeds();
-  #endif
+  setupTouch();
 
-  #ifdef EN_TOUCH
-    setupTouch();
+  #ifdef EN_MQTT
+    setupMQTT();
   #endif
+}
+
+void changeState(int newState)
+{
+
 }
 
 void loop()
 {
-  fadeLeds();
+  switch(state){
+    case STATE_INDIVIDUAL:
+      randomWaves();
+      checkForTouch();
+      break;
+
+    case STATE_CLUSTERED:
+      #ifdef EN_MQTT
+        runMqtt();
+      #endif
+      break;
+  }
 }
