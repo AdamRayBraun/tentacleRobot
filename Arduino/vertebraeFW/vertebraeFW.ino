@@ -10,7 +10,7 @@
 */
 
 // config
-// #define EN_MQTT       true
+#define EN_OSC       true
 
 #define STATE_INDIVIDUAL 0
 #define STATE_CLUSTERED  1
@@ -20,8 +20,11 @@ int state = STATE_INDIVIDUAL;
 #include <WiFi.h>
 #include "LED.h"
 
-#ifdef EN_MQTT
-  #include <PubSubClient.h>
+#ifdef EN_OSC
+  #include <WiFiUdp.h>
+  #include <OSCMessage.h>
+  #include <OSCBundle.h>
+  #include <OSCData.h>
 #endif
 
 boolean touched = false;
@@ -33,14 +36,16 @@ void setup()
   setupLeds();
   setupTouch();
 
-  #ifdef EN_MQTT
-    setupMQTT();
+  #ifdef EN_OSC
+    setupOSC();
   #endif
+
+  changeState(STATE_CLUSTERED);
 }
 
 void changeState(int newState)
 {
-
+  state = newState;
 }
 
 void loop()
@@ -52,8 +57,8 @@ void loop()
       break;
 
     case STATE_CLUSTERED:
-      #ifdef EN_MQTT
-        runMqtt();
+      #ifdef EN_OSC
+        runOSC();
       #endif
       break;
   }
