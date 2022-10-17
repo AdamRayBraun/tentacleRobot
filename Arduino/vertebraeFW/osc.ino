@@ -52,8 +52,11 @@ void handshake(OSCMessage &msg)
   String MSB = WiFi.macAddress().substring(12, 14);
   String LSB = WiFi.macAddress().substring(15, 17);
 
-  String msgMsb = String(msg.getInt(0), HEX);
-  String msgLsb = String(msg.getInt(1), HEX);
+  String msgMsb = (String(msg.getInt(0), HEX));
+  String msgLsb = (String(msg.getInt(1), HEX));
+
+  msgMsb.toUpperCase();
+  msgLsb.toUpperCase();
 
   if (MSB.equals(msgMsb) && LSB.equals(msgLsb)){
     connectionHandshake = true;

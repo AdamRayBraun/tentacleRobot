@@ -15,7 +15,7 @@
 // Each PCBs receives led commands over OSC
 #define STATE_CLUSTERED  1
 
-int state = STATE_INDIVIDUAL;
+int state = STATE_CLUSTERED;
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -61,9 +61,7 @@ void loop()
       break;
 
     case STATE_CLUSTERED:
-      #ifdef EN_OSC
-        runOSC();
-      #endif
+      runOSC();
       break;
   }
 
