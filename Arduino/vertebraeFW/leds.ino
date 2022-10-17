@@ -19,6 +19,9 @@ const int LED_PINS[] = { 22, 18, 19, 21 };
 #define steps    12
 LED *leds[NUM_LEDS];
 
+// status LED
+CRGB statLed[1];
+
 // individual animation vars
 #define animationFrameRate 30
 #define ledFrameRate       1
@@ -36,6 +39,8 @@ void setupLeds()
   for (int l = 0; l < NUM_LEDS; l++) {
     leds[l] = new LED(l, LED_PINS[l], steps);
   }
+
+  FastLED.addLeds<SK6812, 27, GRB>(statLed, 1); // built in WS2812
 }
 
 void pulseAnimation()
@@ -89,6 +94,8 @@ void randomWaves()
 
 void updateLeds(int ledFlag, int newBrightness)
 {
+  newBrightness = constrain(newBrightness, 0, 255);
+
   switch(ledFlag){
     case UPDATE_LED_ALL:
       ledcWrite(PWM_CHANNEL_1, newBrightness);
@@ -118,11 +125,6 @@ void updateLeds(int ledFlag, int newBrightness)
       Serial.println(ledFlag);
       break;
   }
-
-  Serial.print("updating led ");
-  Serial.print(ledFlag);
-  Serial.print(" to ");
-  Serial.println(newBrightness);
 }
 
 void updateAllLeds()
@@ -130,4 +132,9 @@ void updateAllLeds()
   for (byte l = 0; l < NUM_LEDS; l++){
     leds[l]->run();
   }
+}
+
+void updateStatusLed(byte r, byte g, byte b){
+  statLed[0].setRGB(r, g, b);
+  FastLED.show();
 }

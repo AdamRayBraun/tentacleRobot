@@ -9,11 +9,15 @@ void setupVertebrae(){
 }
 
 class Vertebrae {
-  private final int outPort = 7777;
-  private final String ledAddress = "/led";
+  private final String ledAddress       = "/led";
+  private final String handShakeAddress = "/handshake";
+  private final int outPort             = 7777;
+  private final int heartbeatTimeout    = 15000;
+
   private NetAddress remoteLocation;
-  private int id;
   private String ip;
+  private int id;
+  private long lastHeartbeat;
 
   public boolean isConnected = false;
 
@@ -21,16 +25,20 @@ class Vertebrae {
     this.id = id;
   }
 
-  public void setupConnection(String ip){
+  public void setupConnection(String ip, int id){
     if (this.isConnected){
       println("WARN: this vertebrae already registered, id: " + this.id);
       return;
     }
 
+    this.id = id;
     this.ip = ip;
     this.remoteLocation = new NetAddress(this.ip, this.outPort);
     this.isConnected = true;
+    this.lastHeartbeat = millis();
     println("New Vertebrae registered, id: " + id);
+
+    sendHandShake();
   }
 
   public void sendLedVals(int led1Val, int led2Val, int led3Val, int led4Val){
@@ -45,7 +53,23 @@ class Vertebrae {
     msg.add(led3Val);
     msg.add(led4Val);
     oscP5.send(msg, this.remoteLocation);
+  }
 
-    println("MSG sent, to IP : " + this.ip);
+  public void registerHeartbeat(){
+    this.lastHeartbeat = millis();
+  }
+
+  public void cheackHeartbeat(){
+    if (millis() - this.lastHeartbeat > heartbeatTimeout){
+      this.isConnected = false;
+      println("ERR: vertebrae heartbeat lost, id: " + this.id);
+    }
+  }
+
+  private void sendHandShake(){
+    OscMessage msg = new OscMessage(this.handShakeAddress);
+    msg.add(unhex(IDtoMAC[this.id - 1][0]));
+    msg.add(unhex(IDtoMAC[this.id - 1][1]));
+    oscP5.send(msg, this.remoteLocation);
   }
 }

@@ -5,32 +5,28 @@
 
 WiFiUDP Udp;
 const IPAddress outIp(192, 168, 194, 105); // laptop IP
-const unsigned int outPort   = 9999;         // TX port - works
-const unsigned int localPort = 7777;       // RX port
+const unsigned int outPort   = 9999;    // TX port
+const unsigned int localPort = 7777;    // RX port
 
 OSCErrorCode oscError;
 
-#define heartbeatPeriod 4000
+int heartbeatPeriod = 4000;
 unsigned long lastHeartbeat;
+
+bool connectionHandshake = false;
 
 void setupOSC()
 {
-  // // Setting static IP address
-  // IPAddress local_IP(192, 168, 1, getIDfromMac().toInt());
-  // IPAddress gateway(192, 168, 194, 195);
-  // IPAddress subnet(255, 255, 0, 0); // dont fuck with
-  // // IPAddress dns(192, 168, 1, 195);
-  //
-  // // Configures static IP address
-  // if (!WiFi.config(local_IP, gateway, subnet)) {
-  //   Serial.println("STA Failed to configure");
-  // }
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  delay(1000);
 
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pwd);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
@@ -39,18 +35,39 @@ void setupOSC()
 
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
+
+  randomSeed(touchReading());
+  heartbeatPeriod += random(10, 2000); // so all vertebrae heartbeats aren't at the same time
 }
 
 void led(OSCMessage &msg)
 {
-  Serial.print("/led: ");
-  Serial.print(msg.getInt(0));
-  Serial.print(" ");
-  Serial.print(msg.getInt(1));
-  Serial.print(" ");
-  Serial.print(msg.getInt(2));
-  Serial.print(" ");
-  Serial.println(msg.getInt(3));
+  updateLeds(UPDATE_LED_1, msg.getInt(0));
+  updateLeds(UPDATE_LED_2, msg.getInt(1));
+  updateLeds(UPDATE_LED_3, msg.getInt(2));
+  updateLeds(UPDATE_LED_4, msg.getInt(3));
+}
+
+void handshake(OSCMessage &msg)
+{
+  String MSB = WiFi.macAddress().substring(12, 14);
+  String LSB = WiFi.macAddress().substring(15, 17);
+
+  String msgMsb = String(msg.getInt(0), HEX);
+  String msgLsb = String(msg.getInt(1), HEX);
+
+  if (MSB.equals(msgMsb) && LSB.equals(msgLsb)){
+    connectionHandshake = true;
+    updateStatusLed(244, 253, 255);
+    Serial.println("Successful handshake");
+  } else {
+    updateStatusLed(200, 0, 0);
+    Serial.print("ERR: received mismatching MAC from handshake: ");
+    Serial.print("MSG: ");
+    Serial.print(msgMsb);
+    Serial.print(" ");
+    Serial.println(msgLsb);
+  }
 }
 
 void oscRx()
@@ -62,14 +79,12 @@ void oscRx()
   // if message received, unpack and store in msg
   if (size > 0) {
 
-    Serial.print("UDP Size: ");
-    Serial.println(size);
-
     while (size--) {
       msg.fill(Udp.read());
     }
     if (!msg.hasError()) {
       msg.dispatch("/led", led);
+      msg.dispatch("/handshake", handshake);
     } else {
       oscError = msg.getError();
       Serial.print("ERROR: ");
@@ -90,16 +105,26 @@ void runOSC()
 
 void sendHeartbeat()
 {
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    OSCMessage msg("/register/");
-    msg.add(getIDfromMac());
-
-    Udp.beginPacket(outIp, outPort);
-    msg.send(Udp);
-    Udp.endPacket();
-    msg.empty();
-    Serial.println("sending HB");
+  if (WiFi.status() == WL_CONNECTED){
+    if (connectionHandshake){
+      OSCMessage msg("/heartbeat/");
+      msg.add(id);
+      Udp.beginPacket(outIp, outPort);
+      msg.send(Udp);
+      Udp.endPacket();
+      msg.empty();
+    } else {
+      OSCMessage msg("/register/");
+      msg.add(getIDfromMac());
+      Udp.beginPacket(outIp, outPort);
+      msg.send(Udp);
+      Udp.endPacket();
+      msg.empty();
+    }
+  } else {
+    updateStatusLed(100, 0, 0);
+    connectionHandshake = false;
+    setupOSC();
   }
 }
 

@@ -4,7 +4,11 @@ import netP5.*;
 OscP5 oscP5;
 
 // temp
-boolean on;
+int b;
+int bChange = 5;
+boolean animating = false;
+long lastFrame;
+int frameRate = 20;
 
 void setup() {
   oscP5 = new OscP5(this, 9999);
@@ -12,35 +16,52 @@ void setup() {
   setupVertebrae();
 }
 
-void draw(){}
+void draw(){
+  if (animating){
+    if (millis() - lastFrame > frameRate){
+      b += bChange;
 
-void mousePressed() {
-  if (on){
-    for (Vertebrae v : vertebrae){
-      if (v.isConnected){
-        v.sendLedVals(250, 250, 250, 250);
+      if (b > 255 || b < 0 ) bChange *= -1;
+
+      for (Vertebrae v : vertebrae){
+        if (v.isConnected){
+          v.sendLedVals(b, b, b, b);
+        }
       }
-    }
-  } else {
-    for (Vertebrae v : vertebrae){
-      if (v.isConnected){
-        v.sendLedVals(0, 0, 0, 0);
-      }
+
+      lastFrame = millis();
     }
   }
 
-  on = !on;
+  for (Vertebrae v : vertebrae){
+    if (v.isConnected){
+      v.cheackHeartbeat();
+    }
+  }
+}
+
+void keyPressed(){
+  if (key == '['){
+    frameRate--;
+  } else if (key == ']'){
+    frameRate++;
+  }
+  println("new frameRate: " + frameRate);
+}
+
+void mousePressed() {
+  animating = !animating;
+  println("animating : " + animating);
 }
 
 void oscEvent(OscMessage theOscMessage) {
-  print("### received : ");
-  print(theOscMessage.addrPattern());
-  println(" from: " + theOscMessage.netAddress().address());
-
   switch(theOscMessage.addrPattern()){
     case "/register/":
       int id = int(theOscMessage.get(0).intValue());
-      vertebrae.get(id).setupConnection(theOscMessage.netAddress().address());
+      vertebrae.get(id).setupConnection(theOscMessage.netAddress().address(), id);
+      break;
+    case "/heartbeat/":
+      vertebrae.get(theOscMessage.get(0).intValue()).registerHeartbeat();
       break;
     default:
       println("WARN: received OSC w/ unknown addr: " + theOscMessage.addrPattern());

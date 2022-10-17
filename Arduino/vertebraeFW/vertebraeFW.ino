@@ -18,6 +18,9 @@ int state = STATE_INDIVIDUAL;
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <ESPmDNS.h>
+#include <ArduinoOTA.h>
+#include <FastLED.h>
 #include "LED.h"
 
 #ifdef EN_OSC
@@ -36,9 +39,13 @@ void setup()
   setupLeds();
   setupTouch();
 
+  updateStatusLed(0, 0, 100);
+
   #ifdef EN_OSC
     setupOSC();
   #endif
+
+  setupOTA();
 
   changeState(STATE_CLUSTERED);
 }
@@ -62,4 +69,7 @@ void loop()
       #endif
       break;
   }
+
+
+  ArduinoOTA.handle();
 }

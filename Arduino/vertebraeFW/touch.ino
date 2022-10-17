@@ -23,7 +23,7 @@ void testTouch()
 
 void checkForTouch()
 {
-  if (touchRead(TOUCH_3) < touchThreshDebug){
+  if (touchReading() < touchThreshDebug){
     lastTouch = millis();
     touched = true;
   }
@@ -31,4 +31,9 @@ void checkForTouch()
   if (touched = true){
     if (millis() - lastTouch > touchHold) touched = false;
   }
+}
+
+int touchReading()
+{
+  return touchRead(TOUCH_3);
 }
