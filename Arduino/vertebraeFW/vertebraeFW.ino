@@ -1,7 +1,7 @@
 /*
   Firmware for Have We Met's vertabrae PCBs
 
-  Each ESP32-Pico-D4 based PCB has 3 touch inputs and 4 LED outputs
+  Each ESP32-Pico-D4 based PCB has 3 touch inputs and 4 LED outputs (+onboard RGB status led)
 
   Programmed w/ Arduino v1.8.10
   M5Stack board library v2.0.0
@@ -9,26 +9,26 @@
   Adan Ray Braun
 */
 
-// config
-#define EN_OSC       true
-
+// MVP twinkle LEDs that brighten with touch, solo PCBs
 #define STATE_INDIVIDUAL 0
+
+// Each PCBs receives led commands over OSC
 #define STATE_CLUSTERED  1
+
 int state = STATE_INDIVIDUAL;
 
 #include <Arduino.h>
-#include <WiFi.h>
-#include <ESPmDNS.h>
 #include <ArduinoOTA.h>
 #include <FastLED.h>
 #include "LED.h"
 
-#ifdef EN_OSC
-  #include <WiFiUdp.h>
-  #include <OSCMessage.h>
-  #include <OSCBundle.h>
-  #include <OSCData.h>
-#endif
+//OSC
+#include <ESPmDNS.h>
+#include <WiFi.h>
+#include <WiFiUdp.h>
+#include <OSCMessage.h>
+#include <OSCBundle.h>
+#include <OSCData.h>
 
 boolean touched = false;
 
@@ -41,10 +41,7 @@ void setup()
 
   updateStatusLed(0, 0, 100);
 
-  #ifdef EN_OSC
-    setupOSC();
-  #endif
-
+  setupOSC();
   setupOTA();
 
   changeState(STATE_CLUSTERED);

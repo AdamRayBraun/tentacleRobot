@@ -1,5 +1,3 @@
-#ifdef EN_OSC
-
 #define ssid "H&M"
 #define pwd  "weLoveInternetting"
 
@@ -10,9 +8,8 @@ const unsigned int localPort = 7777;    // RX port
 
 OSCErrorCode oscError;
 
-int heartbeatPeriod = 4000;
 unsigned long lastHeartbeat;
-
+int heartbeatPeriod      = 4000;
 bool connectionHandshake = false;
 
 void setupOSC()
@@ -36,8 +33,9 @@ void setupOSC()
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
 
+   // so all vertebrae heartbeats aren't sent at the same time
   randomSeed(touchReading());
-  heartbeatPeriod += random(10, 2000); // so all vertebrae heartbeats aren't at the same time
+  heartbeatPeriod += random(10, 2000);
 }
 
 void led(OSCMessage &msg)
@@ -48,6 +46,7 @@ void led(OSCMessage &msg)
   updateLeds(UPDATE_LED_4, msg.getInt(3));
 }
 
+// check that handshake has sent the correct MAC back as confirmation
 void handshake(OSCMessage &msg)
 {
   String MSB = WiFi.macAddress().substring(12, 14);
@@ -78,7 +77,6 @@ void oscRx()
 
   // if message received, unpack and store in msg
   if (size > 0) {
-
     while (size--) {
       msg.fill(Udp.read());
     }
@@ -127,5 +125,3 @@ void sendHeartbeat()
     setupOSC();
   }
 }
-
-#endif

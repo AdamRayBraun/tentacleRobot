@@ -24,42 +24,22 @@ CRGB statLed[1];
 
 // individual animation vars
 #define animationFrameRate 30
-#define ledFrameRate       1
 #define passiveWaveMin     0
 #define passiveWaveMax     30
 #define speedChangeRate    2000
 
-unsigned long lastAnimationFrame, lastLEDUpdate, lastSpeedChange;
-byte ledTargets[4];
+unsigned long lastAnimationFrame, lastSpeedChange;
 bool ledIncreasing[4];
 float ledSpeeds[4] = { 0.01, 0.01, 0.01, 0.01};
 
 void setupLeds()
 {
+  // side emitting LEDs
   for (int l = 0; l < NUM_LEDS; l++) {
     leds[l] = new LED(l, LED_PINS[l], steps);
   }
 
   FastLED.addLeds<SK6812, 27, GRB>(statLed, 1); // built in WS2812
-}
-
-void pulseAnimation()
-{
-  if (millis() - lastAnimationFrame > animationFrameRate){
-    for (byte l = 0; l < NUM_LEDS; l++){
-      ledTargets[l] = random(0, 150);
-    }
-    lastAnimationFrame = millis();
-  }
-
-  if (millis() - lastLEDUpdate > ledFrameRate){
-    for (byte l = 0; l < NUM_LEDS; l++){
-      leds[l]->fadeTo(ledTargets[l]);
-    }
-
-    updateAllLeds();
-    lastLEDUpdate = millis();
-  }
 }
 
 void randomWaves()
