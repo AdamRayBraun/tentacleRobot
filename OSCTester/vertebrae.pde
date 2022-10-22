@@ -1,6 +1,14 @@
 ArrayList<Vertebrae> vertebrae = new ArrayList<Vertebrae>();
 
 int NUM_VERTEBRAE = 25;
+int ledSize = 20;
+
+// perlin noise vars
+float noiseOffset;
+float noiseIncrement = 0.003;
+int noiseLod = 15;
+float noiseFalloff = 0.25;
+float noiseScale = 0.1;
 
 void setupVertebrae(){
   for (int v = 0; v < NUM_VERTEBRAE; v++){
@@ -10,6 +18,7 @@ void setupVertebrae(){
 
 class Vertebrae {
   private final String ledAddress       = "/led";
+  private final String statLedAddress   = "/statLed";
   private final String handShakeAddress = "/handshake";
   private final int outPort             = 7777;
   private final int heartbeatTimeout    = 15000;
@@ -22,14 +31,17 @@ class Vertebrae {
   // render vars
   private int ySpacing = 50;
   private int ledRadius = 100;
-  private int ledSize = 20;
 
   public boolean isConnected = false;
 
-  int[] ledVals = { 0, 0, 0, 0};
+  ArrayList<vLED> leds = new ArrayList<vLED>();
 
   Vertebrae(int id){
     this.id = id;
+    leds.add(new vLED(new PVector(-ledRadius, this.id * ySpacing, -ledRadius)));
+    leds.add(new vLED(new PVector( ledRadius, this.id * ySpacing, -ledRadius)));
+    leds.add(new vLED(new PVector( ledRadius, this.id * ySpacing, ledRadius)));
+    leds.add(new vLED(new PVector(-ledRadius, this.id * ySpacing, ledRadius)));
   }
 
   public void setupConnection(String ip, int id){
@@ -49,13 +61,12 @@ class Vertebrae {
   }
 
   public void sendLedVals(int led1Val, int led2Val, int led3Val, int led4Val){
-    ledVals[0] = led1Val;
-    ledVals[1] = led2Val;
-    ledVals[2] = led3Val;
-    ledVals[3] = led4Val;
-    
+    leds.get(0).val = led1Val;
+    leds.get(1).val = led2Val;
+    leds.get(2).val = led3Val;
+    leds.get(3).val = led4Val;
+
     if (!this.isConnected){
-      // println("ERR: vertebrae id: " + this.id + " is being ran but not connected");
       return;
     }
 
@@ -64,6 +75,19 @@ class Vertebrae {
     msg.add(led2Val);
     msg.add(led3Val);
     msg.add(led4Val);
+    oscP5.send(msg, this.remoteLocation);
+  }
+
+  public void updateLeds(){
+    if (!this.isConnected){
+      return;
+    }
+
+    OscMessage msg = new OscMessage(this.ledAddress);
+    msg.add((int)(leds.get(0).val));
+    msg.add((int)(leds.get(1).val));
+    msg.add((int)(leds.get(2).val));
+    msg.add((int)(leds.get(3).val));
     oscP5.send(msg, this.remoteLocation);
   }
 
@@ -79,34 +103,76 @@ class Vertebrae {
   }
 
   private void sendHandShake(){
+    if (!this.isConnected){
+      return;
+    }
+
     OscMessage msg = new OscMessage(this.handShakeAddress);
     msg.add(unhex(IDtoMAC[this.id - 1][0]));
     msg.add(unhex(IDtoMAC[this.id - 1][1]));
     oscP5.send(msg, this.remoteLocation);
   }
 
+  public void updateStatusLed(int r, int g, int b){
+    if (!this.isConnected){
+      return;
+    }
+
+    OscMessage msg = new OscMessage(this.statLedAddress);
+    msg.add(r);
+    msg.add(g);
+    msg.add(b);
+    oscP5.send(msg, this.remoteLocation);
+  }
+
+  public void registerTouch(int touchedSide, int shortTouch){
+    switch(touchedSide){
+      case 1:
+        println("Vert " + this.id + " touched on side: 1");
+        break;
+      case 2:
+        println("Vert " + this.id + " touched on side: 2");
+        break;
+    }
+  }
+
+  public void render(){
+    for (vLED l : leds){
+      l.render();
+    }
+  }
+
+  public void pNoise(){
+    for (vLED l : leds){
+      l.pNoise();
+    }
+    noiseOffset += noiseIncrement;
+  }
+}
+
+class vLED{
+  public PVector loc;
+  public float val;
+
+  vLED(PVector loc){
+    this.loc = loc;
+  }
+
+  public void pNoise(){
+    this.val = noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 255;
+  }
+
   public void render(){
     pushMatrix();
-
-    stroke(100);
-
-    translate(0, this.id * ySpacing, 0);
-    translate(-ledRadius, 0, 0);
-    fill(this.ledVals[0]);
+    translate(this.loc.x, this.loc.y, this.loc.z);
+    stroke(200);
+    fill(this.val);
     box(ledSize);
-
-    translate(+ledRadius, 0, +ledRadius);
-    fill(this.ledVals[1]);
-    box(ledSize);
-
-    translate(+ledRadius, 0, -ledRadius);
-    fill(this.ledVals[2]);
-    box(ledSize);
-
-    translate(-ledRadius, 0, -ledRadius);
-    fill(this.ledVals[3]);
-    box(ledSize);
-
     popMatrix();
   }
+}
+
+void changeNoiseDetail(){
+  noiseDetail(noiseLod,noiseFalloff);
+  println("Noise lod: " + noiseLod + " , falloff: " + noiseFalloff);
 }

@@ -15,6 +15,7 @@ class LED
     void fadeTo(float nVal);
     void fadeDown(int speed);
     void updateSteps(int newSteps);
+    void updateTarget(float newTarget);
     void setVal(float nVal);
     float getVal();
     void run();
@@ -25,6 +26,7 @@ class LED
     int _pwmChannel;
     int _pin;
     uint32_t _steps;
+    float _targetVal;
 };
 
 #endif

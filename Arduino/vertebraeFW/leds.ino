@@ -16,7 +16,8 @@ const int LED_PINS[] = { 22, 18, 19, 21 };
 
 // LED object definitions
 #define NUM_LEDS 4
-#define steps    12
+// #define steps    12
+#define steps    6
 LED *leds[NUM_LEDS];
 
 // status LED

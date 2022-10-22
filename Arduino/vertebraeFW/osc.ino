@@ -1,8 +1,8 @@
-#define ssid "H&M"
+#define ssid "isaacLikesToWiggle"
 #define pwd  "weLoveInternetting"
 
 WiFiUDP Udp;
-const IPAddress outIp(192, 168, 194, 105); // laptop IP
+const IPAddress outIp(192, 168, 1, 73); // laptop IP
 const unsigned int outPort   = 9999;    // TX port
 const unsigned int localPort = 7777;    // RX port
 
@@ -34,16 +34,24 @@ void setupOSC()
   Serial.println(WiFi.localIP());
 
    // so all vertebrae heartbeats aren't sent at the same time
-  randomSeed(touchReading());
+  randomSeed(touchReading1());
   heartbeatPeriod += random(10, 2000);
 }
 
 void led(OSCMessage &msg)
 {
-  updateLeds(UPDATE_LED_1, msg.getInt(0));
-  updateLeds(UPDATE_LED_2, msg.getInt(1));
-  updateLeds(UPDATE_LED_3, msg.getInt(2));
-  updateLeds(UPDATE_LED_4, msg.getInt(3));
+  // easing value update
+  for (byte l = 0; l < NUM_LEDS; l++){
+    leds[l]->updateTarget(msg.getInt(l));
+  }
+}
+
+void touchReactiveLeds()
+{
+  // easing value update
+  for (byte l = 0; l < NUM_LEDS; l++){
+    leds[l]->setVal(255);
+  }
 }
 
 // check that handshake has sent the correct MAC back as confirmation
@@ -72,6 +80,16 @@ void handshake(OSCMessage &msg)
   }
 }
 
+void statusLight(OSCMessage &msg)
+{
+  updateStatusLed(msg.getInt(0), msg.getInt(1), msg.getInt(2));
+}
+
+void newTouchThresh(OSCMessage &msg)
+{
+  updateTouchThresh(msg.getInt(0));
+}
+
 void oscRx()
 {
   // check for message
@@ -85,6 +103,8 @@ void oscRx()
     }
     if (!msg.hasError()) {
       msg.dispatch("/led", led);
+      msg.dispatch("/statLed", statusLight);
+      msg.dispatch("/touchThresh", newTouchThresh);
       msg.dispatch("/handshake", handshake);
     } else {
       oscError = msg.getError();
@@ -127,4 +147,29 @@ void sendHeartbeat()
     connectionHandshake = false;
     setupOSC();
   }
+}
+
+void sendTouchMsg(int touchSide, bool isShortTouch)
+{
+  OSCMessage msg("/touchVal/");
+  msg.add(id);
+  msg.add(touchSide);
+  msg.add(isShortTouch);
+  Udp.beginPacket(outIp, outPort);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+}
+
+void oscDebugTouchVals()
+{
+  OSCMessage msg("/touchValDebug/");
+  msg.add(id);
+  msg.add(touchReading1());
+  msg.add(touchReading2());
+  msg.add(getTouchThreshold());
+  Udp.beginPacket(outIp, outPort);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
 }

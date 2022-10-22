@@ -15,7 +15,12 @@
 // Each PCBs receives led commands over OSC
 #define STATE_CLUSTERED  1
 
-int state = STATE_CLUSTERED;
+// Debug / testing
+#define STATE_DEBUG      2
+
+#define STARTING_STATE STATE_CLUSTERED
+
+int state;
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -39,12 +44,22 @@ void setup()
   setupLeds();
   setupTouch();
 
-  updateStatusLed(0, 0, 100);
+  changeState(STARTING_STATE);
 
-  setupOSC();
-  setupOTA();
+  switch(state){
+    case STATE_INDIVIDUAL:
+      break;
 
-  changeState(STATE_CLUSTERED);
+    case STATE_CLUSTERED:
+      updateStatusLed(0, 0, 100);
+      setupOSC();
+      setupOTA();
+      break;
+
+    case STATE_DEBUG:
+      // setupOSC();
+      break;
+  }
 }
 
 void changeState(int newState)
@@ -62,9 +77,17 @@ void loop()
 
     case STATE_CLUSTERED:
       runOSC();
+      updateAllLeds();
+      checkForTouch();
+      ArduinoOTA.handle();
+      break;
+
+    case STATE_DEBUG:
+      // oscDebugTouchVals();
+      Serial.print(touchReading1());
+      Serial.print(" ");
+      Serial.println(20);
+      delay(200);
       break;
   }
-
-
-  ArduinoOTA.handle();
 }

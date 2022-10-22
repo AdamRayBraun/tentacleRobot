@@ -66,7 +66,13 @@ void LED::updateSteps(int newSteps)
   _steps = newSteps;
 }
 
+void LED::updateTarget(float newTarget)
+{
+  _targetVal = newTarget;
+}
+
 void LED::run()
 {
+  fadeTo(_targetVal);
   ledcWrite(_pwmChannel, (int)(_val));
 }
