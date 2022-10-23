@@ -35,7 +35,7 @@ int state;
 #include <OSCBundle.h>
 #include <OSCData.h>
 
-boolean touched = false;
+bool touched = false;
 
 void setup()
 {
@@ -57,7 +57,6 @@ void setup()
       break;
 
     case STATE_DEBUG:
-      // setupOSC();
       break;
   }
 }
@@ -83,7 +82,6 @@ void loop()
       break;
 
     case STATE_DEBUG:
-      // oscDebugTouchVals();
       Serial.print(touchReading1());
       Serial.print(" ");
       Serial.println(20);

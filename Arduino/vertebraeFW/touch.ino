@@ -22,6 +22,9 @@ bool lastTouchDebouceState[NUM_TOUCH] = {false, false, false};
 bool lastTouchState[NUM_TOUCH];
 bool touchState[NUM_TOUCH];
 
+unsigned int lastTouched;
+int touchTime = 3000;
+
 void setupTouch()
 {
   pinMode(TOUCH_1_PIN, INPUT);
@@ -33,11 +36,23 @@ void checkForTouch()
 {
   touchDebounce(TOUCH_1);
   touchDebounce(TOUCH_3);
+
+  if (touched){
+    if (millis() - lastTouched > touchTime){
+      touched = false;
+    }
+
+    for (byte l = 0; l < NUM_LEDS; l++){
+      leds[l]->updateTarget(255);
+    }
+  }
 }
 
 void touchOutput(int touchIndex, bool isShortTouch)
 {
   sendTouchMsg(touchIndex, isShortTouch);
+  touched = true;
+  lastTouched = millis();
 }
 
 void touchDebounce(int touchIndex)
