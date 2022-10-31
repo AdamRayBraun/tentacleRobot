@@ -1,6 +1,5 @@
 boolean drawingInstructions = false;
 boolean shiftHeld           = false;
-boolean showDebugSquare     = false;
 int depthChange             = 20;
 int kinectWindowChange      = 10;
 int posIncrement            = 50;
@@ -25,7 +24,7 @@ void drawInstructions(){
     instructions += "  - 'c' / 'v' to change Y maxn\n";
     instructions += "\n";
     instructions += "Current skip factor : " + pointSkip + "\n";
-    instructions += "  - Change with '1' / '2' / '3' etc\n";
+    instructions += "  - Change with 'g' & 'h'\n";
     instructions += "\n";
     instructions += "Point size : " + pointDiam + "\n";
     instructions += "  - '<' / '>' to change\n";
@@ -38,21 +37,12 @@ void drawInstructions(){
     instructions += "  - Hold shift to constrain rotation axis\n";
     instructions += "  - SPACE to print out current camera params\n";
     instructions += "\n";
-    instructions += "  - '§' key to toggle on / off\n";
-    instructions += "\n";
     instructions += "  - 'p' key to toggle movie playback\n";
     instructions += "\n";
 
     cam.beginHUD();
     fill(255);
     text(instructions, 20, 20);
-
-    if (showDebugSquare){
-      stroke(200, 0, 0);
-      strokeWeight(2);
-      noFill();
-      rect(kinectXMin, kinectYMin, kinect2.depthWidth - kinectXMax, kinect2.depthHeight - kinectYMax);
-    }
     cam.endHUD();
   }
 }
@@ -71,7 +61,7 @@ void keyPressed(){
   } else if (key == ']' || key == '}'){
     depthMax += depthChange;
   } else if (key >= 49 && key <= 57){
-    pointSkip = int(key) - 48;
+    changeMovie(int(key) - 48);
   } else if (key == ',' || key == '<'){
     if (pointDiam > 0.2) pointDiam -= 0.2;
   } else if (key == '.' || key == '>'){
@@ -107,9 +97,10 @@ void keyPressed(){
     } else {
       mov.pause();
     }
-  } else if (key == 'd'){
-    showDebugSquare = !showDebugSquare;
-    println("Showing debug square: " + showDebugSquare);
+  } else if (key == 'g'){
+    if (pointSkip > 1) pointSkip--;
+  } else if (key == 'h'){
+    pointSkip++;
   }
 
   if (key == CODED){

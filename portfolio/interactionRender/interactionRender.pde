@@ -13,11 +13,11 @@ import processing.video.*;
 Kinect2 kinect2;
 PeasyCam cam;
 
-final boolean USING_KINECT     = true;
-final boolean USING_MOVIE      = true;
+final boolean USING_KINECT = true;
+final boolean USING_MOVIE  = true;
 
 void setup(){
-  // fullScreen(P3D);
+  // fullScreen(P3D, 1);
   size(1920, 1080, P3D);
   smooth(16);
 
@@ -30,6 +30,8 @@ void setup(){
 }
 
 void draw(){
+  background(0);
+
   if (USING_MOVIE)      playMovie();
   if (USING_KINECT)     renderPointCloud();
 

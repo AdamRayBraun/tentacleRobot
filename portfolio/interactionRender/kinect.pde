@@ -1,14 +1,12 @@
-PVector loc, lerpedLoc;
-
 int[] depthData;
-float depthMin  = 0;
-float depthMax  = 2040;
+float depthMin  = 1240;
+float depthMax  = 2700;
 float pointDiam = 2;
 int pointSkip   = 1;
-int kinectXMin  = 70;
-int kinectXMax  = 120;
-int kinectYMin  = 00;
-int kinectYMax  = 00;
+int kinectXMin  = 00;
+int kinectXMax  = 00;
+int kinectYMin  = 020;
+int kinectYMax  = 80;
 boolean useDepthWindow = true;
 
 void setupKinect(){
@@ -17,9 +15,6 @@ void setupKinect(){
     kinect2.initDepth();
     kinect2.initDevice();
   }
-
-  loc       = new PVector(0, 0, 0);
-  lerpedLoc = new PVector(0, 0, 0);
 }
 
 void renderPointCloud(){
@@ -31,7 +26,7 @@ void renderPointCloud(){
 
     depthData = kinect2.getRawDepth();
 
-    stroke(255);
+    stroke(190);
     strokeWeight(pointDiam);
     beginShape(POINTS);
 
