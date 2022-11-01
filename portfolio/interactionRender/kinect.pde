@@ -1,6 +1,6 @@
 int[] depthData;
-float depthMin  = 1240;
-float depthMax  = 2700;
+float depthMin  = 640;
+float depthMax  = 2900;
 float pointDiam = 2;
 int pointSkip   = 1;
 int kinectXMin  = 00;
@@ -8,6 +8,7 @@ int kinectXMax  = 00;
 int kinectYMin  = 020;
 int kinectYMax  = 80;
 boolean useDepthWindow = true;
+int pointCol = 190;
 
 void setupKinect(){
   if (USING_KINECT){
@@ -26,7 +27,7 @@ void renderPointCloud(){
 
     depthData = kinect2.getRawDepth();
 
-    stroke(190);
+    stroke(pointCol);
     strokeWeight(pointDiam);
     beginShape(POINTS);
 

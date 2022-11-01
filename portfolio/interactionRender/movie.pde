@@ -1,10 +1,22 @@
 Movie mov;
-int posX, posY, posZ;
 boolean playingMovie = true;
+int currentMovieIndex;
+
+String[] movieNames = {
+                        "0 - Violent touch",
+                        "1 - waking up",
+                        "2 - humans walking past",
+                        "3 - group of humans",
+                        "4 - Human moving around Isaac",
+                        "5 - Isaac looking around Human",
+                        "6 - Isaac greeting unfamiliar human",
+                        "7 - Isaac greeting familiar Human",
+                        "8 - Isaac hugging familiar human",
+                        "9 - Isaac touched by unfamiliar human",
+                      };
 
 void setupMovie(){
-  mov = new Movie(this, "1.mp4");
-  mov.loop();
+  changeMovie(0);
 }
 
 void playMovie(){
@@ -17,11 +29,12 @@ void movieEvent(Movie m){
 }
 
 void changeMovie(int newMov){
-  if (newMov < 1 || newMov > 10){
+  if (newMov < 0 || newMov > 10){
     println("ERR: wrong mov index: " + newMov);
+    return;
   }
 
-  mov.stop();
   mov = new Movie(this, (String)(newMov + ".mp4"));
   mov.loop();
+  currentMovieIndex = newMov;
 }
