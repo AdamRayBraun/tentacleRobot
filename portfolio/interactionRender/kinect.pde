@@ -8,7 +8,7 @@ int kinectXMax  = 00;
 int kinectYMin  = 020;
 int kinectYMax  = 80;
 boolean useDepthWindow = true;
-int pointCol = 190;
+int pointCol = 115;
 
 void setupKinect(){
   if (USING_KINECT){
