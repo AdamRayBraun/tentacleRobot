@@ -112,7 +112,7 @@ void sendBroadcast(byte led1, byte led2, byte led3, byte led4, byte neoR, byte n
   #endif
 }
 
-void hanleENowRx()
+void handleENowRx()
 {
   if (!handleEnowRx){
     return;

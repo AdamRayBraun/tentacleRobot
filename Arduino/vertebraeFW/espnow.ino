@@ -77,7 +77,7 @@ void setupEspNow()
 /**
   If a ESPNOW message has been receives, handles logic based on packet's flag
 **/
-void hanleENowRx()
+void handleENowRx()
 {
   if (!handleEnowRx){
     return;

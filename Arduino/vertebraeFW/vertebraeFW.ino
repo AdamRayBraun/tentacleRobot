@@ -76,7 +76,7 @@ void loop()
       break;
 
     case STATE_CLUSTERED:
-      hanleENowRx();
+      handleENowRx();
       updateAllLeds();
       checkForTouch();
       break;
