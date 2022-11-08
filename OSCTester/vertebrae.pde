@@ -17,9 +17,11 @@ void setupVertebrae(){
 }
 
 class Vertebrae {
-  private final String ledAddress       = "/led";
-  private final String statLedAddress   = "/statLed";
-  private final String handShakeAddress = "/handshake";
+  private final String ledAddress         = "/led";
+  private final String statLedAddress     = "/statLed";
+  private final String handShakeAddress   = "/handshake";
+  private final String stateChangeAddress = "/newState";
+  
   private final int outPort             = 7777;
   private final int heartbeatTimeout    = 15000;
 
@@ -134,6 +136,17 @@ class Vertebrae {
         println("Vert " + this.id + " touched on side: 2");
         break;
     }
+  }
+
+  public void changeSate(int newState){
+    if (newState < 0 || newState > 2){
+      println("ERR: trying to send PCB state change with unknown state index: " + newState);
+      return;
+    }
+
+    OscMessage msg = new OscMessage(this.stateChangeAddress);
+    msg.add(newState);
+    oscP5.send(msg, this.remoteLocation);
   }
 
   public void render(){

@@ -22,11 +22,11 @@ class LED
     int index;
     int _maxBright;
     float _val = 0;
+    float _targetVal;
   private:
     int _pwmChannel;
     int _pin;
     uint32_t _steps;
-    float _targetVal;
 };
 
 #endif

@@ -50,7 +50,20 @@ void checkForTouch()
 
 void touchOutput(int touchIndex, bool isShortTouch)
 {
-  sendTouchMsg(touchIndex, isShortTouch);
+  switch(state){
+    case STATE_INDIVIDUAL:
+
+      break;
+
+    case STATE_CLUSTERED:
+      sendTouchMsg(touchIndex, isShortTouch);
+      break;
+
+    case STATE_DEBUG:
+      break;
+  }
+
+  Serial.println("touched");
   touched = true;
   lastTouched = millis();
 }

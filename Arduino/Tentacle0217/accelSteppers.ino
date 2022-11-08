@@ -10,7 +10,7 @@ AccelStepper topY(AccelStepper::DRIVER, top_servo_Y_PUL_pin, top_servo_Y_DIR_pin
 
 #define STEPPER_TOP_MAX_SPEED 6000
 #define STEPPER_TOP_MAX_ACCEL 900
-#define STEPPER_TOP_MAX_STEPS_X 6000
+#define STEPPER_TOP_MAX_STEPS_X 10000
 #define STEPPER_TOP_MAX_STEPS_Y 6000
 
 int dirBottomX, dirBottomY, dirTopX, dirTopY;

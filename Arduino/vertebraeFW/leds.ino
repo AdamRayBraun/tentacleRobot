@@ -24,14 +24,15 @@ LED *leds[NUM_LEDS];
 CRGB statLed[1];
 
 // individual animation vars
-#define animationFrameRate 30
+#define animationFrameRate 8
 #define passiveWaveMin     0
-#define passiveWaveMax     30
-#define speedChangeRate    2000
+#define passiveWaveMax     100
+#define speedChangeRate    3000
 
 unsigned long lastAnimationFrame, lastSpeedChange;
-bool ledIncreasing[4];
+bool ledIncreasing[4] = {true, true, true, true};
 float ledSpeeds[4] = { 0.01, 0.01, 0.01, 0.01};
+int ledWavePos[4];
 
 void setupLeds()
 {
@@ -45,32 +46,32 @@ void setupLeds()
 
 void randomWaves()
 {
-  if (touched){
+  if (millis() - lastAnimationFrame > animationFrameRate){
     for (byte l = 0; l < NUM_LEDS; l++){
-      leds[l]->_val = 255;
-      ledIncreasing[l] = false;
-    }
-  } else {
-    if (millis() - lastAnimationFrame > animationFrameRate){
-      for (byte l = 0; l < NUM_LEDS; l++){
-        if (ledIncreasing[l]){
-          leds[l]->_val += ledSpeeds[l];
-          if (leds[l]->_val > passiveWaveMax) ledIncreasing[l] = false;
-        } else {
-          leds[l]->_val -= ledSpeeds[l];
-          if (leds[l]->_val < passiveWaveMin) ledIncreasing[l] = true;
-        }
+      if (ledIncreasing[l]){
+        // leds[l]->_val += ledSpeeds[l];
+        // float newTarget = leds[l]->_val + ledSpeeds[l];
+        // leds[l]->updateTarget(newTarget);
+        leds[l]->_targetVal += ledSpeeds[l];
+        if (leds[l]->_targetVal > passiveWaveMax) ledIncreasing[l] = false;
+      } else {
+        // leds[l]->_val -= ledSpeeds[l];
+        // float newTarget = leds[l]->_val - ledSpeeds[l];
+        // leds[l]->updateTarget(newTarget);
+        leds[l]->_targetVal -= ledSpeeds[l];
+        if (leds[l]->_targetVal < passiveWaveMin) ledIncreasing[l] = true;
       }
     }
 
-    if (millis() - lastSpeedChange > speedChangeRate){
-      for (byte l = 0; l < NUM_LEDS; l++){
-        ledSpeeds[l] = random(1, 20) / 1000.0;
-      }
-      lastSpeedChange = millis();
-    }
+    lastAnimationFrame =  millis();
   }
-  updateAllLeds();
+
+  if (millis() - lastSpeedChange > speedChangeRate){
+    for (byte l = 0; l < NUM_LEDS; l++){
+      ledSpeeds[l] = (float)(random(1, 500) / 1000.0);
+    }
+    lastSpeedChange = millis();
+  }
 }
 
 void updateLeds(int ledFlag, int newBrightness)
@@ -106,6 +107,13 @@ void updateLeds(int ledFlag, int newBrightness)
       Serial.println(ledFlag);
       break;
   }
+}
+
+void updateLedTarget(int ledFlag, int newTarget)
+{
+  newTarget = constrain(newTarget, 0, 255);
+
+  leds[ledFlag]->updateTarget(newTarget);
 }
 
 void updateAllLeds()

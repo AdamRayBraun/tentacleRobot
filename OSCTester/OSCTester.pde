@@ -5,19 +5,18 @@ import peasy.PeasyCam;
 PeasyCam cam;
 OscP5 oscP5;
 
-// temp
-int b;
-int bChange = 5;
 long lastFrame;
-// int frameRate = 20;
-int frameRate = 10;
-
+int frameRate = 30;
 int boardIndex = 0;
 
 final int anim_none   = 0;
 final int anim_simple = 1;
 final int anim_noise  = 2;
 int anim_mode = anim_noise;
+
+final int STATE_INDIVIDUAL = 0;
+final int STATE_CLUSTERED  = 1;
+final int STATE_DEBUG      = 2;
 
 void setup() {
   size(700, 700, P3D);
@@ -102,6 +101,18 @@ void keyPressed(){
   } else if (key == 'x'){
     noiseScale += 0.1;
     println("noiseScale: " + noiseScale);
+  } else if (key == 'd'){
+    for (Vertebrae v : vertebrae){
+      if (v.isConnected){
+        v.changeSate(STATE_DEBUG);
+      }
+    }
+  } else if (key == 'c'){
+    for (Vertebrae v : vertebrae){
+      if (v.isConnected){
+        v.changeSate(STATE_CLUSTERED);
+      }
+    }
   }
 }
 
@@ -115,8 +126,7 @@ void oscEvent(OscMessage theOscMessage) {
       vertebrae.get(theOscMessage.get(0).intValue()).registerHeartbeat();
       break;
     case "/touchVal/":
-      vertebrae.get(theOscMessage.get(0).intValue()).registerTouch(theOscMessage.get(0).intValue(), theOscMessage.get(0).intValue());
-      println(theOscMessage.get(0).intValue());
+      vertebrae.get(theOscMessage.get(0).intValue()).registerTouch(theOscMessage.get(1).intValue(), theOscMessage.get(2).intValue());
       break;
     case "/touchValDebug/":
       println(theOscMessage.get(0).intValue() + " with touch values of " + theOscMessage.get(1).intValue() + ", " + theOscMessage.get(2).intValue());

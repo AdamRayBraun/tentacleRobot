@@ -27,13 +27,8 @@ int state;
 #include <FastLED.h>
 #include "LED.h"
 
-//OSC
-#include <ESPmDNS.h>
 #include <WiFi.h>
-#include <WiFiUdp.h>
-#include <OSCMessage.h>
-#include <OSCBundle.h>
-#include <OSCData.h>
+#include <esp_now.h>
 
 bool touched = false;
 
@@ -43,22 +38,27 @@ void setup()
 
   setupLeds();
   setupTouch();
-
+  getIDfromMac();
   changeState(STARTING_STATE);
 
   switch(state){
     case STATE_INDIVIDUAL:
+      // setupWifi();
+      // setupOTA();
       break;
 
     case STATE_CLUSTERED:
       updateStatusLed(0, 0, 100);
-      setupOSC();
+      // setupOSC();
+      setupEspNow();
       setupOTA();
       break;
 
     case STATE_DEBUG:
       break;
   }
+
+  Serial.println("setup done");
 }
 
 void changeState(int newState)
@@ -72,20 +72,22 @@ void loop()
     case STATE_INDIVIDUAL:
       randomWaves();
       checkForTouch();
+      updateAllLeds();
       break;
 
     case STATE_CLUSTERED:
-      runOSC();
+      hanleENowRx();
       updateAllLeds();
       checkForTouch();
-      ArduinoOTA.handle();
       break;
 
     case STATE_DEBUG:
-      Serial.print(touchReading1());
-      Serial.print(" ");
-      Serial.println(20);
-      delay(200);
+      // Serial.print(touchReading1());
+      // Serial.print(" ");
+      // Serial.println(20);
+      // oscDebugTouchVals();
+      delay(250);
       break;
   }
+  ArduinoOTA.handle();
 }
