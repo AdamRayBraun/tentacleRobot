@@ -1,7 +1,15 @@
 ArrayList<Vertebrae> vertebrae = new ArrayList<Vertebrae>();
 
-int NUM_VERTEBRAE = 25;
+int NUM_VERTEBRAE = 20;
+byte[] ids = {3, 4, 5, 25, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
 int ledSize = 20;
+
+// UART vars
+Serial bus;
+final byte packet_header   = (byte)0x69;
+final byte packet_footer   = (byte)0x42;
+final byte packet_flag_led = (byte)0x10;
+final byte packet_len      = 11;
 
 // perlin noise vars
 float noiseOffset;
@@ -11,120 +19,59 @@ float noiseFalloff = 0.25;
 float noiseScale = 0.1;
 
 void setupVertebrae(){
+  bus = new Serial(this, BUS_NAME, 115200);
+
   for (int v = 0; v < NUM_VERTEBRAE; v++){
-    vertebrae.add(new Vertebrae(v));
+    vertebrae.add(new Vertebrae(ids[v]));
   }
 }
 
 class Vertebrae {
-  private final String ledAddress         = "/led";
-  private final String statLedAddress     = "/statLed";
-  private final String handShakeAddress   = "/handshake";
-  private final String stateChangeAddress = "/newState";
-  
-  private final int outPort             = 7777;
-  private final int heartbeatTimeout    = 15000;
-
-  private NetAddress remoteLocation;
-  private String ip;
-  private int id;
-  private long lastHeartbeat;
-
-  // render vars
+  private byte id;
   private int ySpacing = 50;
   private int ledRadius = 100;
-
-  public boolean isConnected = false;
+  byte[] txPacket = new byte[packet_len];
 
   ArrayList<vLED> leds = new ArrayList<vLED>();
 
-  Vertebrae(int id){
+  public byte neoR, neoG, neoB;
+
+  Vertebrae(byte id){
     this.id = id;
     leds.add(new vLED(new PVector(-ledRadius, this.id * ySpacing, -ledRadius)));
     leds.add(new vLED(new PVector( ledRadius, this.id * ySpacing, -ledRadius)));
     leds.add(new vLED(new PVector( ledRadius, this.id * ySpacing, ledRadius)));
     leds.add(new vLED(new PVector(-ledRadius, this.id * ySpacing, ledRadius)));
+
+    txPacket[0]              = packet_header;
+    txPacket[1]              = packet_flag_led;
+    txPacket[packet_len - 1] = packet_footer;
   }
 
-  public void setupConnection(String ip, int id){
-    if (this.isConnected){
-      println("WARN: this vertebrae already registered, id: " + this.id);
-      return;
-    }
-
-    this.id = id;
-    this.ip = ip;
-    this.remoteLocation = new NetAddress(this.ip, this.outPort);
-    this.isConnected = true;
-    this.lastHeartbeat = millis();
-    println("New Vertebrae registered, id: " + id);
-
-    sendHandShake();
-  }
-
-  public void sendLedVals(int led1Val, int led2Val, int led3Val, int led4Val){
+  public void setLedVals(int led1Val, int led2Val, int led3Val, int led4Val){
     leds.get(0).val = led1Val;
     leds.get(1).val = led2Val;
     leds.get(2).val = led3Val;
     leds.get(3).val = led4Val;
-
-    if (!this.isConnected){
-      return;
-    }
-
-    OscMessage msg = new OscMessage(this.ledAddress);
-    msg.add(led1Val);
-    msg.add(led2Val);
-    msg.add(led3Val);
-    msg.add(led4Val);
-    oscP5.send(msg, this.remoteLocation);
   }
 
   public void updateLeds(){
-    if (!this.isConnected){
-      return;
-    }
+    txPacket[2] = this.id;
+    txPacket[3] = (byte)leds.get(0).val;
+    txPacket[4] = (byte)leds.get(1).val;
+    txPacket[5] = (byte)leds.get(2).val;
+    txPacket[6] = (byte)leds.get(3).val;
+    txPacket[7] = neoR;
+    txPacket[8] = neoG;
+    txPacket[9] = neoB;
 
-    OscMessage msg = new OscMessage(this.ledAddress);
-    msg.add((int)(leds.get(0).val));
-    msg.add((int)(leds.get(1).val));
-    msg.add((int)(leds.get(2).val));
-    msg.add((int)(leds.get(3).val));
-    oscP5.send(msg, this.remoteLocation);
+    bus.write(txPacket);
   }
 
-  public void registerHeartbeat(){
-    this.lastHeartbeat = millis();
-  }
-
-  public void cheackHeartbeat(){
-    if (millis() - this.lastHeartbeat > heartbeatTimeout){
-      this.isConnected = false;
-      println("ERR: vertebrae heartbeat lost, id: " + this.id);
-    }
-  }
-
-  private void sendHandShake(){
-    if (!this.isConnected){
-      return;
-    }
-
-    OscMessage msg = new OscMessage(this.handShakeAddress);
-    msg.add(unhex(IDtoMAC[this.id - 1][0]));
-    msg.add(unhex(IDtoMAC[this.id - 1][1]));
-    oscP5.send(msg, this.remoteLocation);
-  }
-
-  public void updateStatusLed(int r, int g, int b){
-    if (!this.isConnected){
-      return;
-    }
-
-    OscMessage msg = new OscMessage(this.statLedAddress);
-    msg.add(r);
-    msg.add(g);
-    msg.add(b);
-    oscP5.send(msg, this.remoteLocation);
+  public void updateStatusLed(byte r, byte g, byte b){
+    this.neoR = r;
+    this.neoG = g;
+    this.neoB = b;
   }
 
   public void registerTouch(int touchedSide, int shortTouch){
@@ -136,17 +83,6 @@ class Vertebrae {
         println("Vert " + this.id + " touched on side: 2");
         break;
     }
-  }
-
-  public void changeSate(int newState){
-    if (newState < 0 || newState > 2){
-      println("ERR: trying to send PCB state change with unknown state index: " + newState);
-      return;
-    }
-
-    OscMessage msg = new OscMessage(this.stateChangeAddress);
-    msg.add(newState);
-    oscP5.send(msg, this.remoteLocation);
   }
 
   public void render(){

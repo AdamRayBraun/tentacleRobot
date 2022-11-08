@@ -18,7 +18,11 @@
 // Debug / testing
 #define STATE_DEBUG      2
 
-#define STARTING_STATE STATE_CLUSTERED
+#define STATE_UPDATE     3
+
+#define STARTING_STATE STATE_UPDATE
+
+todo - give up on connecting to wifi after timeout
 
 int state;
 
@@ -39,6 +43,7 @@ void setup()
   setupLeds();
   setupTouch();
   getIDfromMac();
+  
   changeState(STARTING_STATE);
 
   switch(state){
@@ -47,10 +52,8 @@ void setup()
       // setupOTA();
       break;
 
-    case STATE_CLUSTERED:
-      updateStatusLed(0, 0, 100);
-      // setupOSC();
-      setupEspNow();
+    case STATE_UPDATE:
+      updateStatusLed(100, 0, 0);
       setupOTA();
       break;
 
@@ -64,6 +67,15 @@ void setup()
 void changeState(int newState)
 {
   state = newState;
+
+  Serial.print("changing state to: ");
+  Serial.println(newState);
+
+  switch(state){
+    case STATE_CLUSTERED:
+      setupEspNow();
+      break;
+  }
 }
 
 void loop()
@@ -81,6 +93,13 @@ void loop()
       checkForTouch();
       break;
 
+    case STATE_UPDATE:
+      ArduinoOTA.handle();
+      checkForTouch();
+      if (millis() > 120000) changeState(STATE_CLUSTERED);
+
+      break;
+
     case STATE_DEBUG:
       // Serial.print(touchReading1());
       // Serial.print(" ");
@@ -89,5 +108,4 @@ void loop()
       delay(250);
       break;
   }
-  ArduinoOTA.handle();
 }

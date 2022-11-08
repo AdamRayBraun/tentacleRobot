@@ -37,15 +37,15 @@ void checkForTouch()
   touchDebounce(TOUCH_1);
   touchDebounce(TOUCH_3);
 
-  if (touched){
-    if (millis() - lastTouched > touchTime){
-      touched = false;
-    }
-
-    for (byte l = 0; l < NUM_LEDS; l++){
-      leds[l]->updateTarget(255);
-    }
-  }
+  // if (touched){
+  //   if (millis() - lastTouched > touchTime){
+  //     touched = false;
+  //   }
+  //
+  //   for (byte l = 0; l < NUM_LEDS; l++){
+  //     leds[l]->updateTarget(255);
+  //   }
+  // }
 }
 
 void touchOutput(int touchIndex, bool isShortTouch)
@@ -57,6 +57,10 @@ void touchOutput(int touchIndex, bool isShortTouch)
 
     case STATE_CLUSTERED:
       sendTouchMsg(touchIndex, isShortTouch);
+      break;
+
+    case STATE_UPDATE:
+      if (!isShortTouch) changeState(STATE_CLUSTERED);
       break;
 
     case STATE_DEBUG:

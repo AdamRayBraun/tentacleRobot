@@ -1,9 +1,9 @@
-import oscP5.*;
-import netP5.*;
+final String BUS_NAME = "/dev/tty.wchusbserial53820015941";
+
 import peasy.PeasyCam;
+import processing.serial.*;
 
 PeasyCam cam;
-OscP5 oscP5;
 
 long lastFrame;
 int frameRate = 30;
@@ -20,7 +20,6 @@ final int STATE_DEBUG      = 2;
 
 void setup() {
   size(700, 700, P3D);
-  oscP5 = new OscP5(this, 9999);
   cam = new PeasyCam(this, 400);
   setupVertebrae();
   changeNoiseDetail();
@@ -34,9 +33,11 @@ void draw(){
       if (millis() - lastFrame > frameRate){
         for (int v = 0; v < NUM_VERTEBRAE; v++){
           if (v == boardIndex){
-            vertebrae.get(v).sendLedVals(200, 200, 200, 200);
+            vertebrae.get(v).setLedVals(200, 200, 200, 200);
+            vertebrae.get(v).updateLeds();
           } else {
-            vertebrae.get(v).sendLedVals(0, 0, 0, 0);
+            vertebrae.get(v).setLedVals(0, 0, 0, 0);
+            vertebrae.get(v).updateLeds();
           }
         }
         boardIndex++;
@@ -61,9 +62,6 @@ void draw(){
 
   for (Vertebrae v : vertebrae){
     v.render();
-    if (v.isConnected){
-      v.cheackHeartbeat();
-    }
   }
 }
 
@@ -101,38 +99,5 @@ void keyPressed(){
   } else if (key == 'x'){
     noiseScale += 0.1;
     println("noiseScale: " + noiseScale);
-  } else if (key == 'd'){
-    for (Vertebrae v : vertebrae){
-      if (v.isConnected){
-        v.changeSate(STATE_DEBUG);
-      }
-    }
-  } else if (key == 'c'){
-    for (Vertebrae v : vertebrae){
-      if (v.isConnected){
-        v.changeSate(STATE_CLUSTERED);
-      }
-    }
-  }
-}
-
-void oscEvent(OscMessage theOscMessage) {
-  switch(theOscMessage.addrPattern()){
-    case "/register/":
-      int id = int(theOscMessage.get(0).intValue());
-      vertebrae.get(id).setupConnection(theOscMessage.netAddress().address(), id);
-      break;
-    case "/heartbeat/":
-      vertebrae.get(theOscMessage.get(0).intValue()).registerHeartbeat();
-      break;
-    case "/touchVal/":
-      vertebrae.get(theOscMessage.get(0).intValue()).registerTouch(theOscMessage.get(1).intValue(), theOscMessage.get(2).intValue());
-      break;
-    case "/touchValDebug/":
-      println(theOscMessage.get(0).intValue() + " with touch values of " + theOscMessage.get(1).intValue() + ", " + theOscMessage.get(2).intValue());
-      break;
-    default:
-      println("WARN: received OSC w/ unknown addr: " + theOscMessage.addrPattern());
-      break;
   }
 }

@@ -54,6 +54,10 @@ void espNowTxCB(const uint8_t *mac_addr, esp_now_send_status_t status)
 
 void setupEspNow()
 {
+  WiFi.disconnect();
+
+  delay(2000);
+
   WiFi.mode(WIFI_AP);
 
   const char* pass = "pointlessPassword";
@@ -64,14 +68,19 @@ void setupEspNow()
 
   if (esp_now_init() != ESP_OK) {
     Serial.println("ERROR initializing ESP-NOW");
+    updateStatusLed(100, 0, 0);
     return;
   }
+
+  updateStatusLed(0, 0, 0);
 
   esp_now_register_send_cb(espNowTxCB);
   esp_now_register_recv_cb(espNowRxCB);
   WiFi.scanNetworks(); // needed to initialise WiFi before sending broadcasts
 
   setPeerToBroadcast();
+
+  Serial.println("ESPNOW setup");
 }
 
 /**

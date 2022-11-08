@@ -1,5 +1,19 @@
+#define ssid "isaacLikesToWiggle"
+#define password "weLoveInternetting"
+
 void setupOTA()
 {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("Connection Failed! Rebooting...");
+    updateStatusLed(0, 100, 0);
+    delay(1000);
+    ESP.restart();
+  }
+
+  updateStatusLed(0, 0, 100);
+
   String hostName = "vertebrae" + String(getIDfromMac());
   ArduinoOTA.setHostname(hostName.c_str());
 
@@ -30,4 +44,5 @@ void setupOTA()
     });
 
   ArduinoOTA.begin();
+  Serial.println("Waiting for OTA...");
 }
