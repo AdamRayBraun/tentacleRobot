@@ -8,6 +8,7 @@
 #define packet_footer           0x42
 
 #define packet_flag_led         0x10
+#define packet_flag_touch       0x20
 
 /*
 0  header
@@ -46,4 +47,11 @@ void handleSerialRx()
       }
     }
   }
+}
+
+void sendTouch(byte id, byte touchSide, boolean shortTouch){
+  Serial.print(id);
+  Serial.print(",");
+  Serial.print((shortTouch) ? 1 : 0);
+  Serial.println();
 }

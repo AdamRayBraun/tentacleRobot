@@ -17,15 +17,6 @@
 // #include <EEPROM.h>
 
 // Pin connections
-// #define top_servo_X_PUL_pin    9
-// #define top_servo_X_DIR_pin    8
-// #define bottom_servo_Y_DIR_pin 7
-// #define bottom_servo_Y_PUL_pin 6
-// #define top_servo_Y_DIR_pin    5
-// #define top_servo_Y_PUL_pin    2
-// #define bottom_servo_X_PUL_pin 4
-// #define bottom_servo_X_DIR_pin 3
-
 #define top_servo_X_PUL_pin    2
 #define top_servo_X_DIR_pin    5
 #define bottom_servo_Y_DIR_pin 7
@@ -34,6 +25,8 @@
 #define top_servo_Y_DIR_pin    8
 #define bottom_servo_X_PUL_pin 4
 #define bottom_servo_X_DIR_pin 3
+
+#define end_effector_led_pin  A0
 
 // L top X & bottom Y
 // R top Y & bottom X
@@ -51,7 +44,7 @@ void setup()
 {
   setupSerial();
   setupAccelSteppers();
-  // setupEndEffector();
+  setupEndEffector();
 }
 
 void loop()

@@ -22,8 +22,6 @@
 
 #define STARTING_STATE STATE_UPDATE
 
-todo - give up on connecting to wifi after timeout
-
 int state;
 
 #include <Arduino.h>
@@ -43,7 +41,7 @@ void setup()
   setupLeds();
   setupTouch();
   getIDfromMac();
-  
+
   changeState(STARTING_STATE);
 
   switch(state){

@@ -120,13 +120,7 @@ void handleENowRx()
     handleEnowRx = false;
   }
 
-  Serial.print("New message from ID: ");
-  Serial.print(enowRxPacket.id);
-  Serial.print(" touched side: ");
-  Serial.print(enowRxPacket.touchSide);
-  Serial.print(" shortTouch?: ");
-  Serial.print(enowRxPacket.shortTouch);
-  Serial.println();
+  sendTouch(enowRxPacket.id, enowRxPacket.touchSide, enowRxPacket.shortTouch);
 }
 
 /**

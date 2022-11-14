@@ -8,7 +8,7 @@ final byte MOTOR_BOTTOM_Y = 3;
 
 // general motor variables
 int motorPositions[]        = new int[4];
-final int maxMotorSteps[]   = {6000, 6000, 2000, 2000};
+final int maxMotorSteps[]   = {10000, 6000, 2000, 2000};
 final int motorUpdatePeriod = 1000;
 long lastMotorUpdate;
 

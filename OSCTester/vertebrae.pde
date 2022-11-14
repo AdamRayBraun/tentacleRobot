@@ -1,7 +1,7 @@
 ArrayList<Vertebrae> vertebrae = new ArrayList<Vertebrae>();
 
 int NUM_VERTEBRAE = 20;
-byte[] ids = {3, 4, 5, 25, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+byte[] addresses = {3, 4, 5, 25, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
 int ledSize = 20;
 
 // UART vars
@@ -14,15 +14,32 @@ final byte packet_len      = 11;
 // perlin noise vars
 float noiseOffset;
 float noiseIncrement = 0.003;
-int noiseLod = 15;
-float noiseFalloff = 0.25;
+int noiseLod = 1;
+float noiseFalloff = 1;
 float noiseScale = 0.1;
 
 void setupVertebrae(){
-  bus = new Serial(this, BUS_NAME, 115200);
+  if (usingHardware) bus = new Serial(this, BUS_NAME, 115200);
 
-  for (int v = 0; v < NUM_VERTEBRAE; v++){
-    vertebrae.add(new Vertebrae(ids[v]));
+  for (byte v = 0; v < NUM_VERTEBRAE; v++){
+    vertebrae.add(new Vertebrae(v));
+  }
+}
+
+void handleTouchRx(){
+  while (bus.available() > 0) {
+    String rxMsg = bus.readStringUntil(10); // 10 = \n
+    if (rxMsg != null) {
+      String[] list = split(rxMsg, ',');
+      println(list[0]);
+    }
+  }
+  bus.clear();
+}
+
+void updateAllLeds(){
+  for (Vertebrae v : vertebrae){
+    v.updateLeds();
   }
 }
 
@@ -56,7 +73,7 @@ class Vertebrae {
   }
 
   public void updateLeds(){
-    txPacket[2] = this.id;
+    txPacket[2] = addresses[this.id];
     txPacket[3] = (byte)leds.get(0).val;
     txPacket[4] = (byte)leds.get(1).val;
     txPacket[5] = (byte)leds.get(2).val;
@@ -65,7 +82,7 @@ class Vertebrae {
     txPacket[8] = neoG;
     txPacket[9] = neoB;
 
-    bus.write(txPacket);
+    if (usingHardware) bus.write(txPacket);
   }
 
   public void updateStatusLed(byte r, byte g, byte b){
@@ -108,7 +125,7 @@ class vLED{
   }
 
   public void pNoise(){
-    this.val = noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 255;
+    this.val = noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 60;
   }
 
   public void render(){

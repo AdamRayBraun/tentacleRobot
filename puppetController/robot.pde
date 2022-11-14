@@ -9,8 +9,8 @@ final byte BOTTOM_Y = (byte)0x13;
 
 final int STEPPER_BOTTOM_MAX_STEPS_X = 2000;
 final int STEPPER_BOTTOM_MAX_STEPS_Y = 2000;
-final int STEPPER_TOP_MAX_STEPS_X    = 6000;
-final int STEPPER_TOP_MAX_STEPS_Y    = 6000;
+final int STEPPER_TOP_MAX_STEPS_X    = 10000;
+final int STEPPER_TOP_MAX_STEPS_Y    = 10000;
 
 final byte packet_flag_motor_speed = (byte)0x20;
 final byte packet_flag_motor_accel = (byte)0x30;
@@ -40,10 +40,10 @@ void updateMotors(){
     return;
   }
 
-  sendMotorMsg(TOP_X,    leftX);
+  sendMotorMsg(TOP_X,    leftX * -1);
   sendMotorMsg(TOP_Y,    leftY);
-  sendMotorMsg(BOTTOM_X, rightX);
-  sendMotorMsg(BOTTOM_Y, rightY);
+  sendMotorMsg(BOTTOM_X, rightY * -1);
+  sendMotorMsg(BOTTOM_Y, rightX);
 
   lastMotorUpdate = millis();
 }
