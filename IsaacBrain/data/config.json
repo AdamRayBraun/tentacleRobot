@@ -1,0 +1,15 @@
+{
+  "KINECT_ENABLED": false,
+  "Motors":{
+    "MOTORS_ENABLED": false,
+    "MOTOR_PORT": "/dev/tty.usbserial-FT68HCUZ"
+  },
+  "PCBs":{
+    "PCBS_ENABLEDD": false,
+    "PCB_PORT": "/dev/tty.usbserial-FT68HCUZ"
+  },
+  "Puppet":{
+    "PUPPET_ENABLED": false,
+    "PUPPET_PORT": "/dev/tty.usbserial-FT68HCUZ"
+  }
+}
