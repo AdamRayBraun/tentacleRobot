@@ -1,5 +1,5 @@
 {
-  "KINECT_ENABLED": false,
+  "KINECT_ENABLED": true,
   "Motors":{
     "MOTORS_ENABLED": false,
     "MOTOR_PORT": "/dev/tty.usbserial-FT68HCUZ"

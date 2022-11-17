@@ -1,7 +1,7 @@
 KinectSensor presenceSensor;
 
 void setupKinect(){
-  presenceSensor = new KinectSensor(this, KINECT_EN);
+  presenceSensor = new KinectSensor(this);
 }
 
 class KinectSensor {
