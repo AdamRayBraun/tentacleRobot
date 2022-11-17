@@ -30,14 +30,15 @@ void setup(){
   setupKinect();
   setupBlobDetection();
 
-  if (MOTORS_EN) setupMotors();
-
+  setupMotors();
 }
 
 void draw(){
   // detect presence
   runBlobDetection();
 
+  // handle Motor Responses
+  motors.run();
 
   // render visuals
   renderPointloud();
