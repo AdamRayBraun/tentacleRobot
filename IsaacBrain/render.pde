@@ -5,9 +5,9 @@ int pointSkip   = 2;
 int pointCol = 200;
 
 void setupRendering(){
-  // cam = new PeasyCam(this, 555.38727, 256.59683, 1047.7106, 2712.309326171875);
-  // cam.setSuppressRollRotationMode();
-  // cam.setWheelScale(0.5);
+  cam = new PeasyCam(this, 555.38727, 256.59683, 1047.7106, 2712.309326171875);
+  cam.setSuppressRollRotationMode();
+  cam.setWheelScale(0.5);
 }
 
 void renderPointloud(){
@@ -33,4 +33,12 @@ void renderPointloud(){
     }
   }
   endShape();
+}
+
+void render(){
+  background(0);
+
+  renderPointloud();
+
+  gui.render();
 }

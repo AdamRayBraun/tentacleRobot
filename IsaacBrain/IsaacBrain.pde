@@ -37,8 +37,9 @@ void setup(){
   setupKinect();
   setupBlobDetection();
 
-  // setup motors MCU connection
+  // setup Isaac electronics
   setupMotors();
+  setupVertebrae();
 
   setupMovement();
   setupInterface();
@@ -54,7 +55,5 @@ void draw(){
   // handle Motor Responses
   motors.run();
 
-  // render visuals
-  renderPointloud();
-  gui.render();
+  render();
 }

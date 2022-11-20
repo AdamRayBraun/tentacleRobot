@@ -13,6 +13,7 @@ class GUI {
 
   GUI(PApplet par){
     this.cp5 = new ControlP5(par);
+    this.cp5.setAutoDraw(false);
 
     this.topMotorSlider = this.cp5.addSlider2D("TopPositions")
                         .setPosition(this.border, this.border)
@@ -36,9 +37,14 @@ class GUI {
   }
 
   void render(){
+    cam.beginHUD();
+
+    this.cp5.draw();
+
     fill(255);
     textSize(10);
     text("Current state:  " + stateNames[currentState], this.border, (this.border * 3) + (this.sliderSize * 2));
+    cam.endHUD();
   }
 }
 

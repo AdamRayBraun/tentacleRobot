@@ -8,6 +8,7 @@
   },
   "PCBs":{
     "PCBS_ENABLEDD": false,
+    "SERIAL_DEBUG": false,
     "PCB_PORT": "/dev/tty.usbserial-FT68HCUZ",
     "PCB_BAUD": 115200
   },
