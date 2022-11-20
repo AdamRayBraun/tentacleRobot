@@ -11,6 +11,7 @@ void runBlobDetection(){
 
 class BlobDetector {
   public ArrayList<Blob> blobs = new ArrayList<Blob>();
+
   private PGraphics blobCanvas;
   private final int trackColor = 255;
   private int blobCounter;
@@ -21,7 +22,7 @@ class BlobDetector {
     blobCanvas = createGraphics(kinectDepthW, kinectDepthH, P3D);
   }
 
-  void processBlobs(){
+  public void processBlobs(){
     blobCanvas.beginDraw();
     blobCanvas.clear();
     blobCanvas.endDraw();
@@ -134,7 +135,14 @@ class BlobDetector {
     }
   }
 
-  float distSq(float x1, float y1, float z1, float x2, float y2, float z2) {
+  public void updateMinBlobSize(int amtChange){
+    if (this.minBlobSize > 100){
+      this.minBlobSize += amtChange;
+      println("new minBlobSize: amtChange");
+    }
+  }
+
+  private float distSq(float x1, float y1, float z1, float x2, float y2, float z2) {
     return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1);
   }
 }

@@ -8,9 +8,16 @@
   2022
 */
 
+/*
+  TODO:
+  setup point cloud view
+  debugging lines between issac and person of interest
+*/
+
 import org.openkinect.processing.*;
 import processing.serial.*;
 import peasy.PeasyCam;
+import controlP5.*;
 
 // render sizes
 final int kinectDepthW = 512;
@@ -23,23 +30,31 @@ void settings(){
 
 void setup(){
   loadConfig();
+
   setupRendering();
-  setupInterface();
 
   // setup presence detection
   setupKinect();
   setupBlobDetection();
 
+  // setup motors MCU connection
   setupMotors();
+
+  setupMovement();
+  setupInterface();
 }
 
 void draw(){
   // detect presence
   runBlobDetection();
 
+  // motor movement
+  wiggle();
+
   // handle Motor Responses
   motors.run();
 
   // render visuals
   renderPointloud();
+  gui.render();
 }

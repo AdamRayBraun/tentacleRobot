@@ -1,7 +1,7 @@
 {
-  "KINECT_ENABLED": true,
+  "KINECT_ENABLED": false,
   "Motors":{
-    "MOTORS_ENABLED": true,
+    "MOTORS_ENABLED": false,
     "SERIAL_DEBUG": false,
     "MOTOR_PORT": "/dev/tty.usbserial-FT68HCUZ",
     "MOTOR_BAUD": 115200
@@ -15,5 +15,10 @@
     "PUPPET_ENABLED": false,
     "PUPPET_PORT": "/dev/tty.usbserial-FT68HCUZ",
     "PUPPET_BAUD": 115200
+  },
+  "Isaac":{
+    "baseX": 243,
+    "baseY": 249,
+    "baseZ": 200,
   }
 }

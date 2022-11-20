@@ -5,10 +5,13 @@ void setupMotors(){
 }
 
 class Motors {
+  public final byte NUM_MOTORS     = 4;
   public final byte MOTOR_TOP_X    = 0;
   public final byte MOTOR_TOP_Y    = 1;
   public final byte MOTOR_BOTTOM_X = 2;
   public final byte MOTOR_BOTTOM_Y = 3;
+
+  public final int maxMotorSteps[] = {10000, 6000, 2000, 2000};
 
   private PApplet par;
   private Serial bus;
@@ -85,11 +88,16 @@ class Motors {
 
     uartTx(this.txPacket);
 
-    // topMotorSlider.setValue((float)lastMotorPositions[MOTOR_TOP_X],
-    //                         (float)lastMotorPositions[MOTOR_TOP_Y]);
-    //
-    // bottomMotorSlider.setValue((float)lastMotorPositions[MOTOR_BOTTOM_X],
-    //                            (float)lastMotorPositions[MOTOR_BOTTOM_Y]);
+    gui.topMotorSlider.setValue((float)lastMotorPositions[MOTOR_TOP_X],
+                               (float)lastMotorPositions[MOTOR_TOP_Y]);
+
+    gui.bottomMotorSlider.setValue((float)lastMotorPositions[MOTOR_BOTTOM_X],
+                                  (float)lastMotorPositions[MOTOR_BOTTOM_Y]);
+  }
+
+  public void homeMotors(){
+    this.txPacket[this.packet_pos_flag] = this.packet_flag_stepper_home;
+    uartTx(this.txPacket);
   }
 
   private void uartTx(byte[] packet){

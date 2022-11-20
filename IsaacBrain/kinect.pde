@@ -7,8 +7,11 @@ void setupKinect(){
 class KinectSensor {
   public PGraphics graphics, depthSlice;
   public int[] depthData;
-  public float depthMin  = 1500;
-  public float depthMax  = 3500;
+  public float depthMin          = 1500;
+  public float depthMax          = 3500;
+  public final int DEPTH_ALL     = 0;
+  public final int DEPTH_THRESH  = 1;
+  public int depthMode           = DEPTH_THRESH;
 
   private PApplet parent;
   private Kinect2 kinect;
@@ -30,7 +33,7 @@ class KinectSensor {
     this.depthSlice.endDraw();
   }
 
-  void run(){
+  public void run(){
     if (!KINECT_EN){
       return;
     }
@@ -40,18 +43,39 @@ class KinectSensor {
 
     // build image of depth sliced threshold for blob detection
     this.depthSlice.loadPixels();
-    for (int p = 0; p < this.numKinectPixels; p++){
-      if (this.depthData[p] < this.depthMax && this.depthData[p] > this.depthMin){
-        this.depthSlice.pixels[p] = color(255);
-      } else {
-        this.depthSlice.pixels[p] = color(0);
-      }
+
+    switch(this.depthMode){
+
+      case DEPTH_ALL:
+        for (int p = 0; p < this.numKinectPixels; p++){
+          this.depthSlice.pixels[p] = color(map(this.depthData[p], 0, 4000, 0, 255));
+        }
+        break;
+
+      case DEPTH_THRESH:
+        for (int p = 0; p < this.numKinectPixels; p++){
+          if (this.depthData[p] < this.depthMax && this.depthData[p] > this.depthMin){
+            this.depthSlice.pixels[p] = color(255);
+          } else {
+            this.depthSlice.pixels[p] = color(0);
+          }
+        }
+        break;
+
     }
     this.depthSlice.updatePixels();
   }
 
+  public int getDepthValue(int x, int y){
+    if (!KINECT_EN){
+      return -1;
+    }
+
+    return this.depthData[(y / scale) * kinectDepthW + (x / scale)];
+  }
+
   //calculte the xyz position based on the depth data
-  PVector depthToPointCloudPos(int x, int y, float depthValue){
+  private PVector depthToPointCloudPos(int x, int y, float depthValue){
     PVector point = new PVector();
     point.z = (depthValue);
     point.x = (x - CameraParams.cx) * point.z / CameraParams.fx;
