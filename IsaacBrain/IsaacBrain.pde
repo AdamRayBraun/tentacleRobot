@@ -55,5 +55,8 @@ void draw(){
   // handle Motor Responses
   motors.run();
 
+  // PCB led animations
+  runLedAnimations();
+
   render();
 }

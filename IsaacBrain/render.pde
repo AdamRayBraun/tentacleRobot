@@ -39,6 +39,6 @@ void render(){
   background(0);
 
   renderPointloud();
-
+  pcbVertebrae.render();
   gui.render();
 }

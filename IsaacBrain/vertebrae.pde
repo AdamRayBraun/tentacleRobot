@@ -22,9 +22,9 @@ class Vertebrae{
                                     14, 15, 16, 17, 18, 19, 20, 21, 22
                                   };
 
-  private PApplet par;
+  public ArrayList<Vertebra> vertebrae = new ArrayList<Vertebra>();
 
-  private ArrayList<Vertebra> vertebrae = new ArrayList<Vertebra>();
+  private PApplet par;
 
   private Serial bus;
   private String busPort;
@@ -50,6 +50,10 @@ class Vertebrae{
   }
 
   public void updateAllLeds(){
+    if (!PCBS_EN) {
+      return;
+    }
+    
     for (byte v = 0; v < this.NUM_VERTEBRAE; v++){
       this.vertebrae.get(v).updateLedPacket();
       this.bus.write(this.vertebrae.get(v).txPacket);
@@ -78,6 +82,12 @@ class Vertebrae{
       }
     }
     this.bus.clear();
+  }
+
+  public void render(){
+    for (Vertebra v : vertebrae){
+      v.render();
+    }
   }
 }
 
