@@ -16,10 +16,6 @@ final int STATE_DEBUG      = 2;
 boolean touched   = false;
 boolean touchDrag = false;
 
-void runLedAnimations(){
-  animateLeds();
-}
-
 void animateLeds(){
   switch(anim_mode){
     case anim_simple:

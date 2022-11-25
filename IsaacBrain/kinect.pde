@@ -71,7 +71,7 @@ class KinectSensor {
       return -1;
     }
 
-    return this.depthData[(y / scale) * kinectDepthW + (x / scale)];
+    return this.depthData[floor((y / scale) * kinectDepthW + (x / scale))];
   }
 
   //calculte the xyz position based on the depth data

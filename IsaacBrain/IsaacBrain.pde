@@ -10,22 +10,25 @@
 
 /*
   TODO:
-  setup point cloud view
   debugging lines between issac and person of interest
+  add current state tag to cp5
 */
 
-import org.openkinect.processing.*;
+import org.openkinect.processing.Kinect2;
 import processing.serial.*;
 import peasy.PeasyCam;
-import controlP5.*;
+import controlP5.ControlP5;
+import controlP5.Slider2D;
+import controlP5.Slider;
+import controlP5.Group;
 
 // render sizes
 final int kinectDepthW = 512;
 final int kinectDepthH = 424;
-final int scale        = 1;
+final float scale      = 1.2;
 
 void settings(){
-  size(kinectDepthW * scale * 2, kinectDepthH * scale * 2, P3D);
+  size(int(kinectDepthW * scale * 2), int(kinectDepthH * scale * 2), P3D);
 }
 
 void setup(){
@@ -56,7 +59,8 @@ void draw(){
   motors.run();
 
   // PCB led animations
-  runLedAnimations();
+  animateLeds();
+  pcbVertebrae.checkForPCBTouch();
 
   render();
 }

@@ -19,7 +19,7 @@ void renderPointloud(){
     return;
   }
 
-  stroke(pointCol);
+  stroke(0, 0, pointCol);
   strokeWeight(pointDiam);
 
   beginShape(POINTS);
@@ -29,7 +29,7 @@ void renderPointloud(){
       // get point position
       PVector point = presenceSensor.depthToPointCloudPos(x, y, rawDepth);
       // render point cloud
-      vertex(point.x, point.y, point.z);
+      vertex(point.x, point.z, point.y);
     }
   }
   endShape();

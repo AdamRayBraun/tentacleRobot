@@ -52,6 +52,6 @@ void handleSerialRx()
 void sendTouch(byte id, byte touchSide, boolean shortTouch){
   Serial.print(id);
   Serial.print(",");
-  Serial.print((shortTouch) ? 1 : 0);
+  Serial.print((shortTouch) ? "1" : "0");
   Serial.println();
 }

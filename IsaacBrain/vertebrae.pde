@@ -11,10 +11,6 @@ void setupVertebrae(){
   pcbVertebrae = new Vertebrae(this, PCBConfig);
 }
 
-void runVertebrae(){
-  pcbVertebrae.handleTouchRx();
-}
-
 class Vertebrae{
   public final int NUM_VERTEBRAE = 20;
   public final byte[] addresses = {
@@ -53,7 +49,7 @@ class Vertebrae{
     if (!PCBS_EN) {
       return;
     }
-    
+
     for (byte v = 0; v < this.NUM_VERTEBRAE; v++){
       this.vertebrae.get(v).updateLedPacket();
       this.bus.write(this.vertebrae.get(v).txPacket);
@@ -65,7 +61,7 @@ class Vertebrae{
     println("Noise lod: " + noiseLod + " , falloff: " + noiseFalloff);
   }
 
-  public void handleTouchRx(){
+  public void checkForPCBTouch(){
     if (!PCBS_EN) {
       return;
     }
@@ -73,11 +69,15 @@ class Vertebrae{
     while (this.bus.available() > 0) {
       String rxMsg = this.bus.readStringUntil(10); // 10 = \n
       if (rxMsg != null) {
-        String[] list = split(rxMsg, ',');
+        String[] parsedPacket = split(rxMsg, ',');
+
+        handleRecievedTouch(int(parsedPacket[0]), int(parsedPacket[1]));
 
         if (this.SERIAL_DEBUG){
           print("touch from: ");
-          println(list[0]);
+          print(int(parsedPacket[0]));
+          print(", short touch: ");
+          println(int(parsedPacket[1]));
         }
       }
     }
@@ -106,15 +106,16 @@ class Vertebra {
 
   private byte id;
   private int ySpacing = 50;
-  private int ledRadius = 100;
+  private int yOffset = 700;
+  private int ledRadius = 40;
   private ArrayList<vLED> leds = new ArrayList<vLED>();
 
   Vertebra(byte id){
     this.id = id;
-    this.leds.add(new vLED(new PVector(-this.ledRadius, this.id * this.ySpacing, -this.ledRadius)));
-    this.leds.add(new vLED(new PVector( this.ledRadius, this.id * this.ySpacing, -this.ledRadius)));
-    this.leds.add(new vLED(new PVector( this.ledRadius, this.id * this.ySpacing, this.ledRadius)));
-    this.leds.add(new vLED(new PVector(-this.ledRadius, this.id * this.ySpacing, this.ledRadius)));
+    this.leds.add(new vLED(new PVector(-this.ledRadius, (this.id * this.ySpacing) + this.yOffset, -this.ledRadius)));
+    this.leds.add(new vLED(new PVector( this.ledRadius, (this.id * this.ySpacing) + this.yOffset, -this.ledRadius)));
+    this.leds.add(new vLED(new PVector( this.ledRadius, (this.id * this.ySpacing) + this.yOffset, this.ledRadius)));
+    this.leds.add(new vLED(new PVector(-this.ledRadius, (this.id * this.ySpacing) + this.yOffset, this.ledRadius)));
 
     txPacket[0]                   = this.packet_header;
     txPacket[1]                   = this.packet_flag_led;
@@ -175,7 +176,7 @@ class Vertebra {
 class vLED{
   public PVector loc;
   public float val;
-  private int ledSize = 20;
+  private int ledSize = 10;
 
   vLED(PVector loc){
     this.loc = loc;
