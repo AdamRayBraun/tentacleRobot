@@ -160,3 +160,9 @@ void wiggle(){
     }
   }
 }
+
+void homeMotors(){
+  for (byte m = 0; m < 4; m++){
+    motors.moveMotors(m, 0);
+  }
+}

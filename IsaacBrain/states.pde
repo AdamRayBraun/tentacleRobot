@@ -22,10 +22,24 @@ final String[] stateNames = { "Homing",
                               "MANUAL",
                           };
 
-byte currentState      = EYE_CONTACT;
+byte currentState      = HOME;
 byte lastState         = currentState;
 long lastStateChange;
 
 void changeState(byte newState){
+  if (currentState != newState) currentState = newState;
 
+  switch(currentState){
+    case WIGGLE:
+      break;
+
+    case EYE_CONTACT:
+      break;
+
+    case HOME:
+      homeMotors();
+      break;
+  }
+
+  println("New state:  " + stateNames[currentState]);
 }

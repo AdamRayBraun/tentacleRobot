@@ -22,7 +22,6 @@ class GUI {
                           .setBackgroundColor(color(255,50))
                           .setBackgroundHeight((this.sliderSize * 2) + (this.border * 3))
                           .setWidth(this.sliderSize + (this.border * 2))
-
                           ;
 
     this.topMotorSlider = this.cp5.addSlider2D("TopPositions")
@@ -87,7 +86,7 @@ class GUI {
     fill(255);
     textSize(10);
     // TODO add current state tag to cp5
-    // text("Current state:  " + stateNames[currentState], this.border, (this.border * 3) + (this.sliderSize * 2));
+    // text("Current state:  " + state Names[currentState], this.border, (this.border * 3) + (this.sliderSize * 2));
     cam.endHUD();
   }
 }
@@ -97,12 +96,26 @@ void keyPressed(){
     presenceSensor.depthMode = presenceSensor.DEPTH_THRESH;
   } else if (key == 'a'){
     presenceSensor.depthMode = presenceSensor.DEPTH_ALL;
-  } else if (key == '['){
+  } else if (key == 'b'){
     blobDetector.updateMinBlobSize(-100);
-  } else if (key == ']'){
+  } else if (key == 'B'){
     blobDetector.updateMinBlobSize(100);
   } else if (key == 'h'){
     motors.homeMotors();
+  } else if (key == '['){
+    presenceSensor.depthMin += 50;
+    println("depthMin,depthMax: " + presenceSensor.depthMin + "," + presenceSensor.depthMax);
+  } else if (key == '{'){
+    presenceSensor.depthMin -= 50;
+    println("depthMin,depthMax: " + presenceSensor.depthMin + "," + presenceSensor.depthMax);
+  } else if (key == ']'){
+    presenceSensor.depthMax -= 50;
+    println("depthMin,depthMax: " + presenceSensor.depthMin + "," + presenceSensor.depthMax);
+  } else if (key == '}'){
+    presenceSensor.depthMax += 50;
+    println("depthMin,depthMax: " + presenceSensor.depthMin + "," + presenceSensor.depthMax);
+  } else if (key == 'd'){
+    showBlobs = !showBlobs;
   }
 
   // numbers 0 - 9

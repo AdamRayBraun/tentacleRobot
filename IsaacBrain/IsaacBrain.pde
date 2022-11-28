@@ -25,10 +25,10 @@ import controlP5.Group;
 // render sizes
 final int kinectDepthW = 512;
 final int kinectDepthH = 424;
-final float scale      = 1.2;
+final float scale      = 2.4;
 
 void settings(){
-  size(int(kinectDepthW * scale * 2), int(kinectDepthH * scale * 2), P3D);
+  size(int(kinectDepthW * scale), int(kinectDepthH * scale), P3D);
 }
 
 void setup(){
@@ -49,11 +49,25 @@ void setup(){
 }
 
 void draw(){
-  // detect presence
-  runBlobDetection();
+  // get kinect input
+  presenceSensor.run();
+
+  // run blob detection on depth slice to detect audience
+  blobDetector.processBlobs();
 
   // motor movement
-  wiggle();
+  switch(currentState){
+    case WIGGLE:
+      wiggle();
+      break;
+
+    case EYE_CONTACT:
+      lookAtIndividual();
+      break;
+
+    case HOME:
+      break;
+  }
 
   // handle Motor Responses
   motors.run();
@@ -62,5 +76,6 @@ void draw(){
   animateLeds();
   pcbVertebrae.checkForPCBTouch();
 
+  // render screen control feedback
   render();
 }

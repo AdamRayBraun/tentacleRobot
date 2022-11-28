@@ -4,25 +4,26 @@ void setupBlobDetection(){
   blobDetector = new BlobDetector();
 }
 
-void runBlobDetection(){
-  presenceSensor.run();
-  blobDetector.processBlobs();
-}
-
 class BlobDetector {
   public ArrayList<Blob> blobs = new ArrayList<Blob>();
 
-  private PGraphics blobCanvas;
-  private final int trackColor = 255;
+  public PGraphics blobCanvas;
+  private final color trackColor = color(255);
   private int blobCounter;
   private int threshold = 10;
   private int minBlobSize = 3300;
 
   BlobDetector(){
     blobCanvas = createGraphics(kinectDepthW, kinectDepthH, P3D);
+    blobCanvas.beginDraw();
+    blobCanvas.background(0);
+    blobCanvas.clear();
+    blobCanvas.endDraw();
   }
 
   public void processBlobs(){
+    if (!KINECT_EN) return;
+
     blobCanvas.beginDraw();
     blobCanvas.clear();
     blobCanvas.endDraw();
@@ -70,15 +71,15 @@ class BlobDetector {
     }
 
     // There are no blobs!
-    if (blobs.isEmpty() && currentBlobs.size() > 0) {
+    if (this.blobs.isEmpty() && currentBlobs.size() > 0) {
       for (Blob b : currentBlobs) {
         b.id = this.blobCounter;
-        blobs.add(b);
+        this.blobs.add(b);
         this.blobCounter++;
       }
-    } else if (blobs.size() <= currentBlobs.size()) {
+    } else if (this.blobs.size() <= currentBlobs.size()) {
       // Match whatever blobs you can match
-      for (Blob b : blobs) {
+      for (Blob b : this.blobs) {
         float recordD = 1000;
         Blob matched = null;
         for (Blob cb : currentBlobs) {
@@ -98,7 +99,7 @@ class BlobDetector {
       for (Blob b : currentBlobs) {
         if (!b.taken) {
           b.id = this.blobCounter;
-          blobs.add(b);
+          this.blobs.add(b);
           this.blobCounter++;
         }
       }
@@ -111,7 +112,7 @@ class BlobDetector {
       for (Blob cb : currentBlobs) {
         float recordD = 1000;
         Blob matched = null;
-        for (Blob b : blobs) {
+        for (Blob b : this.blobs) {
           PVector centerB = b.getCenter();
           PVector centerCB = cb.getCenter();
           float d = PVector.dist(centerB, centerCB);
@@ -126,10 +127,10 @@ class BlobDetector {
         }
       }
 
-      for (int i = blobs.size() - 1; i >= 0; i--) {
-        Blob b = blobs.get(i);
+      for (int i = this.blobs.size() - 1; i >= 0; i--) {
+        Blob b = this.blobs.get(i);
         if (!b.taken) {
-          if (b.checkLife()) blobs.remove(i);
+          if (b.checkLife()) this.blobs.remove(i);
         }
       }
     }

@@ -3,7 +3,7 @@
   "Motors":{
     "MOTORS_ENABLED": false,
     "SERIAL_DEBUG": false,
-    "MOTOR_PORT": "/dev/tty.usbserial-FT68HCUZ",
+    "MOTOR_PORT": "/dev/tty.usbmodem1444401",
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
