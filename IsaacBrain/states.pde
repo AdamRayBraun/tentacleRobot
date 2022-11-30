@@ -31,13 +31,17 @@ void changeState(byte newState){
 
   switch(currentState){
     case WIGGLE:
+      showDebugPersonDetection = false;
       break;
 
     case EYE_CONTACT:
+      pickNewTarget();
+      showDebugPersonDetection = true;
       break;
 
     case HOME:
       homeMotors();
+      showDebugPersonDetection = false;
       break;
   }
 

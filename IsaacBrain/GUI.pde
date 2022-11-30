@@ -6,7 +6,7 @@ void setupInterface(){
 
 class GUI {
   public Slider2D topMotorSlider, bottomMotorSlider;
-  public Slider pointSkipSlider, pointDiamSlider;
+  public Slider pointSkip, pointDiam;
   public Group motorGroup, pointCloudGroup;
 
   private ControlP5 cp5;
@@ -46,36 +46,36 @@ class GUI {
                                      .setGroup(motorGroup)
                                      ;
 
-    // TODO : error including more sliders: running out of heap space
-    // this.pointCloudGroup = this.cp5.addGroup("pointCloudGroup")
-    //                                .setPosition((this.sliderSize) + (this.border * 3), this.border / 2)
-    //                                .setBackgroundColor(color(255,50))
-    //                                .setWidth(this.sliderSize + (this.border * 2))
-    //                                .setBackgroundHeight(int((this.sliderSize * 0.5) + (this.border * 2)))
-    //                                .setWidth(this.sliderSize + (this.border * 2))
-    //                                ;
-    //
-    // this.pointSkipSlider = this.cp5.addSlider("pointSkipSlider")
-    //                                .setPosition(this.border, this.border)
-    //                                .setWidth(this.sliderSize - this.border)
-    //                                .setRange(0, 8)
-    //                                .setValue(pointSkip)
-    //                                .setNumberOfTickMarks(9)
-    //                                .setGroup(pointCloudGroup)
-    //                                ;
+    this.pointCloudGroup = this.cp5.addGroup("pointCloudGroup")
+                                   .setPosition((this.sliderSize) + (this.border * 3), this.border / 2)
+                                   .setBackgroundColor(color(255,50))
+                                   .setWidth(this.sliderSize + (this.border * 2))
+                                   .setBackgroundHeight(int((this.sliderSize * 0.5) + (this.border * 2)))
+                                   .setWidth(this.sliderSize + (this.border * 2))
+                                   ;
 
-    // this.pointDiamSlider = this.cp5.addSlider("pointDiamSlider")
-    //                            .setPosition(this.border, (this.border * 2))
-    //                            .setWidth(this.sliderSize - this.border)
-    //                            .setRange(0, 8)
-    //                            .setValue(pointDiam)
-    //                            .setNumberOfTickMarks(9)
-    //                            .setSliderMode(Slider.FLEXIBLE)
-    //                            .setGroup(pointCloudGroup)
-    //                            ;
-    //
-    // this.cp5.getController("pointSkipSlider").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
-    // this.cp5.getController("pointDiamSlider").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.pointSkip = this.cp5.addSlider("pointSkip")
+                                   .setPosition(this.border, this.border)
+                                   .setWidth(this.sliderSize - this.border)
+                                   .setRange(0, 8)
+                                   .setValue(2)
+                                   .setNumberOfTickMarks(9)
+                                   .setSliderMode(Slider.FLEXIBLE)
+                                   .setGroup(pointCloudGroup)
+                                   ;
+
+    this.pointDiam = this.cp5.addSlider("pointDiam")
+                               .setPosition(this.border, (this.border * 2))
+                               .setWidth(this.sliderSize - this.border)
+                               .setRange(0, 8)
+                               .setValue(2)
+                               .setNumberOfTickMarks(9)
+                               .setSliderMode(Slider.FLEXIBLE)
+                               .setGroup(pointCloudGroup)
+                               ;
+
+    this.cp5.getController("pointSkip").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("pointDiam").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   }
 
   void render(){
@@ -126,8 +126,14 @@ void keyPressed(){
 }
 
 void mousePressed(){
-  if (mouseY < kinectDepthH * scale && mouseX > kinectDepthW * scale){
-    print("coordinate : " + (mouseX -  kinectDepthW * scale) + ", " + mouseY);
-    println(presenceSensor.getDepthValue(mouseX, mouseY));
+  if (showBlobs){
+    if (mouseX > debugImgPos.x && mouseX < debugImgPos.x + kinectDepthW &&
+        mouseY > debugImgPos.y && mouseY < debugImgPos.y + kinectDepthH){
+
+      int kinectXCoord = (int)(mouseX - debugImgPos.x);
+      int kinectYCoord = (int)(mouseY - debugImgPos.y);
+      int kinDepth = presenceSensor.getDepthValue(kinectXCoord, kinectYCoord);
+      println("Kinect coordinate : " + kinectXCoord + ", " + kinectYCoord + " depth: " + kinDepth);
+    }
   }
 }
