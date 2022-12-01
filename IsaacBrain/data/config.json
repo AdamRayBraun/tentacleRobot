@@ -3,7 +3,7 @@
   "Motors":{
     "MOTORS_ENABLED": false,
     "SERIAL_DEBUG": false,
-    "MOTOR_PORT": "/dev/tty.usbmodem1444401",
+    "MOTOR_PORT": "/dev/tty.usbmodem1414401",
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
@@ -18,8 +18,8 @@
     "PUPPET_BAUD": 115200
   },
   "Isaac":{
-    "baseX": 243,
-    "baseY": 249,
+    "baseX": 235,
+    "baseY": 287,
     "baseZ": 200,
   }
 }

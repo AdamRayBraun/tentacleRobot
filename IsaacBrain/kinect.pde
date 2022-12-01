@@ -9,6 +9,7 @@ class KinectSensor {
   public int[] depthData;
   public float depthMin          = 1500;
   public float depthMax          = 2000;
+  public int yCrop               = 245;
   public final int DEPTH_ALL     = 0;
   public final int DEPTH_THRESH  = 1;
   public int depthMode           = DEPTH_THRESH;
@@ -45,7 +46,6 @@ class KinectSensor {
     this.depthSlice.loadPixels();
 
     switch(this.depthMode){
-
       case DEPTH_ALL:
         for (int p = 0; p < this.numKinectPixels; p++){
           this.depthSlice.pixels[p] = color(map(this.depthData[p], 0, 4000, 0, 255));
@@ -53,15 +53,21 @@ class KinectSensor {
         break;
 
       case DEPTH_THRESH:
-        for (int p = 0; p < this.numKinectPixels; p++){
-          if (this.depthData[p] < this.depthMax && this.depthData[p] > this.depthMin){
-            this.depthSlice.pixels[p] = color(255);
-          } else {
-            this.depthSlice.pixels[p] = color(0);
+        for (int x = 0; x < kinectDepthW; x++){
+          for (int y = 0; y < kinectDepthH; y++){
+            int i = y * kinectDepthW + x;
+            if (y < this.yCrop){
+              if (this.depthData[i] < this.depthMax && this.depthData[i] > this.depthMin){
+                this.depthSlice.pixels[i] = color(255);
+              } else {
+                this.depthSlice.pixels[i] = color(0);
+              }
+            } else {
+              this.depthSlice.pixels[i] = color(0);
+            }
           }
         }
         break;
-
     }
     this.depthSlice.updatePixels();
   }

@@ -116,6 +116,12 @@ void keyPressed(){
     println("depthMin,depthMax: " + presenceSensor.depthMin + "," + presenceSensor.depthMax);
   } else if (key == 'd'){
     showBlobs = !showBlobs;
+    if (showBlobs) lookAtMouse = false;
+  } else if (key == 'm'){
+    if (showBlobs){
+      lookAtMouse = !lookAtMouse;
+      println("Following debug mouse: " + lookAtMouse);
+    }
   }
 
   // numbers 0 - 9

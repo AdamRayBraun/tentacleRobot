@@ -6,8 +6,8 @@ void setupMotors(){
 
 class Motors {
   public final byte NUM_MOTORS     = 4;
-  public final byte MOTOR_TOP_X    = 0;
-  public final byte MOTOR_TOP_Y    = 1;
+  public final byte MOTOR_TOP_X    = 1; // SWAPPED
+  public final byte MOTOR_TOP_Y    = 0; // SWAPPED
   public final byte MOTOR_BOTTOM_X = 2;
   public final byte MOTOR_BOTTOM_Y = 3;
 
