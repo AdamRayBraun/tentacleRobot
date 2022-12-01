@@ -93,6 +93,25 @@ void sendUpdate(byte address, byte led1, byte led2, byte led3, byte led4, byte n
   #endif
 }
 
+void sendOTAFlag(byte address)
+{
+  enowTxPacket.address = address;
+  enowTxPacket.led1 = 0;
+  enowTxPacket.led2 = 0;
+  enowTxPacket.led3 = 0x69;
+  enowTxPacket.led4 = 0;
+  enowTxPacket.neoR = 0xFF;
+  enowTxPacket.neoG = 0x69;
+  enowTxPacket.neoB = 0xFF;
+
+  const uint8_t *peer_addr = peer.peer_addr;
+  esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
+
+  #ifdef VERBOSE_ENOW_DEBUG
+    debugSentStatus(result);
+  #endif
+}
+
 void sendBroadcast(byte led1, byte led2, byte led3, byte led4, byte neoR, byte neoG, byte neoB)
 {
   enowTxPacket.address = broadcastAdr;

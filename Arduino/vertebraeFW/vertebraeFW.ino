@@ -18,11 +18,10 @@
 // Debug / testing
 #define STATE_DEBUG      2
 
+// initial waiting for OTA after booting
 #define STATE_UPDATE     3
 
-#define STARTING_STATE STATE_UPDATE
-
-int state;
+#define STARTING_STATE STATE_CLUSTERED
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -32,6 +31,7 @@ int state;
 #include <WiFi.h>
 #include <esp_now.h>
 
+int state;
 bool touched = false;
 
 void setup()
@@ -43,22 +43,6 @@ void setup()
   getIDfromMac();
 
   changeState(STARTING_STATE);
-
-  switch(state){
-    case STATE_INDIVIDUAL:
-      // setupWifi();
-      // setupOTA();
-      break;
-
-    case STATE_UPDATE:
-      updateStatusLed(100, 0, 0);
-      setupOTA();
-      break;
-
-    case STATE_DEBUG:
-      break;
-  }
-
   Serial.println("setup done");
 }
 
@@ -71,7 +55,13 @@ void changeState(int newState)
 
   switch(state){
     case STATE_CLUSTERED:
+      updateStatusLed(0, 100, 0);
       setupEspNow();
+      break;
+
+    case STATE_UPDATE:
+      updateStatusLed(0, 0, 100);
+      setupOTA();
       break;
   }
 }
@@ -93,9 +83,7 @@ void loop()
 
     case STATE_UPDATE:
       ArduinoOTA.handle();
-      checkForTouch();
-      if (millis() > 120000) changeState(STATE_CLUSTERED);
-
+      OTAwaitingBlink();
       break;
 
     case STATE_DEBUG:

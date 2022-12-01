@@ -6,21 +6,21 @@
 // packet values
 #define packet_header           0x69
 #define packet_footer           0x42
-
 #define packet_flag_led         0x10
 #define packet_flag_touch       0x20
+#define packet_flag_ota         0x30
 
 /*
 0  header
 1  flag
-2  address
-3  led1
-4  led2
-5  led3
-6  led4
-7  neoR
-8  neoG
-9  neoB
+2  address // packet_pos_data
+3  led1 // + 1
+4  led2 // + 2
+5  led3 // + 3
+6  led4 // + 4
+7  neoR // + 5
+8  neoG // + 6
+9  neoB // + 7
 10 footer
 */
 
@@ -43,6 +43,9 @@ void handleSerialRx()
                      rxBuff[packet_pos_data + 6],
                      rxBuff[packet_pos_data + 7]
                     );
+          break;
+        case packet_flag_ota:
+          sendOTAFlag(rxBuff[packet_pos_data]);
           break;
       }
     }

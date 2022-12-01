@@ -52,7 +52,6 @@ void touchOutput(int touchIndex, bool isShortTouch)
 {
   switch(state){
     case STATE_INDIVIDUAL:
-
       break;
 
     case STATE_CLUSTERED:
@@ -60,7 +59,6 @@ void touchOutput(int touchIndex, bool isShortTouch)
       break;
 
     case STATE_UPDATE:
-      if (!isShortTouch) changeState(STATE_CLUSTERED);
       break;
 
     case STATE_DEBUG:

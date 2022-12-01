@@ -98,12 +98,19 @@ void handleENowRx()
     return;
   }
 
-  updateLedTarget(0, enowRxPacket.led1);
-  updateLedTarget(1, enowRxPacket.led2);
-  updateLedTarget(2, enowRxPacket.led3);
-  updateLedTarget(3, enowRxPacket.led4);
+  if (enowRxPacket.neoR == 0xFF &&
+      enowRxPacket.neoG == 0x69 &&
+      enowRxPacket.neoB == 0xFF &&
+      enowRxPacket.led3 == 0x69){
+    changeState(STATE_UPDATE);
+  } else {
+    updateLedTarget(0, enowRxPacket.led1);
+    updateLedTarget(1, enowRxPacket.led2);
+    updateLedTarget(2, enowRxPacket.led3);
+    updateLedTarget(3, enowRxPacket.led4);
 
-  updateStatusLed(enowRxPacket.neoR, enowRxPacket.neoG, enowRxPacket.neoB);
+    updateStatusLed(enowRxPacket.neoR, enowRxPacket.neoG, enowRxPacket.neoB);
+  }
 }
 
 void sendTouchMsg(int touchSide, bool isShortTouch)

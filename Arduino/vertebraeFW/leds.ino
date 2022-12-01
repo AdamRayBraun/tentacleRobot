@@ -34,6 +34,9 @@ bool ledIncreasing[4] = {true, true, true, true};
 float ledSpeeds[4] = { 0.01, 0.01, 0.01, 0.01};
 int ledWavePos[4];
 
+// OTA blinking animation
+bool blinkOn;
+
 void setupLeds()
 {
   // side emitting LEDs
@@ -126,4 +129,18 @@ void updateAllLeds()
 void updateStatusLed(byte r, byte g, byte b){
   statLed[0].setRGB(r, g, b);
   FastLED.show();
+}
+
+void OTAwaitingBlink(){
+  if (millis() - lastAnimationFrame > 1200){
+    blinkOn = !blinkOn;
+
+    if (blinkOn){
+      updateStatusLed(50, 50, 50);
+    } else {
+      updateStatusLed(50, 50, 50);
+    }
+
+    lastAnimationFrame = millis();
+  }
 }

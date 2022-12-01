@@ -3,17 +3,17 @@
 
 void setupOTA()
 {
+  delay(1000);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting...");
-    updateStatusLed(0, 100, 0);
+    updateStatusLed(100, 0, 0);
     delay(1000 + random(0, 100));
     updateStatusLed(0, 0, 0);
     ESP.restart();
   }
-
-  updateStatusLed(0, 0, 100);
 
   String hostName = "vertebrae" + String(getIDfromMac());
   ArduinoOTA.setHostname(hostName.c_str());
