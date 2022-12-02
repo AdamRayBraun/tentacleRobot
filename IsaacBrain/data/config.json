@@ -1,5 +1,5 @@
 {
-  "KINECT_ENABLED": true,
+  "KINECT_ENABLED": false,
   "Motors":{
     "MOTORS_ENABLED": false,
     "SERIAL_DEBUG": false,
@@ -7,9 +7,9 @@
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
-    "PCBS_ENABLEDD": false,
-    "SERIAL_DEBUG": false,
-    "PCB_PORT": "/dev/tty.usbserial-FT68HCUZ",
+    "PCBS_ENABLEDD": true,
+    "SERIAL_DEBUG": true,
+    "PCB_PORT": "/dev/tty.wchusbserial53820015941",
     "PCB_BAUD": 115200
   },
   "Puppet":{

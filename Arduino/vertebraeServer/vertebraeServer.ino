@@ -3,7 +3,7 @@
 #include <esp_now.h>
 
 void setup() {
-  Serial.begin(115200);
+  setupSerial();
   setupEspNow();
 }
 

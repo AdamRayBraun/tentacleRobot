@@ -27,6 +27,14 @@ class Vertebrae{
   private int busBaud;
   private boolean SERIAL_DEBUG = false;
 
+  // packet flags
+  private final byte packet_header           = (byte)0x69;
+  private final byte packet_footer           = (byte)0x42;
+  private final byte packet_len              = 11;
+
+  private final byte packet_flag_touch       = (byte)0x30;
+  private final byte packet_flag_touchPoll_A = (byte)0x33;
+
   Vertebrae(PApplet par, JSONObject conf){
     this.par = par;
 
@@ -67,21 +75,47 @@ class Vertebrae{
     }
 
     while (this.bus.available() > 0) {
-      String rxMsg = this.bus.readStringUntil(10); // 10 = \n
-      if (rxMsg != null) {
-        String[] parsedPacket = split(rxMsg, ',');
+      byte[] rxBuffer = new byte[this.packet_len];
+      this.bus.readBytesUntil(this.packet_footer, rxBuffer);
 
-        handleRecievedTouch(int(parsedPacket[0]), int(parsedPacket[1]));
+      if (rxBuffer == null) return;
 
-        if (this.SERIAL_DEBUG){
-          print("touch from: ");
-          print(int(parsedPacket[0]));
-          print(", short touch: ");
-          println(int(parsedPacket[1]));
+      if (rxBuffer[0] == this.packet_header){
+        switch(rxBuffer[1]){
+          case packet_flag_touch:
+            handleRecievedTouch(int(rxBuffer[2]), int(rxBuffer[3]));
+
+            if (this.SERIAL_DEBUG){
+              print("touch from: ");
+              print(rxBuffer[2]);
+              print(", short touch: ");
+              println(rxBuffer[3]);
+            }
+            break;
+
+          case packet_flag_touchPoll_A:
+            handleReceivedTouchPoll(rxBuffer[2], rxBuffer[3]);
+
+            if (this.SERIAL_DEBUG){
+              print("poll from: ");
+              print(rxBuffer[2]);
+              print(": ");
+              println(rxBuffer[3]);
+            }
+            break;
         }
       }
     }
     this.bus.clear();
+  }
+
+  public void broadcastTouchPoll(){
+    if (!PCBS_EN) {
+      return;
+    }
+
+    this.vertebrae.get(0).updateTouchPollPacket(true);
+    this.bus.write(this.vertebrae.get(0).txPacket);
   }
 
   public void render(){
@@ -94,32 +128,44 @@ class Vertebrae{
 
 
 class Vertebra {
-  public byte neoR, neoG, neoB;
-
   // UART vars
-  private final byte packet_header   = (byte)0x69;
-  private final byte packet_footer   = (byte)0x42;
-  private final byte packet_flag_led = (byte)0x10;
-  private final byte packet_len      = 11;
+  private final byte packet_header           = (byte)0x69;
+  private final byte packet_footer           = (byte)0x42;
+  private final byte packet_flag_led         = (byte)0x10;
+  private final byte packet_flag_touchThresh = (byte)0x20;
+  private final byte packet_flag_touchPoll_Q = (byte)0x22;
+  private final byte packet_flag_ota         = (byte)0x30;
+  private final byte packet_len              = 11;
+
+  private final byte broadcastAdr            = (byte)0x68;
 
   public byte[] txPacket = new byte[packet_len];
 
   private byte id;
+
+  // LED render vars
   private int ySpacing = 50;
+  private int yPos;
   private int yOffset = 700;
   private int ledRadius = 40;
+
+  // LED mem vars
+  public byte neoR, neoG, neoB;
   private ArrayList<vLED> leds = new ArrayList<vLED>();
+
+  // touch vars
+  public int lastTouchPoll = 70;
 
   Vertebra(byte id){
     this.id = id;
-    this.leds.add(new vLED(new PVector(-this.ledRadius, (this.id * this.ySpacing) + this.yOffset, -this.ledRadius)));
-    this.leds.add(new vLED(new PVector( this.ledRadius, (this.id * this.ySpacing) + this.yOffset, -this.ledRadius)));
-    this.leds.add(new vLED(new PVector( this.ledRadius, (this.id * this.ySpacing) + this.yOffset, this.ledRadius)));
-    this.leds.add(new vLED(new PVector(-this.ledRadius, (this.id * this.ySpacing) + this.yOffset, this.ledRadius)));
+    this.yPos = (this.id * this.ySpacing) + this.yOffset;
+    this.leds.add(new vLED(new PVector(-this.ledRadius, this.yPos, -this.ledRadius)));
+    this.leds.add(new vLED(new PVector( this.ledRadius, this.yPos, -this.ledRadius)));
+    this.leds.add(new vLED(new PVector( this.ledRadius, this.yPos,  this.ledRadius)));
+    this.leds.add(new vLED(new PVector(-this.ledRadius, this.yPos,  this.ledRadius)));
 
-    txPacket[0]                   = this.packet_header;
-    txPacket[1]                   = this.packet_flag_led;
-    txPacket[this.packet_len - 1] = this.packet_footer;
+    this.txPacket[0]                   = this.packet_header;
+    this.txPacket[this.packet_len - 1] = this.packet_footer;
   }
 
   public void setLedVals(int led1Val, int led2Val, int led3Val, int led4Val){
@@ -130,6 +176,7 @@ class Vertebra {
   }
 
   public void updateLedPacket(){
+    this.txPacket[1] = this.packet_flag_led;
     this.txPacket[2] = pcbVertebrae.addresses[this.id];
     this.txPacket[3] = (byte)this.leds.get(0).val;
     this.txPacket[4] = (byte)this.leds.get(1).val;
@@ -138,6 +185,11 @@ class Vertebra {
     this.txPacket[7] = this.neoR;
     this.txPacket[8] = this.neoG;
     this.txPacket[9] = this.neoB;
+  }
+
+  public void updateTouchPollPacket(boolean broadcast){
+    this.txPacket[1] = this.packet_flag_touchPoll_Q;
+    this.txPacket[2] = broadcast ? broadcastAdr :pcbVertebrae.addresses[this.id];
   }
 
   public void updateStatusLed(byte r, byte g, byte b){
@@ -161,6 +213,15 @@ class Vertebra {
     for (vLED l : leds){
       l.render();
     }
+
+    if (!showTouchPoll) return;
+
+    fill(255);
+    textSize(20);
+    pushMatrix();
+    translate(this.ledRadius * 2, this.yPos, 0);
+    text(this.lastTouchPoll, 0, 0);
+    popMatrix();
   }
 
   public void pNoise(){
@@ -170,8 +231,6 @@ class Vertebra {
     noiseOffset += noiseIncrement;
   }
 }
-
-
 
 class vLED{
   public PVector loc;

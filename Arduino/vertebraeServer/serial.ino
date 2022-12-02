@@ -1,7 +1,7 @@
 #define packet_len              11
 #define packet_pos_flag         1
 #define packet_pos_data         2
-#define packet_pos_footer       (packet_len - 1)
+#define packet_pos_footer       10
 
 // RX packet values
 #define packet_header           0x69
@@ -32,6 +32,24 @@
 
 byte rxBuff[packet_len];
 byte txBuff[packet_len];
+
+void setupSerial()
+{
+  Serial.begin(115200);
+
+  txBuff[0]              = packet_header;
+  txBuff[1]              = 0;
+  txBuff[2]              = 0;
+  txBuff[3]              = 0;
+  txBuff[4]              = 0;
+  txBuff[5]              = 0;
+  txBuff[6]              = 0;
+  txBuff[7]              = 0;
+  txBuff[8]              = 0;
+  txBuff[9]              = 0;
+  txBuff[10]             = 0;
+  txBuff[packet_len - 1] = packet_footer;
+}
 
 void handleSerialRx()
 {
@@ -66,20 +84,16 @@ void handleSerialRx()
 
 void sendTouch(byte id, byte touchSide, boolean shortTouch)
 {
-  Serial.print(id);
-  Serial.print(",");
-  Serial.print(packet_flag_touch);
-  Serial.print(",");
-  Serial.print((shortTouch) ? "1" : "0");
-  Serial.println();
+  txBuff[1]              = packet_flag_touch;
+  txBuff[2]              = id;
+  txBuff[3]              = (shortTouch) ? 1 : 0;
+  Serial.write(txBuff, sizeof(txBuff));
 }
 
 void sendTouchPollA(byte id, int amt)
 {
-  Serial.print(id);
-  Serial.print(",");
-  Serial.print(packet_flag_touchPoll_A);
-  Serial.print(",");
-  Serial.print(amt);
-  Serial.println();
+  txBuff[1]              = packet_flag_touchPoll_A;
+  txBuff[2]              = id;
+  txBuff[3]              = amt;
+  Serial.write(txBuff, sizeof(txBuff));
 }

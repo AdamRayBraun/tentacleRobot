@@ -122,6 +122,10 @@ void keyPressed(){
       lookAtMouse = !lookAtMouse;
       println("Following debug mouse: " + lookAtMouse);
     }
+  } else if (key == 't'){
+    pcbVertebrae.broadcastTouchPoll();
+  } else if (key == 'T'){
+    showTouchPoll = !showTouchPoll;
   }
 
   // numbers 0 - 9

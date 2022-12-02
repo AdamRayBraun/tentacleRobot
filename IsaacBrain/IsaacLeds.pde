@@ -79,6 +79,4 @@ void animateLeds(){
       }
       break;
   }
-
-  pcbVertebrae.render();
 }

@@ -3,6 +3,7 @@ boolean showPointCloud           = true;
 boolean showDepthSlice           = true;
 boolean showBlobs                = false;
 boolean showDebugPersonDetection = true;
+boolean showTouchPoll            = false;
 
 float pointDiam = 2;
 int pointSkip   = 2;

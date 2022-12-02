@@ -1,7 +1,7 @@
 // #define VERBOSE_ENOW_DEBUG 1
 
 #define ENOW_CHANNEL       1
-#define broadcastAdr       0x69
+#define broadcastAdr       0x68
 
 //****** ESP-NOW vars ******//
 uint8_t lastRXmac[6];
