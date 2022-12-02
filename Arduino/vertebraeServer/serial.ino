@@ -3,12 +3,18 @@
 #define packet_pos_data         2
 #define packet_pos_footer       (packet_len - 1)
 
-// packet values
+// RX packet values
 #define packet_header           0x69
 #define packet_footer           0x42
 #define packet_flag_led         0x10
-#define packet_flag_touch       0x20
+#define packet_flag_touchThresh 0x20
+#define packet_flag_touchPoll_Q 0x22
 #define packet_flag_ota         0x30
+
+// TX packet flags
+#define packet_flag_touch       0x30
+#define packet_flag_touchPoll_A 0x33
+
 
 /*
 0  header
@@ -47,14 +53,33 @@ void handleSerialRx()
         case packet_flag_ota:
           sendOTAFlag(rxBuff[packet_pos_data]);
           break;
+        case packet_flag_touchThresh:
+          sendTouchThreshUpdate(rxBuff[packet_pos_data], rxBuff[packet_pos_data + 1]);
+          break;
+        case packet_flag_touchPoll_Q:
+          sendTouchPollQ(rxBuff[packet_pos_data]);
+          break;
       }
     }
   }
 }
 
-void sendTouch(byte id, byte touchSide, boolean shortTouch){
+void sendTouch(byte id, byte touchSide, boolean shortTouch)
+{
   Serial.print(id);
   Serial.print(",");
+  Serial.print(packet_flag_touch);
+  Serial.print(",");
   Serial.print((shortTouch) ? "1" : "0");
+  Serial.println();
+}
+
+void sendTouchPollA(byte id, int amt)
+{
+  Serial.print(id);
+  Serial.print(",");
+  Serial.print(packet_flag_touchPoll_A);
+  Serial.print(",");
+  Serial.print(amt);
   Serial.println();
 }

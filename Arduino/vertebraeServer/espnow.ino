@@ -9,8 +9,12 @@ uint8_t lastRXmac[6];
 //****** ESP-NOW flags ******//
 RTC_DATA_ATTR bool handleEnowRx = false;
 
+#define enow_flag_touch        0x30
+#define enow_flag_touchPoll_A  0x33
+
 typedef struct enow_packet_tx {
   byte address;
+  byte flag;
   byte led1;
   byte led2;
   byte led3;
@@ -20,9 +24,15 @@ typedef struct enow_packet_tx {
   byte neoB;
 } enow_packet_tx;
 
+#define enow_flag_leds         0x10
+#define enow_flag_touchThresh  0x20
+#define enow_flag_touchPoll_Q  0x22
+#define enow_flag_OTA          0x40
+
 typedef struct enow_packet_rx {
   byte id;
-  byte touchSide;
+  byte flag;
+  int touchSide;
   bool shortTouch;
 } enow_packet_rx;
 
@@ -77,13 +87,14 @@ void setupEspNow()
 void sendUpdate(byte address, byte led1, byte led2, byte led3, byte led4, byte neoR, byte neoG, byte neoB)
 {
   enowTxPacket.address = address;
-  enowTxPacket.led1 = led1;
-  enowTxPacket.led2 = led2;
-  enowTxPacket.led3 = led3;
-  enowTxPacket.led4 = led4;
-  enowTxPacket.neoR = neoR;
-  enowTxPacket.neoG = neoG;
-  enowTxPacket.neoB = neoB;
+  enowTxPacket.flag    = enow_flag_leds;
+  enowTxPacket.led1    = led1;
+  enowTxPacket.led2    = led2;
+  enowTxPacket.led3    = led3;
+  enowTxPacket.led4    = led4;
+  enowTxPacket.neoR    = neoR;
+  enowTxPacket.neoG    = neoG;
+  enowTxPacket.neoB    = neoB;
 
   const uint8_t *peer_addr = peer.peer_addr;
   esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
@@ -96,13 +107,7 @@ void sendUpdate(byte address, byte led1, byte led2, byte led3, byte led4, byte n
 void sendOTAFlag(byte address)
 {
   enowTxPacket.address = address;
-  enowTxPacket.led1 = 0;
-  enowTxPacket.led2 = 0;
-  enowTxPacket.led3 = 0x69;
-  enowTxPacket.led4 = 0;
-  enowTxPacket.neoR = 0xFF;
-  enowTxPacket.neoG = 0x69;
-  enowTxPacket.neoB = 0xFF;
+  enowTxPacket.flag    = enow_flag_OTA;
 
   const uint8_t *peer_addr = peer.peer_addr;
   esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
@@ -131,6 +136,32 @@ void sendBroadcast(byte led1, byte led2, byte led3, byte led4, byte neoR, byte n
   #endif
 }
 
+void sendTouchThreshUpdate(byte address, byte newTouchThresh)
+{
+  enowTxPacket.address = address;
+  enowTxPacket.flag    = enow_flag_touchThresh;
+  enowTxPacket.led1    = newTouchThresh;
+
+  const uint8_t *peer_addr = peer.peer_addr;
+  esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
+
+  #ifdef VERBOSE_ENOW_DEBUG
+    debugSentStatus(result);
+  #endif
+}
+
+void sendTouchPollQ(byte address){
+  enowTxPacket.address = address;
+  enowTxPacket.flag    = enow_flag_touchPoll_Q;
+
+  const uint8_t *peer_addr = peer.peer_addr;
+  esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
+
+  #ifdef VERBOSE_ENOW_DEBUG
+    debugSentStatus(result);
+  #endif
+}
+
 void handleENowRx()
 {
   if (!handleEnowRx){
@@ -139,7 +170,14 @@ void handleENowRx()
     handleEnowRx = false;
   }
 
-  sendTouch(enowRxPacket.id, enowRxPacket.touchSide, enowRxPacket.shortTouch);
+  switch(enowRxPacket.flag){
+    case(enow_flag_touch):
+      sendTouch(enowRxPacket.id, enowRxPacket.touchSide, enowRxPacket.shortTouch);
+      break;
+    case(enow_flag_touchPoll_A):
+      sendTouchPollA(enowRxPacket.id, enowRxPacket.touchSide);
+      break;
+  }
 }
 
 /**

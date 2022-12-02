@@ -12,7 +12,7 @@
 #define longTouchTime  1000
 #define debounceThresh 100
 
-int touchThreshold = 20;
+byte touchThreshold = 20;
 
 int touchPins[NUM_TOUCH] = {TOUCH_1_PIN, TOUCH_2_PIN, TOUCH_3_PIN};
 

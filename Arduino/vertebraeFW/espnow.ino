@@ -9,8 +9,14 @@ uint8_t lastRXmac[6];
 //****** ESP-NOW flags ******//
 RTC_DATA_ATTR bool handleEnowRx = false;
 
+#define enow_flag_leds         0x10
+#define enow_flag_OTA          0x40
+#define enow_flag_touchThresh  0x20
+#define enow_flag_touchPoll_Q  0x22
+
 typedef struct enow_packet_rx {
   byte address;
+  byte flag;
   byte led1;
   byte led2;
   byte led3;
@@ -20,9 +26,13 @@ typedef struct enow_packet_rx {
   byte neoB;
 } enow_packet_rx;
 
+#define enow_flag_touch        0x30
+#define enow_flag_touchPoll_A  0x33
+
 typedef struct enow_packet_tx {
   byte id;
-  byte touchSide;
+  byte flag;
+  int touchSide;
   bool shortTouch;
 } enow_packet_tx;
 
@@ -98,26 +108,42 @@ void handleENowRx()
     return;
   }
 
-  if (enowRxPacket.neoR == 0xFF &&
-      enowRxPacket.neoG == 0x69 &&
-      enowRxPacket.neoB == 0xFF &&
-      enowRxPacket.led3 == 0x69){
-    changeState(STATE_UPDATE);
-  } else {
-    updateLedTarget(0, enowRxPacket.led1);
-    updateLedTarget(1, enowRxPacket.led2);
-    updateLedTarget(2, enowRxPacket.led3);
-    updateLedTarget(3, enowRxPacket.led4);
-
-    updateStatusLed(enowRxPacket.neoR, enowRxPacket.neoG, enowRxPacket.neoB);
+  switch(enowRxPacket.flag){
+    case(enow_flag_leds):
+      updateLedTarget(0, enowRxPacket.led1);
+      updateLedTarget(1, enowRxPacket.led2);
+      updateLedTarget(2, enowRxPacket.led3);
+      updateLedTarget(3, enowRxPacket.led4);
+      updateStatusLed(enowRxPacket.neoR, enowRxPacket.neoG, enowRxPacket.neoB);
+      break;
+    case(enow_flag_OTA):
+      changeState(STATE_UPDATE);
+      break;
+    case(enow_flag_touchThresh):
+      updateTouchThresh(enowRxPacket.led1);
+      break;
+    case(enow_flag_touchPoll_Q):
+      sendTouchPollA();
+      break;
   }
 }
 
 void sendTouchMsg(int touchSide, bool isShortTouch)
 {
   enowTxPacket.id         = id;
+  enowTxPacket.flag       = enow_flag_touch;
   enowTxPacket.touchSide  = touchSide;
   enowTxPacket.shortTouch = isShortTouch;
+
+  const uint8_t *peer_addr = peer.peer_addr;
+  esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
+}
+
+void sendTouchPollA()
+{
+  enowTxPacket.id         = id;
+  enowTxPacket.flag       = enow_flag_touchPoll_A;
+  enowTxPacket.touchSide  = (int)((touchReading1() + touchReading2()) / 2);
 
   const uint8_t *peer_addr = peer.peer_addr;
   esp_err_t result = esp_now_send(peer_addr, (uint8_t *) &enowTxPacket, sizeof(enow_packet_tx));
