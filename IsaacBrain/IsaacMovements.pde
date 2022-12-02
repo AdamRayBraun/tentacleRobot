@@ -15,6 +15,9 @@ int wiggleSpeed             = 300;
 long lastWiggleUpdate;
 long lastMotorUpdate;
 
+float twoOverPI = 2 / PI;
+float rad, armDirectionAngle, bottomScale;
+
 // debugging / calibrating
 PGraphics debugCanvas;
 boolean lookAtMouse = false;
@@ -52,8 +55,6 @@ void lookAtIndividual(){
   // calculate angle between Isaac and person of interest
   float rad = sqrt(sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y));
 
-  float armDirectionAngle, bottomScale;
-
   if (personPos.y - tentacleBase.y > 0){
     armDirectionAngle = acos((personPos.x - tentacleBase.x) / rad);
   } else {
@@ -63,9 +64,74 @@ void lookAtIndividual(){
   // adjust for angle error
   armDirectionAngle = armDirectionAngle + PI / 18 + map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
   if (armDirectionAngle >= TWO_PI) armDirectionAngle -= TWO_PI;
+  
+  // scale bottom motor positions
+  bottomScale = map(rad, 0, 350, 1.9, 0.9);       // 1.5 0.7
+  // bottomScale = constrain(bottomScale, 0.5, 1.9); // 0.5 1.5 ///////////////////////
+  bottomScale = constrain(bottomScale, 0.0, 1.0); // 0.5 1.5
+  
+  //convert coordinates and send to motor
+  moveMotorsWithPolarCoordinates();
 
-  float twoOverPI = 2 / PI;
+  // check for change of person of interest
+  if (millis() - chosenTargetTime > targetAttentionSpan){
+    chosenTargetTime = millis();
+    pickNewTarget();
+  }
 
+  if (showDebugPersonDetection){
+    debugCanvas.beginDraw();
+    debugCanvas.clear();
+    debugCanvas.stroke(255, 0, 0);
+    debugCanvas.strokeWeight(4);
+    debugCanvas.noFill();
+    debugCanvas.line(tentacleBase.x, tentacleBase.y, personPos.x, personPos.y);
+    debugCanvas.line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
+    debugCanvas.fill(255, 0, 0);
+    debugCanvas.textSize(20);
+    debugCanvas.text(degrees(armDirectionAngle), tentacleBase.x + 10, tentacleBase.y + kinectDepthH);
+    debugCanvas.endDraw();
+  }
+}
+
+//Isaac behaviour. Should have rad, armDirectionAngle, bottomScale ready
+void lookUpDown(){
+  float bottomScale0 = bottomScale;
+  float delta = 0.1;
+  
+  for(int i = 0; i < 3; i++){
+  //move up and down
+  bottomScale = bottomScale0 + delta;
+  moveMotorsWithPolarCoordinates();
+  delay(500);
+  bottomScale = bottomScale0 - delta;
+  moveMotorsWithPolarCoordinates();
+  delay(500);
+  }
+  
+  bottomScale = bottomScale0;
+}
+
+void lookLeftRight(){
+  float armDirectionAngle0 = armDirectionAngle;
+  float delta = 0.2;
+  
+  for(int i = 0; i < 3; i++){
+  //move up and down
+  armDirectionAngle = armDirectionAngle0 + delta;
+  moveMotorsWithPolarCoordinates();
+  delay(500);
+  armDirectionAngle = armDirectionAngle0 - delta;
+  moveMotorsWithPolarCoordinates();
+  delay(500);
+  }
+  
+  armDirectionAngle = armDirectionAngle0;
+}
+
+
+//use rad, armDirectionAngle, bottomScale
+void moveMotorsWithPolarCoordinates(){
   // calculate bottom X motor
   if (armDirectionAngle < PI){
     motorPositions[motors.MOTOR_BOTTOM_X] = -twoOverPI * armDirectionAngle + 1;
@@ -82,7 +148,7 @@ void lookAtIndividual(){
     motorPositions[motors.MOTOR_BOTTOM_X] = -sqrt(-motorPositions[motors.MOTOR_BOTTOM_X]);
   }
 
-  // calculate botton Y motor
+  // calculate bottom Y motor
   if(armDirectionAngle < HALF_PI){
     motorPositions[motors.MOTOR_BOTTOM_Y] = twoOverPI * armDirectionAngle;
   }
@@ -117,9 +183,6 @@ void lookAtIndividual(){
   motorPositions[motors.MOTOR_TOP_Y] *= -1;
 
   // scale bottom motor positions
-  bottomScale = map(rad, 0, 350, 1.9, 0.9);       // 1.5 0.7
-  // bottomScale = constrain(bottomScale, 0.5, 1.9); // 0.5 1.5 ///////////////////////
-  bottomScale = constrain(bottomScale, 0.0, 1.0); // 0.5 1.5
   motorPositions[motors.MOTOR_BOTTOM_X] *= bottomScale * 1.1;
   motorPositions[motors.MOTOR_BOTTOM_Y] *= bottomScale * 0.8;
 
@@ -129,26 +192,6 @@ void lookAtIndividual(){
     for (byte m = 0; m < motors.NUM_MOTORS; m++){
       motors.moveMotors(m, (int)(motorPositions[m] * motors.maxMotorSteps[m]));
     }
-  }
-
-  // check for change of person of interest
-  if (millis() - chosenTargetTime > targetAttentionSpan){
-    chosenTargetTime = millis();
-    pickNewTarget();
-  }
-
-  if (showDebugPersonDetection){
-    debugCanvas.beginDraw();
-    debugCanvas.clear();
-    debugCanvas.stroke(255, 0, 0);
-    debugCanvas.strokeWeight(4);
-    debugCanvas.noFill();
-    debugCanvas.line(tentacleBase.x, tentacleBase.y, personPos.x, personPos.y);
-    debugCanvas.line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
-    debugCanvas.fill(255, 0, 0);
-    debugCanvas.textSize(20);
-    debugCanvas.text(degrees(armDirectionAngle), tentacleBase.x + 10, tentacleBase.y + kinectDepthH);
-    debugCanvas.endDraw();
   }
 }
 
