@@ -65,6 +65,14 @@ void draw(){
       lookAtIndividual();
       break;
 
+    case LOOK_UP_DOWN:
+      lookUpDown();
+      break;
+
+    case LOOK_LEFT_RIGHT:
+      lookLeftRight();
+      break;
+
     case HOME:
       break;
   }

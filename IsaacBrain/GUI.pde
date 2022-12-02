@@ -122,9 +122,9 @@ void keyPressed(){
       lookAtMouse = !lookAtMouse;
       println("Following debug mouse: " + lookAtMouse);
     }
-  } else if (key == 't'){
-    pcbVertebrae.sendTouchPoll();
   } else if (key == 'T'){
+    pcbVertebrae.sendTouchPoll();
+  } else if (key == 't'){
     showTouchPoll = !showTouchPoll;
   } else if (key == 'O'){
     pcbVertebrae.sendOTAMsg();

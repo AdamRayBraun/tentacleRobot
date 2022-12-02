@@ -15,8 +15,14 @@ int wiggleSpeed             = 300;
 long lastWiggleUpdate;
 long lastMotorUpdate;
 
+// looking at individual vars
 float twoOverPI = 2 / PI;
 float rad, armDirectionAngle, bottomScale;
+
+// looking up down left right vars
+long lastMovement;
+boolean movementFlag;
+int lookingPeriod = 1000;
 
 // debugging / calibrating
 PGraphics debugCanvas;
@@ -64,12 +70,12 @@ void lookAtIndividual(){
   // adjust for angle error
   armDirectionAngle = armDirectionAngle + PI / 18 + map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
   if (armDirectionAngle >= TWO_PI) armDirectionAngle -= TWO_PI;
-  
+
   // scale bottom motor positions
   bottomScale = map(rad, 0, 350, 1.9, 0.9);       // 1.5 0.7
   // bottomScale = constrain(bottomScale, 0.5, 1.9); // 0.5 1.5 ///////////////////////
   bottomScale = constrain(bottomScale, 0.0, 1.0); // 0.5 1.5
-  
+
   //convert coordinates and send to motor
   moveMotorsWithPolarCoordinates();
 
@@ -96,37 +102,25 @@ void lookAtIndividual(){
 
 //Isaac behaviour. Should have rad, armDirectionAngle, bottomScale ready
 void lookUpDown(){
-  float bottomScale0 = bottomScale;
-  float delta = 0.1;
-  
-  for(int i = 0; i < 3; i++){
-  //move up and down
-  bottomScale = bottomScale0 + delta;
-  moveMotorsWithPolarCoordinates();
-  delay(500);
-  bottomScale = bottomScale0 - delta;
-  moveMotorsWithPolarCoordinates();
-  delay(500);
+  float delta = 0.3;
+
+  if (millis() - lastMovement > lookingPeriod){
+    bottomScale = movementFlag ? bottomScale + delta : bottomScale - delta;
+    moveMotorsWithPolarCoordinates();
+    lastMovement = millis();
+    movementFlag = !movementFlag;
   }
-  
-  bottomScale = bottomScale0;
 }
 
 void lookLeftRight(){
-  float armDirectionAngle0 = armDirectionAngle;
   float delta = 0.2;
-  
-  for(int i = 0; i < 3; i++){
-  //move up and down
-  armDirectionAngle = armDirectionAngle0 + delta;
-  moveMotorsWithPolarCoordinates();
-  delay(500);
-  armDirectionAngle = armDirectionAngle0 - delta;
-  moveMotorsWithPolarCoordinates();
-  delay(500);
+
+  if (millis() - lastMovement > lookingPeriod){
+    armDirectionAngle = movementFlag ? armDirectionAngle + delta : armDirectionAngle - delta;
+    moveMotorsWithPolarCoordinates();
+    lastMovement = millis();
+    movementFlag = !movementFlag;
   }
-  
-  armDirectionAngle = armDirectionAngle0;
 }
 
 
