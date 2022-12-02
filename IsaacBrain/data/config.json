@@ -7,8 +7,8 @@
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
-    "PCBS_ENABLEDD": true,
-    "SERIAL_DEBUG": true,
+    "PCBS_ENABLEDD": false,
+    "SERIAL_DEBUG": false,
     "PCB_PORT": "/dev/tty.wchusbserial53820015941",
     "PCB_BAUD": 115200
   },

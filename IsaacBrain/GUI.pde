@@ -123,9 +123,21 @@ void keyPressed(){
       println("Following debug mouse: " + lookAtMouse);
     }
   } else if (key == 't'){
-    pcbVertebrae.broadcastTouchPoll();
+    pcbVertebrae.sendTouchPoll();
   } else if (key == 'T'){
     showTouchPoll = !showTouchPoll;
+  } else if (key == 'O'){
+    pcbVertebrae.sendOTAMsg();
+  } else if (key == 'S'){
+    pcbVertebrae.selectPCB = !pcbVertebrae.selectPCB;
+  }
+
+  if (key == CODED){
+    if (keyCode == DOWN){
+      if (pcbVertebrae.selectPCBIndex < pcbVertebrae.NUM_VERTEBRAE - 1) pcbVertebrae.selectPCBIndex++;
+    } else if (keyCode == UP){
+      if (pcbVertebrae.selectPCBIndex > 0) pcbVertebrae.selectPCBIndex--;
+    }
   }
 
   // numbers 0 - 9

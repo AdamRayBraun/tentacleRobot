@@ -20,6 +20,9 @@ class Vertebrae{
 
   public ArrayList<Vertebra> vertebrae = new ArrayList<Vertebra>();
 
+  public boolean selectPCB = false;
+  public int selectPCBIndex = 0;
+
   private PApplet par;
 
   private Serial bus;
@@ -109,18 +112,41 @@ class Vertebrae{
     this.bus.clear();
   }
 
-  public void broadcastTouchPoll(){
+  public void sendTouchPoll(){
     if (!PCBS_EN) {
       return;
     }
 
-    this.vertebrae.get(0).updateTouchPollPacket(true);
-    this.bus.write(this.vertebrae.get(0).txPacket);
+    if (this.selectPCB){
+      this.vertebrae.get(this.selectPCBIndex).updateTouchPollPacket(false);
+      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+    } else {
+      this.vertebrae.get(0).updateTouchPollPacket(true);
+      this.bus.write(this.vertebrae.get(0).txPacket);
+    }
+  }
+
+  public void sendOTAMsg(){
+    if (!PCBS_EN) {
+      return;
+    }
+
+    if (this.selectPCB){
+      this.vertebrae.get(this.selectPCBIndex).updateOTAPacket(false);
+      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+    } else {
+      this.vertebrae.get(0).updateOTAPacket(true);
+      this.bus.write(this.vertebrae.get(0).txPacket);
+    }
   }
 
   public void render(){
     for (Vertebra v : vertebrae){
       v.render();
+    }
+
+    if (this.selectPCB){
+      vertebrae.get(selectPCBIndex).renderHighlight();
     }
   }
 }
@@ -189,7 +215,12 @@ class Vertebra {
 
   public void updateTouchPollPacket(boolean broadcast){
     this.txPacket[1] = this.packet_flag_touchPoll_Q;
-    this.txPacket[2] = broadcast ? broadcastAdr :pcbVertebrae.addresses[this.id];
+    this.txPacket[2] = broadcast ? broadcastAdr : pcbVertebrae.addresses[this.id];
+  }
+
+  public void updateOTAPacket(boolean broadcast){
+    this.txPacket[1] = this.packet_flag_ota;
+    this.txPacket[2] = broadcast ? broadcastAdr : pcbVertebrae.addresses[this.id];
   }
 
   public void updateStatusLed(byte r, byte g, byte b){
@@ -224,6 +255,16 @@ class Vertebra {
     popMatrix();
   }
 
+  public void renderHighlight(){
+    pushMatrix();
+    translate(0, this.yPos, 0);
+    noFill();
+    strokeWeight(1);
+    stroke(255);
+    box(this.ledRadius * 3, this.ySpacing / 2, this.ledRadius * 3);
+    popMatrix();
+  }
+
   public void pNoise(){
     for (vLED l : leds){
       l.pNoise();
@@ -248,7 +289,8 @@ class vLED{
   public void render(){
     pushMatrix();
     translate(this.loc.x, this.loc.y, this.loc.z);
-    stroke(200);
+    strokeWeight(1);
+    stroke(255);
     fill(this.val);
     box(this.ledSize);
     popMatrix();
