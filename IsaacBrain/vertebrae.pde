@@ -7,6 +7,8 @@ float noiseScale = 0.1;
 
 Vertebrae pcbVertebrae;
 
+int touchThresh = 50;
+
 void setupVertebrae(){
   pcbVertebrae = new Vertebrae(this, PCBConfig);
 }
@@ -122,6 +124,20 @@ class Vertebrae{
       this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
     } else {
       this.vertebrae.get(0).updateTouchPollPacket(true);
+      this.bus.write(this.vertebrae.get(0).txPacket);
+    }
+  }
+
+  public void sendTouchThreshUpdate(){
+    if (!PCBS_EN) {
+      return;
+    }
+
+    if (this.selectPCB){
+      this.vertebrae.get(this.selectPCBIndex).updateTouchThreshold(touchThresh, false);
+      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+    } else {
+      this.vertebrae.get(0).updateTouchThreshold(touchThresh, true);
       this.bus.write(this.vertebrae.get(0).txPacket);
     }
   }

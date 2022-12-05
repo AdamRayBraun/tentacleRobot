@@ -87,6 +87,12 @@ class Vertebra {
     this.txPacket[2] = broadcast ? broadcastAdr : pcbVertebrae.addresses[this.id];
   }
 
+  public void updateTouchThreshold(byte newThresh, boolean broadcast){
+    this.txPacket[1] = this.packet_flag_touchThresh;
+    this.txPacket[2] = broadcast ? broadcastAdr : pcbVertebrae.addresses[this.id];
+    this.txPacket[3] = newThresh;
+  }
+
   public void updateOTAPacket(boolean broadcast){
     this.txPacket[1] = this.packet_flag_ota;
     this.txPacket[2] = broadcast ? broadcastAdr : pcbVertebrae.addresses[this.id];
