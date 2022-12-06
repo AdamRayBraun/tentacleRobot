@@ -151,6 +151,8 @@ void keyPressed(){
     pcbVertebrae.selectPCB = !pcbVertebrae.selectPCB;
   } else if (key == 'R'){
     pcbVertebrae.sendTouchThreshUpdate();
+  } else if (key == 'P'){
+    pcbVertebrae.polling = !pcbVertebrae.polling;
   }
 
   if (key == CODED){

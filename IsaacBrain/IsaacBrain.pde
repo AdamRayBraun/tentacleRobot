@@ -84,6 +84,9 @@ void draw(){
   animateLeds();
   pcbVertebrae.checkForPCBTouch();
 
+  // PCB touch
+  pcbVertebrae.handleTouchPolling();
+
   // render screen control feedback
   render();
 }

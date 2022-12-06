@@ -7,7 +7,7 @@ float noiseScale = 0.1;
 
 Vertebrae pcbVertebrae;
 
-int touchThresh = 50;
+byte touchThresh = 50;
 
 void setupVertebrae(){
   pcbVertebrae = new Vertebrae(this, PCBConfig);
@@ -24,6 +24,7 @@ class Vertebrae{
 
   public boolean selectPCB = false;
   public int selectPCBIndex = 0;
+  public boolean polling = false;
 
   private PApplet par;
 
@@ -114,10 +115,10 @@ class Vertebrae{
     this.bus.clear();
   }
 
-  public void sendTouchPoll(){
-    if (!PCBS_EN) {
-      return;
-    }
+  public void handleTouchPolling(){
+    if (!PCBS_EN) return;
+
+    if (!this.polling) return;
 
     if (this.selectPCB){
       this.vertebrae.get(this.selectPCBIndex).updateTouchPollPacket(false);
