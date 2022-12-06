@@ -22,7 +22,7 @@ float rad, armDirectionAngle, bottomScale;
 // looking up down left right vars
 long lastMovement;
 boolean movementFlag = true;
-int lookingPeriod = 3000;
+int lookingPeriod = 1000;
 
 // debugging / calibrating
 PGraphics debugCanvas;

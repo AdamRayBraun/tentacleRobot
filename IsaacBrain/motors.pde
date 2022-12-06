@@ -20,10 +20,10 @@ class Motors {
   public final byte NUM_MOTORS     = 4;
   public final byte MOTOR_TOP_X    = 0;
   public final byte MOTOR_TOP_Y    = 1;
-  public final byte MOTOR_BOTTOM_X = 2;
-  public final byte MOTOR_BOTTOM_Y = 3;
+  public final byte MOTOR_BOTTOM_X = 3; // SWAPPED
+  public final byte MOTOR_BOTTOM_Y = 2; // SWAPPED
 
-  public final int maxMotorSteps[] = {10000, 6000, 2000, 2000};//Top Y, X ,BottomX, Y
+  public final int maxMotorSteps[] = {6000, 6000, 2000, 2000};
 
   private PApplet par;
   private Serial bus;
@@ -77,7 +77,7 @@ class Motors {
                                           packet_flag_accel_bottom_y
                                          };
 
-  private byte[] txPacket          = new byte[this.packet_len];
+  private byte[] txPacket = new byte[this.packet_len];
 
   // heartbeat vars
   private long lastHeartbeatCheck;
@@ -154,6 +154,8 @@ class Motors {
   }
 
   public void updateMotorAccel(byte motor, int newAccel){
+    println("newAccel: " + newAccel);
+    
     if (motor < 0 || motor > 3){
       println("ERR: unknown motor index requested to move: " + motor);
       return;
@@ -164,6 +166,11 @@ class Motors {
     this.txPacket[this.packet_pos_data + 1] = byte(newAccel & 0xFF);
     this.lastMotorAccels[motor]             = newAccel;
 
+    uartTx(this.txPacket);
+  }
+
+  public void stopMotors(){
+    this.txPacket[this.packet_pos_flag]     = this.packet_flag_STOP;
     uartTx(this.txPacket);
   }
 

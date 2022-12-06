@@ -11,10 +11,7 @@
 // #define SERIAL_HEARTBEAT true
 
 #include <AccelStepper.h>
-#include <Servo.h>
-// #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
-// #include <EEPROM.h>
 
 // Pin connections
 #define top_servo_X_PUL_pin    2
@@ -44,7 +41,7 @@ void setup()
 {
   setupSerial();
   setupAccelSteppers();
-  setupEndEffector();
+  // setupEndEffector();
 }
 
 void loop()
