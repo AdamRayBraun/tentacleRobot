@@ -27,23 +27,37 @@ byte lastState         = currentState;
 long lastStateChange;
 
 void changeState(byte newState){
-  if (currentState != newState) currentState = newState;
+  currentState = newState;
+  println("New state:  " + stateNames[currentState]);
 
   switch(currentState){
     case WIGGLE:
+      resetMotorSpeedAccel();
       showDebugPersonDetection = false;
       break;
 
     case EYE_CONTACT:
+      resetMotorSpeedAccel();
       pickNewTarget();
       showDebugPersonDetection = true;
       break;
 
+    case LOOK_UP_DOWN:
+      for (byte m = 0; m < motors.NUM_MOTORS; m++){
+        motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 1.5));
+      }
+      break;
+
+    case LOOK_LEFT_RIGHT:
+      for (byte m = 0; m < motors.NUM_MOTORS; m++){
+        motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 1.5));
+      }
+      break;
+
     case HOME:
+      resetMotorSpeedAccel();
       homeMotors();
       showDebugPersonDetection = false;
       break;
   }
-
-  println("New state:  " + stateNames[currentState]);
 }

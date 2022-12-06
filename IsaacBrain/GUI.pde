@@ -142,7 +142,7 @@ void keyPressed(){
       println("Following debug mouse: " + lookAtMouse);
     }
   } else if (key == 'T'){
-    pcbVertebrae.sendTouchPoll();
+    // pcbVertebrae.sendTouchPoll();
   } else if (key == 't'){
     showTouchPoll = !showTouchPoll;
   } else if (key == 'O'){

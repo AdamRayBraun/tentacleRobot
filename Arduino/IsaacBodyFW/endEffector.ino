@@ -2,7 +2,6 @@
 
 Adafruit_NeoPixel leds(LED_COUNT, end_effector_led_pin, NEO_GRB + NEO_KHZ800);
 
-// Servo eyelidServoL, eyelidServoR;
 
 void setupEndEffector()
 {
@@ -10,18 +9,8 @@ void setupEndEffector()
   leds.show();
   leds.setBrightness(255);
 
-  // eyelidServoL.attach(eyelid_servo_pin_L);
-  // eyelidServoR.attach(eyelid_servo_pin_R);
-
-  endEffectorLedRing(1, 1, 1);
+  endEffectorLedRing(10, 10, 10);
 }
-
-// void setEyelidPosition(int position)
-// {
-//   int pos = constrain(position, 0, 180);
-//   eyelidServoL.write(pos);
-//   eyelidServoR.write(180 - pos);
-// }
 
 void endEffectorLedRing(int r, int g, int b){
   for(int i = 0; i < LED_COUNT; i++) {

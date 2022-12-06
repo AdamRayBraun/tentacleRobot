@@ -16,20 +16,29 @@ AccelStepper topY(AccelStepper::DRIVER, top_servo_Y_PUL_pin, top_servo_Y_DIR_pin
 int dirBottomX, dirBottomY, dirTopX, dirTopY;
 int targetBottomX, targetBottomY, targetTopX, targetTopY;
 
-int stepperMax = 2000;
+int speedBottomX = STEPPER_BOTTOM_MAX_SPEED;
+int speedBottomY = STEPPER_BOTTOM_MAX_SPEED;
+int speedTopX    = STEPPER_TOP_MAX_SPEED;
+int speedTopY    = STEPPER_TOP_MAX_SPEED;
+
+int accelBottomX = STEPPER_BOTTOM_MAX_ACCEL;
+int accelBottomY = STEPPER_BOTTOM_MAX_ACCEL;
+int accelTopX    = STEPPER_BOTTOM_MAX_ACCEL;
+int accelTopY    = STEPPER_BOTTOM_MAX_ACCEL;
+
+int stepperMax   = 2000;
 
 void setupAccelSteppers()
 {
-  resetFromLastSavedPosition();
-  bottomX.setMaxSpeed(STEPPER_BOTTOM_MAX_SPEED);
-  bottomY.setMaxSpeed(STEPPER_BOTTOM_MAX_SPEED);
-  topX.setMaxSpeed(STEPPER_TOP_MAX_SPEED);
-  topY.setMaxSpeed(STEPPER_TOP_MAX_SPEED);
+  bottomX.setMaxSpeed(speedBottomX);
+  bottomY.setMaxSpeed(speedBottomY);
+  topX.setMaxSpeed(speedTopX);
+  topY.setMaxSpeed(speedTopY);
 
-  bottomX.setAcceleration(STEPPER_BOTTOM_MAX_ACCEL);
-  bottomY.setAcceleration(STEPPER_BOTTOM_MAX_ACCEL);
-  topX.setAcceleration(STEPPER_TOP_MAX_ACCEL);
-  topY.setAcceleration(STEPPER_TOP_MAX_ACCEL);
+  bottomX.setAcceleration(accelBottomX);
+  bottomY.setAcceleration(accelBottomY);
+  topX.setAcceleration(accelTopX);
+  topY.setAcceleration(accelTopY);
 }
 
 void handleSteppers()
@@ -46,7 +55,6 @@ void homeMotors()
   bottomX.setCurrentPosition(0);
   topY.setCurrentPosition(0);
   topX.setCurrentPosition(0);
-
 }
 
 void stopMotors()
