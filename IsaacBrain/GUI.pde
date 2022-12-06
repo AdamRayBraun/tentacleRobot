@@ -6,8 +6,8 @@ void setupInterface(){
 
 class GUI {
   public Slider2D topMotorSlider, bottomMotorSlider;
-  public Slider pointSkip, pointDiam;
-  public Group motorGroup, pointCloudGroup;
+  public Slider pointSkip, pointDiam, touchThresh;
+  public Group motorGroup, pointCloudGroup, pcbGroup;
 
   private ControlP5 cp5;
   private final int border = 20;
@@ -74,8 +74,27 @@ class GUI {
                                .setGroup(pointCloudGroup)
                                ;
 
+    this.pcbGroup = this.cp5.addGroup("pcbGroup")
+                            .setPosition((this.sliderSize * 2) + (this.border * 5), this.border / 2)
+                            .setBackgroundColor(color(255,50))
+                            .setWidth(this.sliderSize + (this.border * 2))
+                            .setBackgroundHeight(int((this.sliderSize * 0.5) + (this.border * 2)))
+                            .setWidth(this.sliderSize + (this.border * 2))
+                            ;
+
+
+    touchThresh = this.cp5.addSlider("touchThresh")
+                          .setPosition(this.border, this.border)
+                          .setWidth(this.sliderSize - this.border)
+                          .setRange(0, 100)
+                          .setValue(50)
+                          .setSliderMode(Slider.FLEXIBLE)
+                          .setGroup(pcbGroup)
+                          ;
+
     this.cp5.getController("pointSkip").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
     this.cp5.getController("pointDiam").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("touchThresh").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   }
 
   void render(){
@@ -130,6 +149,10 @@ void keyPressed(){
     pcbVertebrae.sendOTAMsg();
   } else if (key == 'S'){
     pcbVertebrae.selectPCB = !pcbVertebrae.selectPCB;
+  } else if (key == 'R'){
+    pcbVertebrae.sendTouchThreshUpdate();
+  } else if (key == 'P'){
+    pcbVertebrae.polling = !pcbVertebrae.polling;
   }
 
   if (key == CODED){
