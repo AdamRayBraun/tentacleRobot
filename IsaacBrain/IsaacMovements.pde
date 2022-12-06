@@ -21,8 +21,8 @@ float rad, armDirectionAngle, bottomScale;
 
 // looking up down left right vars
 long lastMovement;
-boolean movementFlag;
-int lookingPeriod = 1000;
+boolean movementFlag = true;
+int lookingPeriod = 3000;
 
 // debugging / calibrating
 PGraphics debugCanvas;
@@ -102,7 +102,7 @@ void lookAtIndividual(){
 
 //Isaac behaviour. Should have rad, armDirectionAngle, bottomScale ready
 void lookUpDown(){
-  float delta = 0.3;
+  float delta = 0.5;
 
   if (millis() - lastMovement > lookingPeriod){
     bottomScale = movementFlag ? bottomScale + delta : bottomScale - delta;
@@ -113,9 +113,9 @@ void lookUpDown(){
 }
 
 void lookLeftRight(){
-  float delta = 0.2;
+  float delta = 0.3;
 
-  if (millis() - lastMovement > lookingPeriod){
+  if (millis() - lastMovement > 2 * lookingPeriod){
     armDirectionAngle = movementFlag ? armDirectionAngle + delta : armDirectionAngle - delta;
     moveMotorsWithPolarCoordinates();
     lastMovement = millis();

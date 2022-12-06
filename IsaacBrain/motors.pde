@@ -11,7 +11,7 @@ class Motors {
   public final byte MOTOR_BOTTOM_X = 2;
   public final byte MOTOR_BOTTOM_Y = 3;
 
-  public final int maxMotorSteps[] = {10000, 6000, 2000, 2000};
+  public final int maxMotorSteps[] = {10000, 6000, 2000, 2000};//Top Y, X ,BottomX, Y
 
   private PApplet par;
   private Serial bus;

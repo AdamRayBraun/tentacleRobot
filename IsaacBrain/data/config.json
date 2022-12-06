@@ -1,9 +1,9 @@
 {
-  "KINECT_ENABLED": false,
+  "KINECT_ENABLED": true,
   "Motors":{
-    "MOTORS_ENABLED": false,
+    "MOTORS_ENABLED": true,
     "SERIAL_DEBUG": false,
-    "MOTOR_PORT": "/dev/tty.usbmodem1414401",
+    "MOTOR_PORT": "COM5",
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
