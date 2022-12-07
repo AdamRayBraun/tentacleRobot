@@ -64,6 +64,7 @@ class Vertebra {
 
   private void changeLightBasedOnTouch(){
     float timeSinceTouch = millis() - this.lastTouchTime;
+    
     if (timeSinceTouch < this.touchHighlightTime){
       for (vLED l : leds){
         l.val = map(timeSinceTouch, 0, this.touchHighlightTime, 255, l.noiseVal);
@@ -102,17 +103,6 @@ class Vertebra {
     this.neoR = r;
     this.neoG = g;
     this.neoB = b;
-  }
-
-  public void registerTouch(int touchedSide, int shortTouch){
-    switch(touchedSide){
-      case 1:
-        println("Vert " + this.id + " touched on side: 1");
-        break;
-      case 2:
-        println("Vert " + this.id + " touched on side: 2");
-        break;
-    }
   }
 
   public void render(){

@@ -22,6 +22,8 @@
 #define packet_flag_accel_bottom_x 0x32
 #define packet_flag_accel_bottom_y 0x33
 
+#define packet_flag_end_effector   0x40
+
 #define packet_flag_stepper_home   0x09
 
 #define packet_flag_STOP           0xFF
@@ -171,6 +173,19 @@ void serialRx()
           #ifdef SERIAL_DEBUG
             Serial.print("BY accel : ");
             Serial.println(accelBottomY);
+          #endif
+          break;
+
+        case packet_flag_end_effector:
+          endEffectorLedRing(rxBuff[packet_pos_data], rxBuff[packet_pos_data] + 1, rxBuff[packet_pos_data] + 2);
+
+          #ifdef SERIAL_DEBUG
+            Serial.print("End effector set to : ");
+            Serial.print(rxBuff[packet_pos_data]);
+            Serial.print(", ");
+            Serial.print(rxBuff[packet_pos_data] + 1);
+            Serial.print(", ");
+            Serial.println(rxBuff[packet_pos_data] + 2);
           #endif
           break;
 

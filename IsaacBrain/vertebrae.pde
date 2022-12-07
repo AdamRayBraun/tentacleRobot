@@ -24,7 +24,6 @@ class Vertebrae{
 
   public boolean selectPCB = false;
   public int selectPCBIndex = 0;
-  public boolean polling = false;
 
   private PApplet par;
 
@@ -40,6 +39,11 @@ class Vertebrae{
 
   private final byte packet_flag_touch       = (byte)0x30;
   private final byte packet_flag_touchPoll_A = (byte)0x33;
+
+  // touch poll flags
+  public boolean polling = false;
+  private long lastTouchPoll;
+  private int touchPollFreq = 2000;
 
   Vertebrae(PApplet par, JSONObject conf){
     this.par = par;
@@ -120,6 +124,8 @@ class Vertebrae{
 
     if (!this.polling) return;
 
+    if (millis() - lastTouchPoll < touchPollFreq) return;
+
     if (this.selectPCB){
       this.vertebrae.get(this.selectPCBIndex).updateTouchPollPacket(false);
       this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
@@ -127,6 +133,8 @@ class Vertebrae{
       this.vertebrae.get(0).updateTouchPollPacket(true);
       this.bus.write(this.vertebrae.get(0).txPacket);
     }
+
+    this.lastTouchPoll = millis();
   }
 
   public void sendTouchThreshUpdate(){

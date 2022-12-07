@@ -11,7 +11,7 @@ class BlobDetector {
   private final color trackColor = color(255);
   private int blobCounter;
   private int threshold = 10;
-  private int minBlobSize = 3300;
+  private int minBlobSize = 3900;
 
   BlobDetector(){
     blobCanvas = createGraphics(kinectDepthW, kinectDepthH, P3D);
@@ -139,7 +139,7 @@ class BlobDetector {
   public void updateMinBlobSize(int amtChange){
     if (this.minBlobSize > 100){
       this.minBlobSize += amtChange;
-      println("new minBlobSize: amtChange");
+      println("new minBlobSize: " + this.minBlobSize);
     }
   }
 

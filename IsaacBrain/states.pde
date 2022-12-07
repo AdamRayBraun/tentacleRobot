@@ -34,7 +34,7 @@ void changeState(byte newState){
   switch(currentState){
     case WIGGLE:
       resetMotorSpeedAccel();
-      break;
+      break;                                 
 
     case EYE_CONTACT:
       resetMotorSpeedAccel();

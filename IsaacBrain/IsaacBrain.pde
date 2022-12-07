@@ -63,6 +63,7 @@ void draw(){
 
     case EYE_CONTACT:
       lookAtIndividual();
+      handleSpeedChanges();
       break;
 
     case LOOK_UP_DOWN:
@@ -89,4 +90,8 @@ void draw(){
 
   // render screen control feedback
   render();
+}
+
+void stop(){
+  homeMotors();
 }

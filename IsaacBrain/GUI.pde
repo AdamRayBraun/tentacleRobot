@@ -83,7 +83,7 @@ class GUI {
                             ;
 
 
-    touchThresh = this.cp5.addSlider("touchThresh")
+    this.touchThresh = this.cp5.addSlider("touchThresh")
                           .setPosition(this.border, this.border)
                           .setWidth(this.sliderSize - this.border)
                           .setRange(0, 100)
@@ -142,7 +142,7 @@ void keyPressed(){
       println("Following debug mouse: " + lookAtMouse);
     }
   } else if (key == 'T'){
-    // pcbVertebrae.sendTouchPoll();
+    pcbVertebrae.polling = !pcbVertebrae.polling;
   } else if (key == 't'){
     showTouchPoll = !showTouchPoll;
   } else if (key == 'O'){

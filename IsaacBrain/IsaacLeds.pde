@@ -8,7 +8,7 @@ final int anim_noise        = 2;
 final int anim_touch        = 3;
 final int anim_touch_noise  = 4;
 
-int anim_mode = anim_simple;
+int anim_mode = anim_touch_noise;
 
 final int STATE_INDIVIDUAL = 0;
 final int STATE_CLUSTERED  = 1;

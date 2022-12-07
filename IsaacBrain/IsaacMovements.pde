@@ -19,6 +19,10 @@ long lastMotorUpdate;
 float twoOverPI = 2 / PI;
 float rad, armDirectionAngle, bottomScale;
 
+// speed change vars
+long lastSpeedChange;
+int speedChangeFreq = 3000;
+
 // looking up down left right vars
 long lastMovement;
 boolean movementFlag = true;
@@ -27,6 +31,9 @@ int lookingPeriod = 1000;
 // debugging / calibrating
 PGraphics debugCanvas;
 boolean lookAtMouse = false;
+
+// expressions vars
+int proximitySpeedChange = 190;
 
 void setupMovement(){
   tentacleBase = new PVector(isaacConfig.getInt("baseX"),
@@ -68,16 +75,20 @@ void lookAtIndividual(){
   }
 
   // adjust for angle error
-  armDirectionAngle = armDirectionAngle + PI / 18 + map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
+  armDirectionAngle = armDirectionAngle - PI / 18 - PI / 36;// - map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
   if (armDirectionAngle >= TWO_PI) armDirectionAngle -= TWO_PI;
 
   // scale bottom motor positions
   bottomScale = map(rad, 0, 350, 1.9, 0.9);       // 1.5 0.7
   // bottomScale = constrain(bottomScale, 0.5, 1.9); // 0.5 1.5 ///////////////////////
-  bottomScale = constrain(bottomScale, 0.0, 1.0); // 0.5 1.5
+  bottomScale = constrain(bottomScale, 0.0, 1.2); // 0.5 1.5
 
-  //convert coordinates and send to motor
-  moveMotorsWithPolarCoordinates();
+  if (rad < proximitySpeedChange){
+      lookLeftRight();
+    } else {
+      //convert coordinates and send to motor
+      moveMotorsWithPolarCoordinates();
+    }
 
   // check for change of person of interest
   if (millis() - chosenTargetTime > targetAttentionSpan){
@@ -95,9 +106,28 @@ void lookAtIndividual(){
     debugCanvas.line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
     debugCanvas.fill(255, 0, 0);
     debugCanvas.textSize(20);
-    debugCanvas.text(degrees(armDirectionAngle), tentacleBase.x + 10, tentacleBase.y + kinectDepthH);
+    debugCanvas.text("angle: " + degrees(armDirectionAngle) + " radius: " + rad, 20, tentacleBase.y);
     debugCanvas.endDraw();
   }
+}
+
+void handleSpeedChanges(){
+  if (millis() - lastSpeedChange < speedChangeFreq) return;
+
+  if (blobDetector.blobs.size() > 3 || rad < proximitySpeedChange){
+    println("Excited");
+    for (byte m = 0; m < motors.NUM_MOTORS; m++){
+      motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
+    }
+
+    for (byte m = 0; m < motors.NUM_MOTORS; m++){
+      motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 8));
+    }
+  } else {
+    resetMotorSpeedAccel();
+  }
+
+  lastSpeedChange = millis();
 }
 
 //Isaac behaviour. Should have rad, armDirectionAngle, bottomScale ready
@@ -120,6 +150,7 @@ void lookLeftRight(){
     moveMotorsWithPolarCoordinates();
     lastMovement = millis();
     movementFlag = !movementFlag;
+    println("Confused because someone is so close");
   }
 }
 
@@ -178,7 +209,7 @@ void moveMotorsWithPolarCoordinates(){
 
   // scale bottom motor positions
   motorPositions[motors.MOTOR_BOTTOM_X] *= bottomScale * 1.1;
-  motorPositions[motors.MOTOR_BOTTOM_Y] *= bottomScale * 0.8;
+  motorPositions[motors.MOTOR_BOTTOM_Y] *= bottomScale;// * 0.8;
 
   // Move motors
   if (millis() - lastMotorUpdate > motorUpdatePeriod){

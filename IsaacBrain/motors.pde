@@ -52,6 +52,7 @@ class Motors {
   private final byte packet_flag_accel_top_y    = (byte)0x31;
   private final byte packet_flag_accel_bottom_x = (byte)0x32;
   private final byte packet_flag_accel_bottom_y = (byte)0x33;
+  private final byte packet_flag_end_effector   = (byte)0x40;
   private final byte packet_flag_stepper_home   = (byte)0x09;
   private final byte packet_flag_change_state   = (byte)0x60;
   private final byte packet_flag_STOP           = (byte)0xFF;
@@ -155,7 +156,7 @@ class Motors {
 
   public void updateMotorAccel(byte motor, int newAccel){
     println("newAccel: " + newAccel);
-    
+
     if (motor < 0 || motor > 3){
       println("ERR: unknown motor index requested to move: " + motor);
       return;
@@ -171,6 +172,15 @@ class Motors {
 
   public void stopMotors(){
     this.txPacket[this.packet_pos_flag]     = this.packet_flag_STOP;
+    uartTx(this.txPacket);
+  }
+
+  public void updateEndEffectorLED(byte r, byte g, byte b){
+    this.txPacket[this.packet_pos_flag]     = this.packet_flag_end_effector;
+    this.txPacket[this.packet_pos_data]     = r;
+    this.txPacket[this.packet_pos_data + 1] = g;
+    this.txPacket[this.packet_pos_data + 2] = b;
+
     uartTx(this.txPacket);
   }
 
