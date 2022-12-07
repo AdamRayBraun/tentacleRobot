@@ -31,6 +31,7 @@ void handleTouchRx(){
     String rxMsg = bus.readStringUntil(10); // 10 = \n
     if (rxMsg != null) {
       String[] list = split(rxMsg, ',');
+      print("touch from: ");
       println(list[0]);
     }
   }

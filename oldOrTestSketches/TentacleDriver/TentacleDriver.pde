@@ -8,7 +8,7 @@ import netP5.*;
 final String  ARDUINO_PORT  = "/dev/tty.usbmodem1414401";
 final boolean SERIAL_DEBUG  = false;
 final boolean USING_KINECT  = false;
-final boolean USING_ARDUINO = true;
+final boolean USING_ARDUINO = false;
 
 Kinect2 kinect2;
 
@@ -64,6 +64,7 @@ void setup(){
 void draw(){
   // GUI
   background(0);
+
   if (USING_KINECT){
     drawDepth();
     image(kinectCanvas, kinectDepthW * scale, 0, kinectDepthW * scale, height / 2);
