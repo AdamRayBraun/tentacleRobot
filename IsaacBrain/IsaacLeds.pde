@@ -40,7 +40,7 @@ void animateLeds(){
     case anim_noise:
       if (millis() - lastLedFrame > ledFrameRate){
         for (Vertebra v : pcbVertebrae.vertebrae){
-          v.pNoise();
+          v.pNoise(true);
         }
         pcbVertebrae.updateAllLeds();
         lastLedFrame = millis();

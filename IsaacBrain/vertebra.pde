@@ -27,7 +27,7 @@ class Vertebra {
   // touch vars
   public int lastTouchPoll = 70;
   public long lastTouchTime;
-  public int touchHighlightTime = 1000;
+  public int touchHighlightTime = 2000;
 
   Vertebra(byte id){
     this.id = id;
@@ -66,14 +66,13 @@ class Vertebra {
     long timeSinceTouch = millis() - this.lastTouchTime;
 
     if (timeSinceTouch < this.touchHighlightTime){
+      pNoise(false);
       for (vLED l : this.leds){
         l.val = map(timeSinceTouch, 0, this.touchHighlightTime, 255, l.noiseVal);
       }
-      this.neoR = (byte)constrain(this.leds.get(0).val, 0, 255);
-      this.neoG = (byte)constrain(this.leds.get(0).val, 0, 255);
-      this.neoB = (byte)constrain(this.leds.get(0).val, 0, 255);
+      this.neoR = this.neoG = this.neoB = (byte)constrain(this.leds.get(0).val, 0, 255);
     } else {
-      pNoise();
+      pNoise(true);
       this.neoR = 0;
       this.neoG = 0;
       this.neoB = 0;
@@ -127,10 +126,10 @@ class Vertebra {
     popMatrix();
   }
 
-  public void pNoise(){
+  public void pNoise(boolean updateVal){
     for (vLED l : leds){
-      l.pNoise();
-      l.val = l.noiseVal;
+      l.perlinNoise();
+      if (updateVal) l.val = l.noiseVal;
     }
     noiseOffset += noiseIncrement;
   }
@@ -146,7 +145,7 @@ class vLED{
     this.loc = loc;
   }
 
-  public void pNoise(){
+  public void perlinNoise(){
     this.noiseVal = (noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 60);
   }
 
