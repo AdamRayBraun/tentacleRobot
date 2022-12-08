@@ -154,6 +154,12 @@ void lookLeftRight(){
   }
 }
 
+void lookForAudience(){
+  rad = 100;
+  armDirectionAngle = 270;
+  //move there and wait for a sec?
+  lookLeftRight();
+}
 
 //use rad, armDirectionAngle, bottomScale
 void moveMotorsWithPolarCoordinates(){
