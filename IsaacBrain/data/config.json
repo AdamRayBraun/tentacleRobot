@@ -18,8 +18,8 @@
     "PUPPET_BAUD": 115200
   },
   "Isaac":{
-    "baseX": 235,
-    "baseY": 287,
+    "baseX": 291,
+    "baseY": 375,
     "baseZ": 200,
   }
 }

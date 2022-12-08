@@ -8,8 +8,8 @@ class KinectSensor {
   public PGraphics graphics, depthSlice;
   public int[] depthData;
   public float depthMin          = 1500;
-  public float depthMax          = 2000;
-  public int yCrop               = 245;
+  public float depthMax          = 2616;
+  public int yCrop               = 350;
   public final int DEPTH_ALL     = 0;
   public final int DEPTH_THRESH  = 1;
   public int depthMode           = DEPTH_THRESH;

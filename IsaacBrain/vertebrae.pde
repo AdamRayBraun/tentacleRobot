@@ -43,7 +43,7 @@ class Vertebrae{
   // touch poll flags
   public boolean polling = false;
   private long lastTouchPoll;
-  private int touchPollFreq = 2000;
+  private int touchPollFreq = 3000;
 
   Vertebrae(PApplet par, JSONObject conf){
     this.par = par;

@@ -22,7 +22,7 @@ class Vertebra {
 
   // LED mem vars
   public byte neoR, neoG, neoB;
-  private ArrayList<vLED> leds = new ArrayList<vLED>();
+  public ArrayList<vLED> leds = new ArrayList<vLED>();
 
   // touch vars
   public int lastTouchPoll = 70;
@@ -63,20 +63,17 @@ class Vertebra {
   }
 
   private void changeLightBasedOnTouch(){
-    float timeSinceTouch = millis() - this.lastTouchTime;
-    
+    long timeSinceTouch = millis() - this.lastTouchTime;
+
     if (timeSinceTouch < this.touchHighlightTime){
-      for (vLED l : leds){
+      for (vLED l : this.leds){
         l.val = map(timeSinceTouch, 0, this.touchHighlightTime, 255, l.noiseVal);
       }
-      this.neoR = (byte)constrain(leds.get(0).val, 0, 255);
-      this.neoG = (byte)constrain(leds.get(0).val, 0, 255);
-      this.neoB = (byte)constrain(leds.get(0).val, 0, 255);
+      this.neoR = (byte)constrain(this.leds.get(0).val, 0, 255);
+      this.neoG = (byte)constrain(this.leds.get(0).val, 0, 255);
+      this.neoB = (byte)constrain(this.leds.get(0).val, 0, 255);
     } else {
-      for (vLED l : leds){
-        l.pNoise();
-        l.val = l.noiseVal;
-      }
+      pNoise();
       this.neoR = 0;
       this.neoG = 0;
       this.neoB = 0;
@@ -142,7 +139,7 @@ class Vertebra {
 class vLED{
   public PVector loc;
   public float val;
-  public  int noiseVal;
+  public float noiseVal;
   private int ledSize = 10;
 
   vLED(PVector loc){
@@ -150,7 +147,7 @@ class vLED{
   }
 
   public void pNoise(){
-    this.noiseVal = (int)(noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 60);
+    this.noiseVal = (noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 60);
   }
 
   public void render(){

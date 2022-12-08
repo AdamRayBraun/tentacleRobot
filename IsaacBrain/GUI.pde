@@ -143,6 +143,7 @@ void keyPressed(){
     }
   } else if (key == 'T'){
     pcbVertebrae.polling = !pcbVertebrae.polling;
+    println("Touch polling: " + pcbVertebrae.polling);
   } else if (key == 't'){
     showTouchPoll = !showTouchPoll;
   } else if (key == 'O'){
