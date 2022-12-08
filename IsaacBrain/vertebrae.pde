@@ -4,7 +4,7 @@ float noiseIncrement = 0.003;
 int noiseLod = 1;
 float noiseFalloff = 1;
 float noiseScale = 0.1;
-
+float pcbLedBrightness = 60;
 Vertebrae pcbVertebrae;
 
 byte touchThresh = 50;
@@ -64,19 +64,14 @@ class Vertebrae{
   }
 
   public void updateAllLeds(){
-    if (!PCBS_EN) {
-      return;
-    }
-
     for (byte v = 0; v < this.NUM_VERTEBRAE; v++){
       this.vertebrae.get(v).updateLedPacket();
-      this.bus.write(this.vertebrae.get(v).txPacket);
+      sendPacket(this.vertebrae.get(v).txPacket);
     }
   }
 
   public void changeNoiseDetail(){
     noiseDetail(noiseLod, noiseFalloff);
-    println("Noise lod: " + noiseLod + " , falloff: " + noiseFalloff);
   }
 
   public void checkForPCBTouch(){
@@ -120,48 +115,38 @@ class Vertebrae{
   }
 
   public void handleTouchPolling(){
-    if (!PCBS_EN) return;
-
     if (!this.polling) return;
 
     if (millis() - lastTouchPoll < touchPollFreq) return;
 
     if (this.selectPCB){
       this.vertebrae.get(this.selectPCBIndex).updateTouchPollPacket(false);
-      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+      sendPacket(this.vertebrae.get(this.selectPCBIndex).txPacket);
     } else {
       this.vertebrae.get(0).updateTouchPollPacket(true);
-      this.bus.write(this.vertebrae.get(0).txPacket);
+      sendPacket(this.vertebrae.get(0).txPacket);
     }
 
     this.lastTouchPoll = millis();
   }
 
   public void sendTouchThreshUpdate(){
-    if (!PCBS_EN) {
-      return;
-    }
-
     if (this.selectPCB){
       this.vertebrae.get(this.selectPCBIndex).updateTouchThreshold(touchThresh, false);
-      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+      sendPacket(this.vertebrae.get(this.selectPCBIndex).txPacket);
     } else {
       this.vertebrae.get(0).updateTouchThreshold(touchThresh, true);
-      this.bus.write(this.vertebrae.get(0).txPacket);
+      sendPacket(this.vertebrae.get(0).txPacket);
     }
   }
 
   public void sendOTAMsg(){
-    if (!PCBS_EN) {
-      return;
-    }
-
     if (this.selectPCB){
       this.vertebrae.get(this.selectPCBIndex).updateOTAPacket(false);
-      this.bus.write(this.vertebrae.get(this.selectPCBIndex).txPacket);
+      sendPacket(this.vertebrae.get(this.selectPCBIndex).txPacket);
     } else {
       this.vertebrae.get(0).updateOTAPacket(true);
-      this.bus.write(this.vertebrae.get(0).txPacket);
+      sendPacket(this.vertebrae.get(0).txPacket);
     }
   }
 
@@ -173,5 +158,13 @@ class Vertebrae{
     if (this.selectPCB){
       vertebrae.get(selectPCBIndex).renderHighlight();
     }
+  }
+
+  private void sendPacket(byte[] packet){
+    if (!PCBS_EN) {
+      return;
+    }
+
+    this.bus.write(packet);
   }
 }

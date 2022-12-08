@@ -6,8 +6,8 @@ void setupInterface(){
 
 class GUI {
   public Slider2D topMotorSlider, bottomMotorSlider;
-  public Slider pointSkip, pointDiam, touchThresh;
-  public Group motorGroup, pointCloudGroup, pcbGroup;
+  public Slider pointSkip, pointDiam, touchThresh, noiseLod, noiseFalloff, noiseScale, pcbLedBrightness;
+  public Group motorGroup, pointCloudGroup, pcbGroup, ledGroup;
 
   private ControlP5 cp5;
   private final int border = 20;
@@ -84,17 +84,65 @@ class GUI {
 
 
     this.touchThresh = this.cp5.addSlider("touchThresh")
-                          .setPosition(this.border, this.border)
-                          .setWidth(this.sliderSize - this.border)
-                          .setRange(0, 100)
-                          .setValue(50)
-                          .setSliderMode(Slider.FLEXIBLE)
-                          .setGroup(pcbGroup)
-                          ;
+                           .setPosition(this.border, this.border)
+                           .setWidth(this.sliderSize - this.border)
+                           .setRange(0, 100)
+                           .setValue(50)
+                           .setSliderMode(Slider.FLEXIBLE)
+                           .setGroup(pcbGroup)
+                           ;
+
+    this.ledGroup = this.cp5.addGroup("ledGroup")
+                            .setPosition((this.sliderSize * 3) + (this.border * 7), this.border / 2)
+                            .setBackgroundColor(color(255,50))
+                            .setWidth(this.sliderSize + (this.border * 2))
+                            .setBackgroundHeight(int((this.sliderSize * 0.5) + (this.border * 2)))
+                            .setWidth(this.sliderSize + (this.border * 2))
+                            ;
+
+    this.noiseLod = this.cp5.addSlider("noiseLod")
+                            .setPosition(this.border, this.border)
+                            .setWidth(this.sliderSize - this.border)
+                            .setRange(0, 100)
+                            .setValue(1)
+                            .setSliderMode(Slider.FLEXIBLE)
+                            .setGroup(ledGroup)
+                            ;
+
+    this.noiseFalloff = this.cp5.addSlider("noiseFalloff")
+                                .setPosition(this.border, this.border * 2)
+                                .setWidth(this.sliderSize - this.border)
+                                .setRange(0, 1)
+                                .setValue(1)
+                                .setSliderMode(Slider.FLEXIBLE)
+                                .setGroup(ledGroup)
+                                ;
+
+    this.noiseScale = this.cp5.addSlider("noiseScale")
+                              .setPosition(this.border, this.border * 3)
+                              .setWidth(this.sliderSize - this.border)
+                              .setRange(0, 100)
+                              .setValue(0.1)
+                              .setSliderMode(Slider.FLEXIBLE)
+                              .setGroup(ledGroup)
+                              ;
+
+    this.pcbLedBrightness = this.cp5.addSlider("pcbLedBrightness")
+                                    .setPosition(this.border, this.border * 4)
+                                    .setWidth(this.sliderSize - this.border)
+                                    .setRange(0, 200)
+                                    .setValue(60)
+                                    .setSliderMode(Slider.FLEXIBLE)
+                                    .setGroup(ledGroup)
+                                    ;
 
     this.cp5.getController("pointSkip").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
     this.cp5.getController("pointDiam").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
     this.cp5.getController("touchThresh").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("noiseLod").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("noiseFalloff").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("noiseScale").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+    this.cp5.getController("pcbLedBrightness").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   }
 
   void render(){
@@ -108,6 +156,14 @@ class GUI {
     // text("Current state:  " + state Names[currentState], this.border, (this.border * 3) + (this.sliderSize * 2));
     cam.endHUD();
   }
+}
+
+void noiseLod(float val){
+  noiseDetail(noiseLod, noiseFalloff);
+}
+
+void noiseFalloff(float val){
+  noiseDetail(noiseLod, noiseFalloff);
 }
 
 void keyPressed(){

@@ -112,7 +112,7 @@ class Vertebra {
     textSize(20);
     pushMatrix();
     translate(this.ledRadius * 2, this.yPos, 0);
-    text(this.lastTouchPoll, 0, 0);
+    text(this.lastTouchPoll + "  " + this.lastTouchTime, 0, 0);
     popMatrix();
   }
 
@@ -146,14 +146,20 @@ class vLED{
   }
 
   public void perlinNoise(){
-    this.noiseVal = (noise(this.loc.x * noiseScale, (this.loc.y * noiseScale) + noiseOffset , this.loc.z * noiseScale) * 60);
+    float noiseNormal = noise(this.loc.x * noiseScale,
+                            (this.loc.y * noiseScale) + noiseOffset,
+                            this.loc.z * noiseScale);
+
+    if (noiseNormal > 1) noiseNormal = 1;
+    this.noiseVal = noiseNormal * pcbLedBrightness;
   }
 
   public void render(){
     pushMatrix();
     translate(this.loc.x, this.loc.y, this.loc.z);
     strokeWeight(1);
-    stroke(255);
+    // stroke(255);
+    noStroke();
     fill(this.val);
     box(this.ledSize);
     popMatrix();
