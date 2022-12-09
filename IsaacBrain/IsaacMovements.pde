@@ -33,7 +33,7 @@ PGraphics debugCanvas;
 boolean lookAtMouse = false;
 
 // expressions vars
-int proximitySpeedChange = 190;
+int proximitySpeedChange = 100;
 
 void setupMovement(){
   tentacleBase = new PVector(isaacConfig.getInt("baseX"),
@@ -75,7 +75,7 @@ void lookAtIndividual(){
   }
 
   // adjust for angle error
-  armDirectionAngle = armDirectionAngle - PI / 18 - PI / 36;// - map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
+  armDirectionAngle = armDirectionAngle - PI / 18;// - PI / 36;// - map( rad, 0, 350, - (PI / 180) * 1, (PI / 180) * 30);//correct twisting
   if (armDirectionAngle >= TWO_PI) armDirectionAngle -= TWO_PI;
 
   // scale bottom motor positions
@@ -112,22 +112,22 @@ void lookAtIndividual(){
 }
 
 void handleSpeedChanges(){
-  if (millis() - lastSpeedChange < speedChangeFreq) return;
-
-  if (blobDetector.blobs.size() > 3 || rad < proximitySpeedChange){
-    println("Excited");
-    for (byte m = 0; m < motors.NUM_MOTORS; m++){
-      motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
-    }
-
-    for (byte m = 0; m < motors.NUM_MOTORS; m++){
-      motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 8));
-    }
-  } else {
-    resetMotorSpeedAccel();
-  }
-
-  lastSpeedChange = millis();
+  // if (millis() - lastSpeedChange < speedChangeFreq) return;
+  //
+  // if (blobDetector.blobs.size() > 3 || rad < proximitySpeedChange){
+  //   println("Excited");
+  //   for (byte m = 0; m < motors.NUM_MOTORS; m++){
+  //     motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
+  //   }
+  //
+  //   for (byte m = 0; m < motors.NUM_MOTORS; m++){
+  //     motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 8));
+  //   }
+  // } else {
+  //   resetMotorSpeedAccel();
+  // }
+  //
+  // lastSpeedChange = millis();
 }
 
 //Isaac behaviour. Should have rad, armDirectionAngle, bottomScale ready

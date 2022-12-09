@@ -1,6 +1,6 @@
 import processing.serial.*;
 
-String ARDUINO_PORT = "/dev/tty.usbmodem14101";
+String ARDUINO_PORT = "/dev/tty.usbmodem1464401";
 
 
 final byte packet_len = 6;
@@ -26,7 +26,7 @@ void draw(){
   background(0);
   fill(255);
   textSize(15);
-  String gui = " topX:  " + topXPos + "\n topY:  " + topYPos + "\n bottomX:  " + bottomXPos + "\n bottomY:  " + bottomYPos;
+  String gui = " topX:  " + topXPos + "  q & w\n topY:  " + topYPos + "  a & s\n bottomX:  " + bottomXPos + "  o & p\n bottomY:  " + bottomYPos + "  k & l";
   text(gui, 50, 50);
 
   while (bus.available() > 0) {

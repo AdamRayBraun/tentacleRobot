@@ -3,12 +3,12 @@
   "Motors":{
     "MOTORS_ENABLED": true,
     "SERIAL_DEBUG": false,
-    "MOTOR_PORT": "COM5",
+    "MOTOR_PORT": "/dev/tty.usbmodem1464401",
     "MOTOR_BAUD": 115200
   },
   "PCBs":{
-    "PCBS_ENABLEDD": false,
-    "SERIAL_DEBUG": false,
+    "PCBS_ENABLEDD": true,
+    "SERIAL_DEBUG": true,
     "PCB_PORT": "/dev/tty.wchusbserial53820015941",
     "PCB_BAUD": 115200
   },
@@ -18,8 +18,8 @@
     "PUPPET_BAUD": 115200
   },
   "Isaac":{
-    "baseX": 291,
-    "baseY": 375,
+    "baseX": 296,
+    "baseY": 354,
     "baseZ": 200,
   }
 }

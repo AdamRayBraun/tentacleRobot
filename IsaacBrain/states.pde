@@ -34,27 +34,27 @@ void changeState(byte newState){
   switch(currentState){
     case WIGGLE:
       resetMotorSpeedAccel();
-      break;                                 
+      break;
 
     case EYE_CONTACT:
-      resetMotorSpeedAccel();
+      // resetMotorSpeedAccel();
       pickNewTarget();
       break;
 
     case LOOK_UP_DOWN:
-      for (byte m = 0; m < motors.NUM_MOTORS; m++){
-        motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
-      }
-
-      for (byte m = 0; m < motors.NUM_MOTORS; m++){
-        motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 12));
-      }
+      // for (byte m = 0; m < motors.NUM_MOTORS; m++){
+      //   motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
+      // }
+      //
+      // for (byte m = 0; m < motors.NUM_MOTORS; m++){
+      //   motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 12));
+      // }
       break;
 
     case LOOK_LEFT_RIGHT:
-      for (byte m = 0; m < motors.NUM_MOTORS; m++){
-        motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 12));
-      }
+      // for (byte m = 0; m < motors.NUM_MOTORS; m++){
+      //   motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 12));
+      // }
       break;
 
     case HOME:
