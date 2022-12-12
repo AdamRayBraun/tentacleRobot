@@ -5,15 +5,15 @@ void setupMotors(){
 }
 
 void resetMotorSpeedAccel(){
-  // reset motor speeds
-  for (byte m = 0; m < motors.NUM_MOTORS; m++){
-    motors.updateMotorSpeed(m, motors.originalMotorSpeeds[m]);
-  }
-
-  // reset motor accels
-  for (byte m = 0; m < motors.NUM_MOTORS; m++){
-    motors.updateMotorAccel(m, motors.originalMotorAccels[m]);
-  }
+  // // reset motor speeds
+  // for (byte m = 0; m < motors.NUM_MOTORS; m++){
+  //   motors.updateMotorSpeed(m, motors.originalMotorSpeeds[m]);
+  // }
+  //
+  // // reset motor accels
+  // for (byte m = 0; m < motors.NUM_MOTORS; m++){
+  //   motors.updateMotorAccel(m, motors.originalMotorAccels[m]);
+  // }
 }
 
 class Motors {
@@ -120,6 +120,8 @@ class Motors {
       return;
     }
 
+    position = min(position, this.maxMotorSteps[motor]);
+
     this.txPacket[this.packet_pos_flag]     = this.motorMoveFlags[motor];
     this.txPacket[this.packet_pos_data]     = byte((position > 0) ? 0 : 1);
     this.txPacket[this.packet_pos_data + 1] = byte((position >> 8) & 0xFF);
@@ -155,8 +157,6 @@ class Motors {
   }
 
   public void updateMotorAccel(byte motor, int newAccel){
-    println("newAccel: " + newAccel);
-
     if (motor < 0 || motor > 3){
       println("ERR: unknown motor index requested to move: " + motor);
       return;

@@ -27,6 +27,7 @@ final int kinectDepthW = 512;
 final int kinectDepthH = 424;
 final float scale      = 2.4;
 
+
 void settings(){
   size(int(kinectDepthW * scale), int(kinectDepthH * scale), P3D);
 }
@@ -59,11 +60,25 @@ void draw(){
   switch(currentState){
     case WIGGLE:
       wiggle();
+
+      if (millis() - lastStateChange > 5000){
+        lastStateChange = millis();
+        if (blobDetector.blobs.size() > 0) changeState(EYE_CONTACT);
+      }
+
+      if (millis() - wiggleTime > 30000){
+        changeState(LOOK_FOR_AUDIENCE);
+      }
       break;
 
     case EYE_CONTACT:
       lookAtIndividual();
       handleSpeedChanges();
+
+      if (millis() - lastStateChange > 5000){
+        lastStateChange = millis();
+        if (blobDetector.blobs.size() <= 0) changeState(WIGGLE);
+      }
       break;
 
     case LOOK_UP_DOWN:
@@ -75,6 +90,18 @@ void draw(){
       break;
 
     case HOME:
+      break;
+
+    case LOOK_FOR_AUDIENCE:
+      if (millis() - lastStateChange < 7000) return;
+
+      lookLeftRight();
+
+      if (blobDetector.blobs.size() > 0) changeState(EYE_CONTACT);
+
+      // if (millis() - lastStateChange > (random(5, 10) * 1000)){
+      //   changeState(WIGGLE);
+      // }
       break;
   }
 

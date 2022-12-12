@@ -5,7 +5,7 @@ final byte WIGGLE          = 2;
 final byte EYE_CONTACT     = 3;
 final byte LOOK_UP_DOWN    = 4;
 final byte LOOK_LEFT_RIGHT = 5;
-final byte PRESENT_WAIST   = 6;
+final byte LOOK_FOR_AUDIENCE = 6;
 final byte MANUAL          = 10;
 
 final String[] stateNames = { "Homing",
@@ -14,7 +14,7 @@ final String[] stateNames = { "Homing",
                               "Eye contact",
                               "Looking up down",
                               "Looking left right",
-                              "",
+                              "Looking for audience",
                               "",
                               "",
                               "",
@@ -24,7 +24,7 @@ final String[] stateNames = { "Homing",
 
 byte currentState      = HOME;
 byte lastState         = currentState;
-long lastStateChange;
+long lastStateChange, wiggleTime;
 
 void changeState(byte newState){
   println("New state:  " + stateNames[newState]);
@@ -34,6 +34,7 @@ void changeState(byte newState){
   switch(currentState){
     case WIGGLE:
       resetMotorSpeedAccel();
+      wiggleTime = millis();
       break;
 
     case EYE_CONTACT:
@@ -61,6 +62,11 @@ void changeState(byte newState){
       motors.stopMotors();
       homeMotors();
       resetMotorSpeedAccel();
+      break;
+
+    case LOOK_FOR_AUDIENCE:
+      InitialLookForAudience();
+      lastStateChange = millis();
       break;
   }
 

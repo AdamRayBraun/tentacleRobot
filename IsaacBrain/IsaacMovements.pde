@@ -33,7 +33,10 @@ PGraphics debugCanvas;
 boolean lookAtMouse = false;
 
 // expressions vars
-int proximitySpeedChange = 100;
+int proximitySpeedChange = 120;
+
+// speed vars
+boolean fastMode = false;
 
 void setupMovement(){
   tentacleBase = new PVector(isaacConfig.getInt("baseX"),
@@ -66,7 +69,7 @@ void lookAtIndividual(){
   float distanceXY = PVector.dist(personPos, tentacleBase);
 
   // calculate angle between Isaac and person of interest
-  float rad = sqrt(sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y));
+  rad = sqrt(sq(personPos.x - tentacleBase.x) + sq(personPos.y - tentacleBase.y));
 
   if (personPos.y - tentacleBase.y > 0){
     armDirectionAngle = acos((personPos.x - tentacleBase.x) / rad);
@@ -84,7 +87,7 @@ void lookAtIndividual(){
   bottomScale = constrain(bottomScale, 0.0, 1.2); // 0.5 1.5
 
   if (rad < proximitySpeedChange){
-      lookLeftRight();
+      lookLeftRight(); // TODO random updown too
     } else {
       //convert coordinates and send to motor
       moveMotorsWithPolarCoordinates();
@@ -106,7 +109,7 @@ void lookAtIndividual(){
     debugCanvas.line(tentacleBase.x, tentacleBase.y + kinectDepthH, personPos.x, personPos.y + kinectDepthH);
     debugCanvas.fill(255, 0, 0);
     debugCanvas.textSize(20);
-    debugCanvas.text("angle: " + degrees(armDirectionAngle) + " radius: " + rad, 20, tentacleBase.y);
+    debugCanvas.text("angle: " + degrees(armDirectionAngle) + " radius: " + rad, 20, tentacleBase.y + 30);
     debugCanvas.endDraw();
   }
 }
@@ -115,16 +118,18 @@ void handleSpeedChanges(){
   // if (millis() - lastSpeedChange < speedChangeFreq) return;
   //
   // if (blobDetector.blobs.size() > 3 || rad < proximitySpeedChange){
-  //   println("Excited");
-  //   for (byte m = 0; m < motors.NUM_MOTORS; m++){
-  //     motors.updateMotorSpeed(m, (int)(motors.originalMotorSpeeds[m] * 2));
-  //   }
-  //
-  //   for (byte m = 0; m < motors.NUM_MOTORS; m++){
-  //     motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 8));
+  //   if (!fastMode){
+  //     for (byte m = 0; m < motors.NUM_MOTORS; m++){
+  //       // motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 8));
+  //       // motors.updateMotorAccel(m, (int)(motors.originalMotorAccels[m] * 2));
+  //     }
+  //     fastMode = true;
   //   }
   // } else {
-  //   resetMotorSpeedAccel();
+  //   if (fastMode){
+  //     resetMotorSpeedAccel();
+  //     fastMode = false;
+  //   }
   // }
   //
   // lastSpeedChange = millis();
@@ -150,15 +155,16 @@ void lookLeftRight(){
     moveMotorsWithPolarCoordinates();
     lastMovement = millis();
     movementFlag = !movementFlag;
-    println("Confused because someone is so close");
   }
 }
 
-void lookForAudience(){
-  rad = 100;
-  armDirectionAngle = 270;
+void InitialLookForAudience(){
+  rad = 200;
+  armDirectionAngle = 120;
+  moveMotorsWithPolarCoordinates();
+
   //move there and wait for a sec?
-  lookLeftRight();
+  // lookLeftRight();
 }
 
 //use rad, armDirectionAngle, bottomScale
